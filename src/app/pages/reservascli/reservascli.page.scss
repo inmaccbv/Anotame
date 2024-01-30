@@ -1,0 +1,36 @@
+/* Añadir margen entre elementos en el formulario */
+ion-item {
+    margin-bottom: 30px;
+    /* Puedes ajustar el valor según tus preferencias */
+}
+
+/* Añadir margen a los chips y textarea */
+ion-chip,
+ion-textarea {
+    margin-right: 8px;
+    margin-top: 20px;
+}
+
+/* Añadir margen entre el label y el ion-input */
+ion-item ion-label {
+    margin-bottom: 8px;
+    /* Puedes ajustar el valor según tus preferencias */
+}
+
+ion-label {
+    color: #ff830f !important;
+}
+
+.dark-mode-content {
+    background-color: #333 !important;
+    color: #fff !important;
+}
+
+.dark-mode ion-chip,
+.dark-mode ion-searchbar,
+.dark-mode ion-input,
+.dark-mode ion-datetime,
+.dark-mode ion-textarea,
+.dark-mode ion-button {
+    color: #fff !important;
+}

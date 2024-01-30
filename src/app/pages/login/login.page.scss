@@ -1,0 +1,31 @@
+.email-label,
+.password-label {
+    font-size: 1vw; 
+}
+
+p {
+    font-family: Lato;
+}
+
+ion-input[type="password"] {
+    --background: transparent !important;
+}
+
+ion-grid {
+    border: 2px solid #ff830f;
+    background-color: #343541;
+}
+
+ion-button {
+    color: white;
+    background-color: #ff830f;
+    border-radius: 10px;
+}
+
+ion-checkbox {
+    margin-top: 22px;
+}
+
+ion-title {
+    text-align: center;
+}

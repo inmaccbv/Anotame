@@ -1,0 +1,48 @@
+<ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'cliente'">
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/homecli" style="--color: #ff830f;"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title color="primary">Contacto</ion-title>
+
+    <ion-buttons slot="end">
+
+      <ion-button (click)="toggleDarkMode()">
+        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"
+          style="color: #ff830f; font-size: 24px;"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="cerrarSesion()">
+        <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [class]="{'dark-theme': isDarkMode}" *ngIf="rol === 'cliente'">
+
+  <div class="text-container" *ngFor="let dato of datos">
+
+    <ion-icon name="restaurant-outline" style="font-size: 1.5em;"></ion-icon>
+    <p style="font-weight: bold; font-size: 30px;">{{ dato.nombre }}</p>
+    <ion-icon name="call-outline" style="font-size: 1.5em;"></ion-icon>
+    <p>{{ dato.telefono1 }}</p>
+    <p>{{ dato.telefono2 }}</p>
+    <ion-icon name="location-outline" style="font-size: 1.5em;"></ion-icon>
+    <p>{{ dato.direccion }}</p>
+
+    <ion-grid>
+      <ion-icon name="time-outline" style="font-size: 1.5em;"></ion-icon>
+      <ion-row *ngFor="let horario of horariosSeleccionados">
+        <ion-col>{{ horario.dia }}</ion-col>
+        <ion-col>{{ horario.horaApertura }}</ion-col>
+        <ion-col>{{ horario.horaCierre }}</ion-col>
+      </ion-row>
+    </ion-grid>
+    
+  </div>
+
+</ion-content>

@@ -1,0 +1,17 @@
+p {
+    font-family: Lato;
+}
+
+input.ng-touched.ng-invalid {
+    border: 1px solid red;
+}
+
+ion-button.custom-button {
+    background-color: #ff830f;
+    color: #fff;
+    border-radius: 10px;
+}
+
+ion-title {
+    text-align: center;
+}

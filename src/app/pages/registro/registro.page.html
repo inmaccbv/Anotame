@@ -1,0 +1,68 @@
+<!-- eslint-disable @angular-eslint/template/eqeqeq -->
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <a routerLink="/inicio">
+        <img src="./../../../assets/img/ic-inicio.png" style="width: 84px;">
+      </a>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Registro</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="nomFlotante">
+  <form [formGroup]="ionicForm" (ngSubmit)="enviarDatos()">
+ 
+    <ion-item lines="full">
+      <ion-label class="nomFlotante" position="floating">Nombre</ion-label>
+      <ion-input type="text" formControlName="nombre"></ion-input>
+    </ion-item>
+    <ion-note *ngIf="f['nombre'].getError('required') !== null" class="errormessage">Nombre requerido</ion-note>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Apellido</ion-label>
+      <ion-input type="text" formControlName="apellido"></ion-input>
+    </ion-item>
+    <ion-note *ngIf="f['apellido'].getError('required') !== null" class="errormessage">Apellido requerido</ion-note>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Email</ion-label>
+      <ion-input type="text" formControlName="email"></ion-input>
+    </ion-item>
+    <ion-note *ngIf="f['email'].getError('required') !== null" class="errormessage">Email requerido</ion-note>
+    <ion-note *ngIf="f['email'].getError('pattern') !== null" class="errormessage">Email no válido</ion-note>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Password</ion-label>
+      <ion-input type="password" formControlName="password"></ion-input>
+    </ion-item>
+    <ion-note *ngIf="f['password'].getError('required') !== null" class="errormessage">Password requerido</ion-note>
+    <ion-note *ngIf="f['password'].getError('minlength') !== null" class="errormessage">Longitud mínima de 6 caracteres</ion-note>
+  
+    <ion-item lines="full">
+      <ion-label position="floating">Confirmación Password</ion-label>
+      <ion-input type="password" formControlName="confirmPassword"></ion-input>
+      <ion-note *ngIf="f['confirmPassword'].getError('required') !== null" class="errormessage">Confirmar Password</ion-note>
+      <ion-note style="margin-bottom: 10px;" *ngIf="f['confirmPassword'].getError('MustMatch') !== null" class="errormessage">Los passwords no coinciden</ion-note>
+    </ion-item>
+
+    <ion-item lines="full" style="display: none;">
+      <ion-input type="text" formControlName="rol" label="Rol"></ion-input>
+    </ion-item>
+    <ion-note *ngIf="f['rol'].getError('required') !== null" class="errormessage"></ion-note>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Empresa</ion-label>
+      <!-- Muestra el id_empresa en un campo de solo lectura -->
+      <ion-input type="text" formControlName="empresa" [value]="empresa" readonly></ion-input>
+    </ion-item>
+
+    <ion-row>
+      <ion-col>
+        <ion-button class="custom-button" (click)="enviarDatos()" >
+          Registro
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+</ion-content>

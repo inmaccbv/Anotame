@@ -1,0 +1,35 @@
+<ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'cliente'">
+  <ion-toolbar> 
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/gestion-reservascli" style="--color: #ff830f;"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title [style.color]="isDarkMode ? '#ff830f' : ''">Lista Reservas</ion-title>
+    
+    <ion-buttons slot="end">
+
+      <ion-button (click)="toggleDarkMode()">
+        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"
+          style="color: #ff830f; font-size: 24px;"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="cerrarSesion()">
+        <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
+      </ion-button>
+
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="rol === 'cliente'">
+
+  <ion-list>
+    <ion-item *ngFor="let reserva of reservas">
+     
+      {{ reserva.id_reserva }} - {{ reserva.numPax }} - {{ reserva.fechaHoraReserva | date: 'dd/MM/yyyy HH:mm:ss' }}
+    </ion-item>
+  </ion-list>
+
+</ion-content>

@@ -1,0 +1,66 @@
+<ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'administrador'">
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/config-empleados" style="--color: #ff830f;"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title color="primary" style="font-size: 20px;">Lista Empresas</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleDarkMode()">
+        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"
+          style="color: #ff830f; font-size: 24px;"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="cerrarSesion()">
+        <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-grid class="tabla-ancha tabla-centrada" *ngIf="rol === 'administrador'">
+
+    <ion-row class="fila-bordes" style="text-align: center;font-weight: bold;">
+      <ion-col class="columna encabezado-naranja">ID</ion-col>
+      <ion-col class="columna columna-cif encabezado-naranja">CIF</ion-col>
+      <ion-col class="columna encabezado-naranja">EMPRESA</ion-col>
+      <ion-col class="columna encabezado-naranja">DIRECCIÓN</ion-col>
+      <ion-col class="columna encabezado-naranja">PROVINCIA</ion-col>
+      <ion-col class="columna encabezado-naranja">CIUDAD</ion-col>
+      <ion-col class="columna encabezado-naranja">C.POSTAL</ion-col>
+      <ion-col class="columna iconos"></ion-col>
+      <ion-col class="columna iconos"></ion-col>
+    </ion-row>
+
+    <ion-row class="fila-bordes" *ngFor="let empresa of empresas; let i = index"
+      [ngStyle]="{ 'background-color': coloresFilas[i % coloresFilas.length] }" style="text-align: center;">
+      <ion-col class="columna">{{ empresa.id_empresa }}</ion-col>
+      <ion-col class="columna columna-cif">{{ empresa.cif }}</ion-col>
+      <ion-col class="columna">{{ empresa.empresa }}</ion-col>
+      <ion-col class="columna">{{ empresa.direccion }}</ion-col>
+      <ion-col class="columna">{{ empresa.provincia }}</ion-col>
+      <ion-col class="columna">{{ empresa.ciudad }}</ion-col>
+      <ion-col class="columna">{{ empresa.cPostal }}</ion-col>
+      <ion-col class="columna iconos">
+        <a (click)="borrarEmpresa(empresa.id_empresa)">
+          <ion-icon name="trash-outline" size="small"></ion-icon>
+        </a>
+      </ion-col>
+
+      <ion-col class="columna iconos">
+
+        <a (click)="mostrarDetallesPopover($event, empresa)" id="trigger-button" class="eye-button">
+          <ion-icon style="font-size: 20px;" name="eye-outline"></ion-icon>
+        </a>
+
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+
+</ion-content>

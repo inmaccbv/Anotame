@@ -1,0 +1,75 @@
+<!-- eslint-disable @angular-eslint/template/eqeqeq -->
+<ion-header>
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <a href="/inicio">
+        <img src="./../../../assets/img/ic-inicio.png" style="width: 84px;">
+      </a>
+    </ion-buttons>
+
+    <ion-title>Registro Cliente</ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="ionicForm" (ngSubmit)="enviarDatos()">
+
+    <ion-item lines="full">
+      <ion-label position="floating">Nombre</ion-label>
+      <ion-input type="text" formControlName="nombre"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['nombre'].getError('required')!=null" class="errormessage" position="floating">Nombre requerido</ion-label>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Apellido</ion-label> 
+      <ion-input type="text" formControlName="apellido"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['apellido'].getError('required')!=null" class="errormessage" position="floating">Apellido requerido</ion-label>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Email</ion-label>
+      <ion-input type="text" formControlName="email"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['email'].getError('required')!=null" class="errormessage" position="floating">Email requerido</ion-label>
+    <ion-label *ngIf="f['email'].getError('pattern')!=null" class="errormessage" position="floating">Email no valido</ion-label>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Teléfono</ion-label>
+      <ion-input type="text" formControlName="telf"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['telf'].getError('required')!=null" class="errormessage" position="floating">Teléfono requerido</ion-label>
+    <ion-label *ngIf="f['telf'].getError('pattern')!=null" class="errormessage" position="floating">Teléfono no valido</ion-label>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Password</ion-label>
+      <ion-input type="password" formControlName="password"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['password'].getError('required')!=null" class="errormessage" position="floating">Password requerido</ion-label>
+    <ion-label *ngIf="f['password'].getError('minLength')!=null" class="errormessage" position="floating">Longitud minima de 6 caracteres</ion-label>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Confirmación Password</ion-label>
+      <ion-input type="password" formControlName="confirmPassword"></ion-input>
+      <ion-label *ngIf="f['password'].getError('required')!=null" class="errormessage" position="floating">Confirmar Password</ion-label>
+      <ion-label style="margin-bottom: 5px;" *ngIf="f['password'].getError('Mustmatch')!=null" class="errormessage" position="floating">Los passwords no coinciden</ion-label>
+    </ion-item>
+
+    <ion-item lines="full" style="display: none;">
+      <ion-input type="text" formControlName="rol"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['rol'].getError('required')!=null" class="errormessage" position="floating"></ion-label>
+
+    <ion-row>
+      <ion-col>
+        <ion-button class="custom-button" (click)="enviarDatos()" [disabled]="!ionicForm.valid">
+          <a href='/logincli' style="color: #fff;">
+            Registro 
+          </a>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+
+</ion-content>

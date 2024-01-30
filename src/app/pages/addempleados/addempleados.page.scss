@@ -1,0 +1,45 @@
+/* Estilos generales */
+p {
+    font-family: Lato;
+}
+
+.errormessage {
+    color: red;
+    font-size: 12px;
+}
+
+input.ng-touched.ng-invalid {
+    border: 1px solid red;
+}
+
+ion-title {
+    text-align: center;
+}
+
+.color-salir {
+    color: #ff830f;
+}
+
+/* Estilos del botón personalizado */
+ion-button.custom-button {
+    background-color: #ff830f;
+    color: #fff;
+    border-radius: 10px;
+}
+
+.dark-mode {
+    background-color: #333;
+    color: #000000 !important;
+}
+
+.dark-mode-label {
+    color: #fff !important;
+}
+
+.dark-mode-input {
+    color: #fff !important;
+}
+
+.custom-alert-header {
+    color: #ff830f !important;
+}

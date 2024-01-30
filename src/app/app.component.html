@@ -1,3 +1,48 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+
+
+
+  <!-- <ion-chip size="small">
+      <ion-avatar size="small">
+          <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" />
+      </ion-avatar>
+
+  </ion-chip> -->
+
+
+  <!-- MENU HAMBURGUESA -->
+  <ion-menu side="start" menuId="first" contentId="main" [class]="isDarkMode ? 'dark-background' : ''">
+      <ion-header>
+          <ion-toolbar>
+              <ion-buttons slot="end">
+
+                  <ion-button (click)="mostrarMenu()" color="primary">
+                      <ion-icon slot="icon-only" name="menu_outline"></ion-icon>
+                  </ion-button>
+                  <!-- <app-dark-mode-toggle></app-dark-mode-toggle> -->
+
+                  <ion-menu-button menu="first" color="primary"></ion-menu-button>
+
+              </ion-buttons>
+              <ion-title>Anótame</ion-title>
+          </ion-toolbar>
+      </ion-header>
+
+      <ion-content>
+          <ion-list>
+
+              <ion-item *ngFor="let c of componentes | async"
+                         [routerLink]="c.redirectTo" 
+                         >
+                  <ion-icon slot="start" [name]="c.icon" color="primary"></ion-icon>
+                  {{ c.name }}
+              </ion-item>
+
+          </ion-list>
+      </ion-content>
+
+  </ion-menu>
+
+  <ion-router-outlet id="main"></ion-router-outlet>
+
 </ion-app>

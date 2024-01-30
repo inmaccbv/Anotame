@@ -1,0 +1,16 @@
+<ion-header class="centrado">
+  <ion-toolbar>
+    <img src="./assets/img/ic-avatar.png">
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="centrado">
+
+  <ion-list class="centrado" *ngIf="clienteData">
+    <ion-item class="negrita">{{ clienteData.email }}</ion-item>
+    <ion-item class="negrita">{{ clienteData.nombre }}</ion-item>
+    <ion-item class="negrita">{{ clienteData.apellido }}</ion-item>
+    <ion-item class="negrita" [hidden]="!mostrarItem">Rol: {{ clienteData.rol }}</ion-item>
+  </ion-list>
+
+</ion-content>

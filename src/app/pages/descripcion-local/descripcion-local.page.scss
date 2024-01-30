@@ -1,0 +1,36 @@
+ion-title {
+    text-align: center;
+}
+
+.dark-theme ion-input {
+    color: white;
+}
+
+.dark-theme p.white-text {
+    color: white;
+    /* Cambia el color del texto a blanco en modo oscuro */
+}
+
+.color-salir {
+    color: #ff830f !important;
+}
+
+.custom-margin {
+    padding: 20px !important; // Ajusta el espacio alrededor del contenido
+}
+
+.custom-button {
+    --color: #ffffff;
+}
+
+.dark-theme .custom-button {
+    --color: #ffffff;
+}
+
+label {
+    font-size: large;
+    color: #ff830f;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+}

@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+      <ion-title>Gestión Sala</ion-title>
+
+      
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarSesion()">
+        <ion-icon name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-button (click)="onButtonClick('/assets/imgMesas/mesa4.png')">Mesa 4</ion-button>
+  <ion-button (click)="onButtonClick('/assets/imgMesas/mesa6.png')">Mesa 6</ion-button>
+  <ion-button (click)="onButtonClick('/assets/imgMesas/mesa8.png')">Mesa 8</ion-button>
+  
+  <canvas #myCanvas
+ 
+          (touchstart)="onTouchStart($event)"
+       
+          (touchend)="onTouchEnd()"></canvas>
+  <ion-button (click)="guardarImagen()">Guardar imagen</ion-button>
+
+</ion-content>

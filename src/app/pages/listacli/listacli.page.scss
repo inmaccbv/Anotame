@@ -1,0 +1,84 @@
+ion-toolbar, ion-title, ion-col {
+    font-size: 2.0vw;
+}
+
+ion-title { 
+    text-align: center;
+}
+
+.color-salir {
+    color: #ff830f;
+}
+
+/* Configuración y estilo para la tabla centrada */
+.tabla-centrada {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Estilo para las filas de la tabla */
+.fila-bordes {
+    background-color: #FFFFFF; 
+    border: 1px solid #E0E0E0; 
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; 
+    color: black !important; 
+}
+
+.encabezado-naranja {
+    color: #ff830f !important; 
+}
+
+/* Configuración para todas las columnas (títulos y datos) */
+.columna {
+    flex: 2; 
+    text-align: center;
+}
+
+/* Configuración para las columnas de íconos */
+.iconos {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex: 1; 
+    margin-right: 1px; 
+}
+
+/* Estilo para los íconos en la tabla */
+.iconos ion-icon {
+    font-size: 1.5vw; 
+}
+
+/* El ancho máximo de la tabla */
+.tabla-ancha {
+    max-width: 90vw; 
+    margin: auto; 
+}
+
+/* Estilo específico para el modo oscuro */
+.dark-mode {
+    filter: none;
+}
+
+/* Estilos específicos para pantallas pequeñas */
+@media screen and (max-width: 768px) {
+    ion-title.tabla-ancha {
+        font-size: 3vw; /* Ajusta el tamaño de fuente para pantallas pequeñas */
+    }
+
+    /* Cambia el diseño a una columna en pantallas pequeñas */
+    .columna, .iconos {
+        flex: 1;
+        font-size: 2.5vw;
+    }
+
+    /* Ajusta el tamaño de fuente para íconos en pantallas pequeñas */
+    ion-icon {
+        font-size: 4vw;
+    }
+}

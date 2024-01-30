@@ -1,0 +1,45 @@
+<ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'administrador'">
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" style="--color: #ff830f;"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Configuración</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleDarkMode()">
+        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"
+          style="color: #ff830f; font-size: 24px;"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="cerrarSesion()">
+        <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="rol === 'administrador'">
+
+  <!-- Vista Administrador -->
+  <ion-list>
+    <ion-item [href]="'/addempleados'">
+      <ion-icon name="person-add-outline" class="ion-padding-end" color="primary"></ion-icon>Añadir empleado
+    </ion-item>
+    <ion-item [href]="'/listauser'">
+      <ion-icon name="accessibility-outline" class="ion-padding-end" color="primary"></ion-icon>Listar empleados
+    </ion-item>
+    <ion-item [href]="'/listacli'">
+      <ion-icon name="people-outline" class="ion-padding-end" color="primary"></ion-icon>Listar clientes
+    </ion-item>
+    <ion-item [href]="'/registroempresa'">
+      <ion-icon name="bag-add-outline" class="ion-padding-end" color="primary"></ion-icon>Agregar empresas
+    </ion-item>
+    <ion-item [href]="'/listaempr'">
+      <ion-icon name="storefront-outline" class="ion-padding-end" color="primary"></ion-icon>Listar empresas
+    </ion-item>
+  </ion-list>
+
+</ion-content>

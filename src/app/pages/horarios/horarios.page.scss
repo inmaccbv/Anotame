@@ -1,0 +1,72 @@
+ion-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+ion-title {
+    text-align: center;
+}
+
+div.ion-padding {
+    width: 100%;
+    max-width: 600px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+input {
+    margin-bottom: 10px;
+}
+
+button {
+    margin-top: 20px;
+}
+
+.tabla-horarios {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px !important;
+}
+
+.tabla-horarios .encabezado {
+    background-color: #f2f2f2;
+}
+
+.tabla-horarios .fila {
+    background-color: #ffffff;
+}
+
+.tabla-horarios ion-col {
+    border: 1px solid #dddddd;
+    padding: 8px;
+}
+
+.tabla-horarios ion-row:first-child ion-col {
+    font-weight: bold;
+}
+
+.boton-agregar,
+.tabla-horarios:last-child {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px !important;
+}
+
+/* Establecer un ancho para los ion-input */
+ion-input {
+    width: 90px;
+}
+
+.color-salir {
+    color: #ff830f;
+}
+
+.dark-text {
+    color: white;
+}

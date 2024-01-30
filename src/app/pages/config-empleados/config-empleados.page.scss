@@ -1,0 +1,30 @@
+/* Estilos generales para el componente */
+ion-content ion-list ion-item,
+ion-content.dark-theme ion-list ion-item {
+    color: #000;
+    ion-icon {
+      margin-right: 10px !important;
+    }
+}
+
+/* Estilos específicos para el modo oscuro */
+ion-content.dark-theme ion-list ion-item {
+    --background-color: #333 !important; 
+    --color: #fff !important; 
+}
+
+ion-title {
+    text-align: center;
+}
+
+.color-salir {
+    color: #ff830f;
+}
+
+.icon-with-margin {
+    margin-right: 8px;
+}
+
+.text-with-margin {
+    margin-left: 20px;
+}

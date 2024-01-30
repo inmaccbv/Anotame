@@ -1,0 +1,44 @@
+[
+    {
+      "icon": "book-outline",
+      "name": "Carta y/o menú",
+      "redirectTo": "/gestion-menu-carta",
+      "roles": ["administrador", "encargado", "camarero"]
+    },
+    {
+        "icon": "brush-outline",
+        "name": "Gestión Sala",
+        "redirectTo": "/gestion-sala",
+        "roles": ["administrador", "encargado"]
+    },
+    {
+        "icon": "settings-outline",
+        "name": "Ajustes",
+        "redirectTo": "/ajustes",
+        "roles": ["administrador", "encargado"]
+    },
+    {
+        "icon": "call-outline",
+        "name": "Datos contacto",
+        "redirectTo": "/contacto",
+        "roles":  ["administrador", "encargado"]
+    },
+    {
+        "icon": "time-outline",
+        "name": "Horario",
+        "redirectTo": "/horarios",
+        "roles":  ["administrador", "encargado"]
+    },
+    {
+        "icon": "star-half-outline",
+        "name": "Reseñas",
+        "redirectTo": "/reviews",
+        "roles":  ["administrador", "encargado"]
+    },
+    {
+        "icon": "log-in-outline",
+        "name": "Logout",
+        "redirectTo": "/login",
+        "roles": ["administrador", "encargado", "camarero", "cliente"]
+    }
+]

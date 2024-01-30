@@ -1,0 +1,108 @@
+<!-- eslint-disable @angular-eslint/template/eqeqeq -->
+<ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'administrador'">
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/config-empleados" style="--color: #ff830f;"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Añadir Empleado</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleDarkMode()">
+        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'" style="color: #ff830f;"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="cerrarSesion()">
+        <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="rol === 'administrador'">
+  <form [formGroup]="ionicForm" (ngSubmit)="enviarDatos()">
+    <ion-item lines="full" [ngClass]="{'dark-mode': isDarkMode}">
+      <ion-label position="floating" [ngClass]="{'dark-mode-label': isDarkMode}">Nombre Empleado</ion-label>
+      <ion-input type="text" formControlName="nombre" [ngClass]="{'dark-mode-input': isDarkMode}"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['nombre'].getError('required')!=null" class="errormessage" position="floating">
+      Nombre requerido
+    </ion-label>
+
+    <ion-item lines="full" [ngClass]="{'dark-mode': isDarkMode}">
+      <ion-label position="floating" [ngClass]="{'dark-mode-label': isDarkMode}">Apellido Empleado</ion-label>
+      <ion-input type="text" formControlName="apellido" [ngClass]="{'dark-mode-input': isDarkMode}"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['apellido'].getError('required')!=null" class="errormessage" position="floating">
+      Apellido requerido
+    </ion-label>
+
+    <ion-item lines="full" [ngClass]="{'dark-mode': isDarkMode}">
+      <ion-label position="floating" [ngClass]="{'dark-mode-label': isDarkMode}">Email Empleado</ion-label>
+      <ion-input type="text" formControlName="email" [ngClass]="{'dark-mode-input': isDarkMode}"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['email'].getError('required')!=null" class="errormessage" position="floating">
+      Email requerido
+    </ion-label>
+    <ion-label *ngIf="f['email'].getError('pattern')!=null" class="errormessage" position="floating">
+      Email no valido
+    </ion-label>
+
+    <ion-item lines="full" [ngClass]="{'dark-mode': isDarkMode}">
+      <ion-label position="floating" [ngClass]="{'dark-mode-label': isDarkMode}">Selecciona Empresa</ion-label>
+      <ion-select formControlName="empresa" [ngClass]="{'dark-mode-input': isDarkMode}">
+        <ion-select-option *ngFor="let empresa of empresas" [value]="empresa.empresa">
+          {{ empresa.empresa }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-label *ngIf="f['empresa'].getError('required') != null" class="errormessage" position="floating">
+      Empresa requerida
+    </ion-label>
+
+    <ion-item lines="full" [ngClass]="{'dark-mode': isDarkMode}">
+      <ion-label position="floating" [ngClass]="{'dark-mode-label': isDarkMode}">Selecciona Rol</ion-label>
+      <ion-select type="select" formControlName="rol" [ngClass]="{'dark-mode-input': isDarkMode}">
+        <ion-select-option value="encargado">Encargado</ion-select-option>
+        <ion-select-option value="camarero">Camarero</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-label *ngIf="f['rol'].getError('required')!=null" class="errormessage" position="floating">
+      Rol requerido
+    </ion-label>
+
+    <ion-item lines="full" [ngClass]="{'dark-mode': isDarkMode}">
+      <ion-label position="floating" [ngClass]="{'dark-mode-label': isDarkMode}">Contraseña</ion-label>
+      <ion-input type="password" formControlName="password" [ngClass]="{'dark-mode-input': isDarkMode}"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['password'].getError('required')!=null" class="errormessage" position="floating">
+      Contraseña requerido
+    </ion-label>
+    <ion-label *ngIf="f['password'].getError('minLength')!=null" class="errormessage" position="floating">
+      Longitud minima de 6 caracteres
+    </ion-label>
+
+    <ion-item lines="full" [ngClass]="{'dark-mode': isDarkMode}">
+      <ion-label position="floating" [ngClass]="{'dark-mode-label': isDarkMode}">Confirmar Contraseña</ion-label>
+      <ion-input type="password" formControlName="confirmPassword"
+        [ngClass]="{'dark-mode-input': isDarkMode}"></ion-input>
+      <ion-label *ngIf="f['confirmPassword'].getError('required')!=null" class="errormessage" position="floating">
+        Confirmar Contraseña
+      </ion-label>
+      <ion-label *ngIf="f['confirmPassword'].getError('Mustmatch')!=null" class="errormessage" position="floating">
+        Los password no coinciden
+      </ion-label>
+    </ion-item>
+
+    <ion-row>
+      <ion-col>
+        <ion-button class="custom-button" (click)="enviarDatos()" [disabled]="!ionicForm.valid">
+          <a href='/config-empleados' style="color: #fff;">
+            Añadir empleado 
+          </a>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    
+  </form>
+</ion-content>

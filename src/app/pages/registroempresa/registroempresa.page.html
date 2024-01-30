@@ -1,0 +1,68 @@
+<!-- eslint-disable @angular-eslint/template/eqeqeq -->
+<ion-header>
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/registration" style="--color: #ff830f;"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Registro Empresa</ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="empresaForm" (ngSubmit)="enviarDatos()">
+
+    <ion-item lines="full">
+      <ion-label position="floating">CIF Empresa</ion-label>
+      <ion-input type="text" formControlName="cif"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['cif'].getError('required')!=null" class="errormessage" position="floating">Cif empresa requerido</ion-label>  
+    <ion-label *ngIf="f['cif'].getError('pattern')!=null" class="errormessage" position="floating">Cif no valido</ion-label>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Nombre Empresa</ion-label>
+      <ion-input type="text" formControlName="empresa"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['empresa'].getError('required')!=null" class="errormessage" position="floating">Nombre empresa requerido</ion-label>  
+   
+    <ion-item lines="full">
+      <ion-label position="floating">Direccion</ion-label>
+      <ion-input type="text" formControlName="direccion"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['direccion'].getError('required')!=null" class="errormessage" position="floating">Direccion requerido</ion-label>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Provincia</ion-label>
+
+      <ion-select type="select" formControlName="provincia">
+        <ion-select-option *ngFor="let provincia of provincias" [value]="provincia.provincia">{{ provincia.provincia }}</ion-select-option>
+      </ion-select>
+
+    </ion-item>
+    
+    <ion-item lines="full">
+      <ion-label position="floating">Ciudad</ion-label>
+      <ion-input type="text" formControlName="ciudad"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['ciudad'].getError('required')!=null" class="errormessage" position="floating">Ciudad requerida</ion-label>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Codigo Postal</ion-label>
+      <ion-input type="text" formControlName="cPostal"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['cPostal'].getError('required')!=null" class="errormessage" position="floating">Codigo Postal requerido</ion-label>
+
+    <ion-row>
+      <ion-col>
+        <ion-button class="custom-button" (click)="enviarDatos()" >
+          <!-- <a href='/registro' style="color: #fff;"> -->
+            Registro Empresa
+          <!-- </a> -->
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    
+  </form>
+</ion-content>

@@ -1,0 +1,35 @@
+.detalle-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.detalle-info div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px; 
+}
+
+.detalle-info p {
+    margin: 0; // Para eliminar el margen predeterminado de los párrafos
+}
+
+.pe {
+    font-weight: bold;
+}
+
+h2 {
+    color: #ff830f;
+    text-align: center;
+}
+
+.dark-theme {
+    background-color: #222; 
+}
+
+.dark-theme h2 {
+    color: #ff830f;
+}
+
+.dark-theme .detalle-info p {
+    color: #fff; 
+}

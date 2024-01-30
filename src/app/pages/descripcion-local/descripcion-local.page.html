@@ -1,0 +1,40 @@
+<ion-header [class]="isDarkMode ? 'dark-header' : ''" *ngIf="rol === 'administrador'">
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/ajustes" style="--color: #ff830f;"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Descripción Local</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleDarkMode()" class="custom-button">
+        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"
+          style="color: #ff830f; font-size: 24px;"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="cerrarSesion()" class="color-salir" size="large">
+        <ion-icon name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [class]="{'dark-theme': isDarkMode}" *ngIf="rol === 'administrador'" class="custom-margin">
+
+  <ion-input style="font-weight: bold; font-size: 25px; margin-bottom: 10px; color: #ff830f;" [(ngModel)]="nomLocal"
+    placeholder="Introduce nombre local" maxlength="2000"></ion-input>
+  <ion-input style="font-weight: bold; font-size: 20px;" [(ngModel)]="texto"
+    placeholder="Introduce texto" maxlength="2000"></ion-input>
+  <ion-button (click)="enviarTexto()" class="custom-button">Enviar</ion-button>
+
+  <div style="overflow-wrap: break-word; max-width: 350px; color: #ff830f;">
+    <p style="font-size: 25px;">{{ nomLocal }}</p>
+  </div>
+
+  <div style="overflow-wrap: break-word; max-width: 350px;">
+    <p class="white-text" style="font-size: 20px;">{{ texto }}</p>
+  </div>
+
+</ion-content>

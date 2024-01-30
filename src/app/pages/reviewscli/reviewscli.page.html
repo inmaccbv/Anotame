@@ -1,0 +1,59 @@
+<ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'cliente'">
+  <ion-toolbar>
+    
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/homecli" style="--color: #ff830f;"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title [style.color]="isDarkMode ? '#ff830f' : ''">Reseñas</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleDarkMode()">
+        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'" style="color: #ff830f; font-size: 24px;"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="cerrarSesion()">
+        <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" *ngIf="rol === 'cliente'">
+  <ion-item [class.dark-theme]="isDarkMode">
+    <ion-label position="floating">Nombre (opcional)</ion-label>
+    <ion-input [(ngModel)]="nombre" name="nombre" type="text"></ion-input>
+  </ion-item>
+
+  <ion-item [class.dark-theme]="isDarkMode">
+    <ion-label>Calificación</ion-label>
+    <ion-icon *ngFor="let star of stars; let i = index" [name]="star.icon" [style.color]="star.color"
+      (click)="calificar(i + 1)"></ion-icon>
+  </ion-item>
+
+  <ion-item [class.dark-theme]="isDarkMode">
+    <ion-label position="floating">Comentario</ion-label>
+    <ion-textarea [(ngModel)]="comentario" name="comentario"></ion-textarea>
+  </ion-item>
+
+  <ion-button [style.color]="isDarkMode ? '#fff' : '#fff'" type="submit" expand="block" name="submit" (click)="enviarResena()">Enviar Reseña</ion-button>
+
+  <ion-card *ngFor="let resena of resenas; let i = index" [class.dark-theme]="isDarkMode">
+    
+    <ion-card-header>
+      <ion-card-title [style.color]="isDarkMode ? '#ff830f' : '#ff830f'">{{ resena.nombre }}</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <p>Calificación: {{ resena.calificacion }} estrellas</p>
+      <p>{{ resena.comentario }}</p>
+
+      <a (click)="eliminarResena(i)">
+        <ion-icon style="margin-left: 290px;" class="custom-trash-icon" name="trash-outline" size="small"
+          slot="end"></ion-icon>
+      </a>
+    </ion-card-content>
+
+  </ion-card>
+</ion-content>

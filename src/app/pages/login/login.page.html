@@ -1,0 +1,52 @@
+<!-- eslint-disable @angular-eslint/template/eqeqeq -->
+<ion-header>
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <a href="/inicio">
+        <img src="./../../../assets/img/ic-inicio.png" style="width: 84px;">
+      </a>
+    </ion-buttons>
+
+    <ion-title class="ion-text-center">Login</ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="loginForm" (ngSubmit)="enviarDatos()">
+
+    <ion-item lines="full">
+      <ion-label position="floating">Email</ion-label>
+      <ion-input class="inputs" type="text" formControlName="email"></ion-input>
+    </ion-item>
+    <ion-label style="font-size: 10px;" *ngIf="f['email'].getError('required')!=null" class="errormessage" position="floating">Email
+      requerido</ion-label>
+    <ion-label style="font-size: 10px;" *ngIf="f['email'].getError('pattern')!=null" class="errormessage" position="floating">Email no
+      valido</ion-label>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input type="password" formControlName="password"></ion-input>
+    </ion-item>
+    <ion-label style="font-size: 10px;" *ngIf="f['password'].getError('required')!=null" class="errormessage" position="floating">Password
+      requerido</ion-label>
+    <ion-label style="font-size: 10px;" *ngIf="f['password'].getError('minLength')!=null" class="errormessage" position="floating">Longitud
+      minimo 6 caracteres</ion-label>
+
+    <ion-item lines="full">
+      <ion-label style="margin-bottom: 8px;" position="floating">Recordar usuario y contraseña</ion-label>
+      <ion-checkbox type="checkbox" formControlName="recordarDatos"></ion-checkbox>
+    </ion-item>
+
+    <ion-row>
+      <ion-col>
+        <ion-button href='/home' type="submit" color="danger" expand="block" (click)="alert($event)"
+          name="submit" [disabled]="!loginForm.valid">Iniciar Sesión</ion-button>
+        <!-- <a href='/enviar-email' class="small-text">Olvido contraseña?</a><br> -->
+        <a href='/registration' class="small-text">Registrarse</a>
+      </ion-col>
+    </ion-row>
+
+  </form>
+</ion-content>

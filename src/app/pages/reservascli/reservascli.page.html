@@ -1,0 +1,111 @@
+<ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'cliente'">
+  <ion-toolbar> 
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/gestion-reservascli" style="--color: #ff830f;"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title style="text-align: center;" [style.color]="isDarkMode ? '#ff830f' : ''">Reservas</ion-title>
+    
+    <ion-buttons slot="end">
+
+      <ion-button (click)="toggleDarkMode()">
+        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"
+          style="color: #ff830f; font-size: 24px;"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="cerrarSesion()">
+        <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
+      </ion-button>
+
+    </ion-buttons>
+    
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [ngClass]="{'dark-theme': isDarkMode}">
+  <form [formGroup]="reservaForm" class="ion-padding">
+
+    <ion-searchbar (ionChange)="buscarAutocompletado($event)" placeholder="Buscar"
+      [ngClass]="{'dark-theme': isDarkMode}"></ion-searchbar>
+
+    <div class="autocompletado">
+      <ion-list *ngFor="let opcion of opcionesAutocompletado" (click)="seleccionarOpcionAutocompletado(opcion)">
+
+        <!-- Campos autocompletados -->
+        <ion-item
+        *ngIf="mostrarAutocompletadoCampo === 'id_cliente' || mostrarAutocompletadoCampo === 'nombre' || mostrarAutocompletadoCampo === 'email' || mostrarAutocompletadoCampo === 'telf'"
+        [ngClass]="{'dark-theme': isDarkMode}" style="display: none;">
+        <ion-label position="floating">ID</ion-label>
+        <ion-chip (click)="eliminarOpcion('id_cliente')" [ngClass]="{'dark-theme': isDarkMode}">
+          {{ opcion.id_cliente }}
+          <ion-icon name="close-circle"></ion-icon>
+        </ion-chip>
+      </ion-item>
+
+        <ion-item
+        *ngIf="mostrarAutocompletadoCampo === 'id_cliente' || mostrarAutocompletadoCampo === 'nombre' || mostrarAutocompletadoCampo === 'email' || mostrarAutocompletadoCampo === 'telf'"
+          [ngClass]="{'dark-theme': isDarkMode}">
+          <ion-label position="floating">Nombre</ion-label>
+          <ion-chip (click)="eliminarOpcion('nombre')" [ngClass]="{'dark-theme': isDarkMode}">
+            {{ opcion.nombre }}
+            <ion-icon name="close-circle"></ion-icon>
+          </ion-chip>
+        </ion-item>
+
+        <ion-item
+        *ngIf="mostrarAutocompletadoCampo === 'id_cliente' || mostrarAutocompletadoCampo === 'nombre' || mostrarAutocompletadoCampo === 'email' || mostrarAutocompletadoCampo === 'telf'"
+          [ngClass]="{'dark-theme': isDarkMode}">
+          <ion-label position="floating">Email</ion-label>
+          <ion-chip (click)="eliminarOpcion('email')" [ngClass]="{'dark-theme': isDarkMode}">
+            {{ opcion.email }}
+            <ion-icon name="close-circle"></ion-icon>
+          </ion-chip>
+        </ion-item>
+
+        <ion-item
+        *ngIf="mostrarAutocompletadoCampo === 'id_cliente' || mostrarAutocompletadoCampo === 'nombre' || mostrarAutocompletadoCampo === 'email' || mostrarAutocompletadoCampo === 'telf'"
+          [ngClass]="{'dark-theme': isDarkMode}">
+          <ion-label position="floating">Teléfono</ion-label>
+          <ion-chip (click)="eliminarOpcion('telf')" [ngClass]="{'dark-theme': isDarkMode}">
+            {{ opcion.telf }}
+            <ion-icon name="close-circle"></ion-icon>
+          </ion-chip>
+        </ion-item>
+
+        <!-- Otros campos -->
+        <ion-item [ngClass]="{'dark-theme': isDarkMode}">
+          <ion-label position="floating">Número de Personas</ion-label>
+          <ion-input type="number" formControlName="numPax" required [ngClass]="{'dark-theme': isDarkMode}"></ion-input>
+        </ion-item>
+
+        <ion-item [ngClass]="{'dark-theme': isDarkMode}">
+          <ion-label position="floating">Fecha/Hora Reserva</ion-label>
+          <ion-datetime displayFormat="DD, MMM, YYYY HH:mm" formControlName="fechaHoraReserva" required
+            [ngClass]="{'dark-theme': isDarkMode}"></ion-datetime>
+        </ion-item>
+
+        <ion-item [ngClass]="{'dark-theme': isDarkMode}">
+          <ion-label position="floating">Notas Especiales</ion-label>
+          <ion-textarea formControlName="notasEspeciales" [ngClass]="{'dark-theme': isDarkMode}"></ion-textarea>
+        </ion-item>
+
+        <ion-item [ngClass]="{'dark-theme': isDarkMode}" style="display: none;">
+          <ion-label position="floating">Estado de Reserva</ion-label>
+          <ion-input type="text" formControlName="estadoReserva" value="no realizado"></ion-input>
+        </ion-item>
+
+        <!-- Campo de fecha de creación -->
+        <ion-item [ngClass]="{'dark-theme': isDarkMode}" style="display: none;">
+          <ion-label position="floating">Fecha de Creación</ion-label>
+          <ion-input type="text" formControlName="fechaCreacion" [value]="fechaCreacionActual" readonly></ion-input>
+        </ion-item>
+
+        <!-- Botón de enviar reserva -->
+        <ion-button expand="full" type="submit" (click)="enviarReserva()"
+          [ngClass]="{'dark-theme': isDarkMode}">Reservar</ion-button>
+      </ion-list>
+    </div>
+
+  </form>
+</ion-content>

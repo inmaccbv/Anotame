@@ -1,0 +1,51 @@
+ion-content {
+    &.dark-theme {
+    }
+
+    label {
+        font-size: large;
+        color: #ff830f;
+        font-weight: bold;
+        display: block;
+        /* Hace que el label sea de bloque, provocando un salto de línea */
+        margin-bottom: 10px;
+    }
+
+    .color-salir {
+        color: #ff830f;
+    }
+
+    #print-qr {
+        margin-top: 10px;
+    }
+}
+
+/* Estilos específicos para la impresión */
+@media print {
+    .no-print {
+        display: none;
+        /* Ocultar elementos con esta clase al imprimir */
+    }
+
+    #print-qr {
+        width: 800px;
+        height: 800px;
+        /* Dimensiones para el contenedor del código QR al imprimir */
+    }
+
+    .codigoQR {
+        width: 100%;
+        height: 100%;
+        /* Ajusta dimensiones del código QR al imprimir */
+    }
+}
+
+/* Estilos para el botón de imprimir */
+ion-button.no-print {
+    margin-left: 10px;
+    margin-bottom: 20px;
+}
+
+ion-icon.print {
+    color: #fff !important;
+}

@@ -1,0 +1,91 @@
+/* Estilos generales */
+ion-toolbar {
+    font-size: 20px;
+}
+
+.color-salir {
+    color: #ff830f;
+}
+
+ion-title {
+    text-align: center;
+}
+
+/* Estilos para la tabla */
+.tabla-ancha {
+    width: 100%;
+    margin: auto;
+}
+
+/* Estilos para las filas de la tabla */
+.fila-bordes {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    color: black !important;
+    text-align: center;
+    font-weight: bold;
+}
+
+.encabezado-naranja {
+    flex: 1;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.columna {
+    flex: 1;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.columna-cif {
+    flex: 2;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Ajustes para mostrar texto completo */
+.fila-bordes {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* Ajustes para los íconos en la tabla */
+.iconos ion-icon {
+    font-size: 1.5vw;
+    overflow: visible;
+}
+
+/* Estilos específicos para el modo oscuro */
+.dark-theme {
+    filter: none;
+}
+
+/* Estilos específicos para pantallas pequeñas */
+@media screen and (max-width: 768px) {
+    ion-toolbar {
+        font-size: 3vw;
+    }
+
+    .columna,
+    .iconos {
+        flex: 1;
+        font-size: 2.5vw;
+    }
+
+    ion-icon {
+        font-size: 4vw;
+    }
+}  
