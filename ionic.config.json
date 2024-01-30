@@ -1,0 +1,7 @@
+{
+  "name": "anotame",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
