@@ -73,7 +73,7 @@ use CodeIgniter\Validation\Validation;
 use CodeIgniter\View\Cell;
 use CodeIgniter\View\Parser;
 use CodeIgniter\View\RendererInterface;
-use Config\App;
+use Config\App; 
 use Config\Cache;
 use Config\Images;
 use Config\Logger;

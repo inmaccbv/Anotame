@@ -9,8 +9,8 @@ class LogueoModel extends Model {
       'nombre',
       'apellido',
       'email',
-      'empresa_empleado',
       'password',
       'rol',
+      'id_empresa',
     ];
 }

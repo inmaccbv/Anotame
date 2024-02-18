@@ -13,13 +13,15 @@ import { PerfilPage } from '../perfil/perfil.page';
 export class HomePage  {
 
   cards = [
-    { title: 'Gestión carta/menú', image: './assets/img/ic-carta.png', alt: 'Carta', href: 'gestion-menu-carta' },
-    { title: 'Reservas', image: './assets/img/ic_reservas2.png', alt: 'Sala', href: '/gestion-reservas' },
-    { title: 'Reseñas', image: './assets/img/ic-reviews.png', alt: 'Reseñas', href: '/reviews' },
-    { title: 'Configuración', image: './assets/img/ic-config-usuarios.png', alt: 'Imagen 2', href: '/config-empleados', role: 'administrador' },
-    { title: 'Descripción Local', image: './assets/img/ic-descripcion.png', alt: 'Descripción Local', href: '/descripcion-local', role: 'administrador' },
-    { title: 'Generar QR', image: './assets/img/ic-qr.png', alt: 'Imagen 4', href: '/codigo-qr', role: 'administrador' },
-  ];
+    { title: 'Reservas',                    image: './assets/img/ic_reservas2.png',       alt: 'Imagen 1', href: '/gestion-reservas',  roles: ['administrador', 'encargado', 'camarero'] },
+    { title: 'Reseñas',                     image: './assets/img/ic-reviews.png',         alt: 'Imagen 2', href: '/reviews',           roles: ['administrador', 'encargado', 'camarero'] },
+    { title: 'Gestión carta/menú',          image: './assets/img/ic-carta.png',           alt: 'Imagen 3', href: 'gestion-menu-carta', roles: ['administrador', 'encargado'] },
+    { title: 'Descripción Local',           image: './assets/img/ic-descripcion.png',     alt: 'Imagen 4', href: '/descripcion-local', roles: ['administrador', 'encargado'] },
+    { title: 'Contacto',                    image: './assets/img/ic-contacto.png',        alt: 'Imagen 5', href: '/contacto',          roles: ['administrador', 'encargado'] },
+    { title: 'Generar QR',                  image: './assets/img/ic-qr.png',              alt: 'Imagen 6', href: '/codigo-qr',         roles: ['administrador', 'encargado'] },
+    { title: 'Horarios',                    image: './assets/img/ic-horario.png',         alt: 'Imagen 8', href: '/horarios',          roles: ['administrador', 'encargado'] },
+    { title: 'Configuración Usuarios',      image: './assets/img/ic-config-usuarios.png', alt: 'Imagen 7', href: '/config-empleados',  roles: ['administrador'] },
+  ];  
   
   rol!: any;
   isDarkMode: any;
@@ -31,8 +33,7 @@ export class HomePage  {
     public authService: AuthService,
     public themeService: ThemeService,
   ) { 
-    this.getUserRole();
-    console.log('Rol obtenido:', this.rol);
+    //this.getUserRole();
     this.isDarkMode = this.themeService.isDarkTheme();
   }
 
@@ -40,21 +41,16 @@ export class HomePage  {
     this.router.navigateByUrl(card.href);
   }
 
-  showCard(card: { title: string }): boolean {
+  showCard(card: { title: string, roles: string[] }): boolean {
     const userRole = this.authService.getUserRole();
-
-    switch (userRole) {
-      case 'administrador':
-        return true;
-      case 'encargado':
-        return card.title !== 'Ajustes';
-      case 'camarero':
-        return card.title === 'Carta y/o menú' || card.title === 'Gestión Sala';
-      case 'camarero':
-        return card.title !== 'Ajustes';
-      default:
-        return false;
+  
+    // Verifica si userRole es una cadena no nula o no indefinida
+    if (typeof userRole === 'string') {
+      return card.roles.includes(userRole);
     }
+  
+    // Si userRole no es una cadena, devuelve false (o ajusta según tus necesidades)
+    return false;
   }
 
   getUserRole() {

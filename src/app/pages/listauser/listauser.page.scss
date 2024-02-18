@@ -10,6 +10,12 @@ ion-title {
     color: #ff830f;
 }
 
+.iconos ion-icon {
+    font-size: 1.5vw;
+    color: #ff830f; 
+    overflow: visible;
+}
+
 /* Configuración y estilo para la tabla centrada */
 .tabla-centrada {
     display: flex;

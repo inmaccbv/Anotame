@@ -1,28 +1,25 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse, HttpRequest, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuariosService {
 
-  // BASE_RUTA ="https://www.jm2informatica.es/APISATCONTROL/public/";
-
   BASE_RUTA = "http://localhost/anotame/APIANOTAME/public/";
-  BASE_RUTA2 = "http://192.168.0.19/anotame/APIANOTAME/public/";
-
 
   RUTA_REGISTRO = "Registro";
   RUTA_LOGIN = "Logueo";
   RUTA_EMPLEADO = 'Empleado';
+  RUTA_FILTRAR = "Filtrar";
 
   constructor(private http: HttpClient) { }
 
   httpOptions = {
     headers: new HttpHeaders({
-      'Content-Type': 'x-www-form-urlencoded',
+      'Content-Type': 'application/x-www-form-urlencoded',
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST',
       'Access-Control-Allow-Headers': 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,X-Access-Token,XKey,Authorization,Origin, X-Requested-With, Content-Type, Accept',
@@ -80,37 +77,48 @@ export class UsuariosService {
     );
   }
 
+
   registroUsuario(datos: any) {
-    // Obtén el campo de empresa almacenado en localStorage
-    const empresa = localStorage.getItem('empresa');
-    // Agrega el campo de empresa a los datos
-    datos.empresa = empresa;
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
+    console.log(datos);
 
-    return this.http.post(this.BASE_RUTA + this.RUTA_REGISTRO, datos, { headers })
+    var headers = new Headers();
+    headers.append("Accept", 'application/json');
+    headers.append('Content-Type', 'application/json');
+
+    const payload = new HttpParams()
+      .set('nombre', datos.nombre)
+      .set('apellido', datos.apellido)
+      .set('email', datos.email)
+      .set('empleado', datos.empleado)
+      .set('password', datos.password)
+      .set('rol', datos.rol)
+      .set('id_empresa', datos.id_empresa)
+
+    console.log(payload);
+
+    return this.http.post(this.BASE_RUTA + this.RUTA_REGISTRO, payload)
       .pipe(
-        catchError(error => {
-          console.error('Error en la solicitud:', error);
-          return throwError('Error en la solicitud. Por favor, inténtalo de nuevo.');
-        })
+        dat => {
+          console.log('res ' + JSON.stringify(dat));
+
+          return dat;
+        }
       );
   }
 
   getEmpleados() {
-    var headers = new Headers();
-    headers.append("Accept", "application/json");
-    headers.append("Content-Type", "application/json");
-
-    return this.http.post(this.BASE_RUTA + this.RUTA_LOGIN + '/getEmpleados', '').pipe(
-      map(dat => {
-        console.log('res ' + JSON.stringify(dat));
-        return dat;
-      })
-    );
+    return this.http.get(this.BASE_RUTA + this.RUTA_LOGIN + '/getEmpleados')
+      .pipe(
+        tap((ans) => {
+          console.log('Empleados obtenidos:', ans);
+          return ans;
+        }),
+        catchError(error => {
+          console.error('Error al obtener empleados:', error);
+          throw error;
+        })
+      );
   }
 
   getUserByEmail(email: string): Observable<any> {
@@ -159,25 +167,6 @@ export class UsuariosService {
       );
   }
 
-  // UsuariosService
-  editarEmpleado(id_user: string, datos: any): Observable<any> {
-    const url = `${this.BASE_RUTA}/editar-empleado/${id_user}`;
-    return this.http.put(url, datos);
-  }
-
-  //   getUserId(email: string): Observable<any> {
-  //   const payload = { email };  // Crear un objeto con el correo electrónico
-
-  //   return this.http.post(`${this.BASE_RUTA}Logueo/getUserId`, payload).pipe(
-  //     catchError(error => {
-  //       console.error('Error al obtener información del usuario por correo electrónico:', error);
-  //       return throwError(error);
-  //     })
-  //   );
-  // }
-
-
-
   getEmpresas() {
     const headers = new HttpHeaders({
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -185,4 +174,5 @@ export class UsuariosService {
 
     return this.http.post(this.BASE_RUTA + this.RUTA_REGISTRO + '/getEmpresas', '', { headers });
   }
+
 }

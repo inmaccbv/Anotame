@@ -1,44 +1,86 @@
 [
     {
-      "icon": "book-outline",
-      "name": "Carta y/o menú",
-      "redirectTo": "/gestion-menu-carta",
-      "roles": ["administrador", "encargado", "camarero"]
-    },
-    {
         "icon": "brush-outline",
-        "name": "Gestión Sala",
-        "redirectTo": "/gestion-sala",
-        "roles": ["administrador", "encargado"]
-    },
-    {
-        "icon": "settings-outline",
-        "name": "Ajustes",
-        "redirectTo": "/ajustes",
-        "roles": ["administrador", "encargado"]
-    },
-    {
-        "icon": "call-outline",
-        "name": "Datos contacto",
-        "redirectTo": "/contacto",
-        "roles":  ["administrador", "encargado"]
-    },
-    {
-        "icon": "time-outline",
-        "name": "Horario",
-        "redirectTo": "/horarios",
-        "roles":  ["administrador", "encargado"]
+        "name": "Reservas",
+        "redirectTo": "/gestion-reservas",
+        "roles": [
+            "administrador",
+            "encargado",
+            "camarero"
+        ]
     },
     {
         "icon": "star-half-outline",
         "name": "Reseñas",
         "redirectTo": "/reviews",
-        "roles":  ["administrador", "encargado"]
+        "roles": [
+            "administrador",
+            "encargado",
+            "camarero"
+        ]
+    },
+    {
+        "icon": "book-outline",
+        "name": "Carta y/o menú",
+        "redirectTo": "/gestion-menu-carta",
+        "roles": [
+            "administrador",
+            "encargado"
+        ]
+    },
+    {
+        "icon": "pencil-outline",
+        "name": "Descripción Local",
+        "redirectTo": "/descripcion-local",
+        "roles": [
+            "administrador",
+            "encargado"
+        ]
+    },
+    {
+        "icon": "call-outline",
+        "name": "Datos contacto",
+        "redirectTo": "/contacto",
+        "roles": [
+            "administrador",
+            "encargado"
+        ]
+    },
+    {
+        "icon": "qr-code-outline",
+        "name": "Generar QR",
+        "redirectTo": "/codigo-qr",
+        "roles": [
+            "administrador",
+            "encargado"
+        ]
+    },
+    {
+        "icon": "time-outline",
+        "name": "Horario",
+        "redirectTo": "/horarios",
+        "roles": [
+            "administrador",
+            "encargado"
+        ]
+    },
+    {
+        "icon": "people-outline",
+        "name": "Configuración Usuarios",
+        "redirectTo": "/config-empleados",
+        "roles": [
+            "administrador"
+        ]
     },
     {
         "icon": "log-in-outline",
-        "name": "Logout",
-        "redirectTo": "/login",
-        "roles": ["administrador", "encargado", "camarero", "cliente"]
-    }
+        "name": "Cerrar Sesión",
+        "action": "logout",
+        "roles": [
+            "administrador",
+            "encargado",
+            "camarero",
+            "cliente"
+        ]
+    }    
 ]

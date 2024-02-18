@@ -38,9 +38,9 @@ export class ContactocliPage implements OnInit {
     console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
 
-    this.contactService.datos$.subscribe((nuevosDatos: DatosContacto[]) => {
-      this.datos = nuevosDatos;
-    });
+    // this.contactService.datos$.subscribe((nuevosDatos: DatosContacto[]) => {
+    //   this.datos = nuevosDatos;
+    // });
 
     // Suscribirse a futuros cambios en los horarios
     this.horariosService.obtenerHorarios().subscribe((nuevosHorarios) => {

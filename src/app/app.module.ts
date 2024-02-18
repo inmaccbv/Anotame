@@ -14,6 +14,7 @@ import { QRCodeModule } from 'angularx-qrcode';
 import { ContactoService } from './services/contacto.service';
 import { HorariosService } from './services/horarios.service';
 import { DiasService } from './services/dias.service';
+import { TextoService } from './services/texto.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -35,6 +36,7 @@ import { DiasService } from './services/dias.service';
     HorariosService,
     DiasService,
     ThemeService,
+    TextoService
   ],
   bootstrap: [AppComponent],
 })

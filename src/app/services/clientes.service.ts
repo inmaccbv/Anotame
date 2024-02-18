@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse, HttpRequest, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -21,13 +21,11 @@ export class ClientesService {
 
   httpOptions = {
     headers: new HttpHeaders({
-      // 'Content-Type': 'application/json',
-      'Content-Type': 'x-www-form-urlencoded',
+      'Content-Type': 'application/x-www-form-urlencoded',
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST',
       'Access-Control-Allow-Headers': 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,X-Access-Token,XKey,Authorization,Origin, X-Requested-With, Content-Type, Accept',
       'Access-Control-Allow-Credentials': 'true',
-      method: 'POST'
     })
   };
 
@@ -47,6 +45,38 @@ export class ClientesService {
       'Something bad happened; please try again later.');
   }
 
+  loginCliente(datos: any) {
+    console.log(datos);
+    var headers = new Headers();
+    headers.append("Accept", 'application/json');
+    headers.append('Content-Type', 'application/json');
+
+    const payload = new HttpParams()
+      .set('rol', datos.rol)
+      .set('email', datos.email)
+      .set('password', datos.password)
+
+    return this.http.post(this.BASE_RUTA + this.LOGIN_CLIENTE, payload).pipe(
+      map((response: any) => {
+        console.log('Respuesta del servidor:', response);
+
+        if (response && response.rol && response.id_cliente) {
+          // Almacena todos los datos del usuario en localStorage
+          localStorage.setItem('cliente', JSON.stringify(response));
+
+          // Devuelve la respuesta del servidor
+          return response;
+        } else {
+          // Si no, devolvemos una cadena vacía.
+          return response;
+        }
+      }),
+      catchError((error: any) => {
+        console.error('Error al obtener el rol del cliente:', error);
+        return of(''); // Otra opción: return throwError(''); si prefieres lanzar un error observable
+      })
+    );
+  }
 
   registroCliente(datos: any) {
 
@@ -76,47 +106,24 @@ export class ClientesService {
       );
   }
 
-  loginCliente(datos: any) {
-    console.log(datos);
-    var headers = new Headers();
-    headers.append("Accept", 'application/json');
-    headers.append('Content-Type', 'application/json');
-
-    const payload = new HttpParams()
-      .set('rol', datos.rol)
-      .set('email', datos.email)
-      .set('password', datos.password);
-
-    return this.http.post(this.BASE_RUTA + this.LOGIN_CLIENTE, payload).pipe(
-      map((response: any) => {
-        console.log('Respuesta del servidor:', response);
-        // Si el servidor devuelve un objeto con la propiedad "rol", entonces lo devolvemos.
-        if (response && response.rol) {
-          // Primero se establece el valor del rol en el localStorage
-          localStorage.setItem('rol', response.rol);
-          // Luego se devuelve el valor del rol de la respuesta del servidor
-          return response;
-        } else {
-          // Si no, devolvemos una cadena vacía.
-          //console.log('No se encontró el rol del usuario en la respuesta del servicio');
-          return response;
-        }
-      }),
-      catchError((error: any) => {
-        console.error('Error al obtener el rol del usuario:', error);
-        // Devolvemos una cadena vacía.
-        return of('');
-      })
-    );
-  }
-  
   getClientes() {
+    return this.http.get(this.BASE_RUTA + this.LOGIN_CLIENTE + '/getClientes')
+      .pipe(
+        tap((ans) => {
+          console.log('Clientes obtenidos:', ans);
+          return ans;
+        }),
+        catchError(error => {
+          console.error('Error al obtener a los clientes:', error);
+          throw error;
+        })
+      );
+  }
 
-    var headers = new Headers();
-    headers.append("Accept", "application/json");
-    headers.append("Content-Type", "application/json");
+  getUserByEmail(email: string): Observable<any> {
+    const payload = new HttpParams().set('email', email);
 
-    return this.http.post(this.BASE_RUTA + this.LOGIN_CLIENTE + '/getClientes', '')
+    return this.http.post(this.BASE_RUTA + this.LOGIN_CLIENTE + '/getUserByEmail', payload)
       .pipe(
         dat => {
           console.log('res ' + JSON.stringify(dat));
@@ -135,19 +142,6 @@ export class ClientesService {
       .set('id_cliente', id_cliente);
 
     return this.http.post(this.BASE_RUTA + this.LOGIN_CLIENTE + '/borrarCliente', payload)
-      .pipe(
-        dat => {
-          console.log('res ' + JSON.stringify(dat));
-
-          return dat;
-        }
-      );
-  }
-
-  getUserByEmail(email: string): Observable<any> {
-    const payload = new HttpParams().set('email', email);
-
-    return this.http.post(this.BASE_RUTA + this. LOGIN_CLIENTE + '/getUserByEmail', payload)
       .pipe(
         dat => {
           console.log('res ' + JSON.stringify(dat));

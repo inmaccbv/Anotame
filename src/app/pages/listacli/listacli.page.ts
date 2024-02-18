@@ -19,6 +19,8 @@ import { AlertController } from '@ionic/angular';
 export class ListacliPage implements OnInit {
 
   clientes: any;
+  clientesFiltrados: any;
+
   coloresFilas = ['#FFECBA', '#FFFFFF'];
 
   rol!: any;
@@ -104,6 +106,28 @@ export class ListacliPage implements OnInit {
     });
   
     await alert.present();
+  }
+
+  filtrarClientes(criterio: string, valor: string) {
+    if (!valor) {
+      valor = '';
+    }
+
+    this.clientesFiltrados = this.clientes.filter((cliente: any) => {
+      const valorLower = valor.toLowerCase();
+      switch (criterio) {
+        case 'nombre':
+          return cliente.nombre.toLowerCase().includes(valorLower);
+        case 'apellido':
+          return cliente.apellido.toLowerCase().includes(valorLower);
+        case 'email':
+          return cliente.email.toLowerCase().includes(valorLower);
+          case 'telf':
+            return cliente.telf.toLowerCase().includes(valorLower);
+        default:
+          return false;
+      }
+    });
   }
 
   toggleDarkMode() {

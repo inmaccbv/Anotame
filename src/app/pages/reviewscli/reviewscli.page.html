@@ -21,23 +21,34 @@
 </ion-header>
 
 <ion-content class="ion-padding" *ngIf="rol === 'cliente'">
-  <ion-item [class.dark-theme]="isDarkMode">
-    <ion-label position="floating">Nombre (opcional)</ion-label>
-    <ion-input [(ngModel)]="nombre" name="nombre" type="text"></ion-input>
-  </ion-item>
+  <!-- Utiliza [formGroup] y (ngSubmit) para manejar el formulario -->
+  <form [formGroup]="reviewForm" (ngSubmit)="enviarResena()">
 
-  <ion-item [class.dark-theme]="isDarkMode">
-    <ion-label>Calificación</ion-label>
-    <ion-icon *ngFor="let star of stars; let i = index" [name]="star.icon" [style.color]="star.color"
-      (click)="calificar(i + 1)"></ion-icon>
-  </ion-item>
+    <ion-item [class.dark-theme]="isDarkMode">
+      <ion-label position="floating">Nombre (opcional)</ion-label>
+      <!-- Utiliza formControlName para enlazar el control en el FormGroup -->
+      <ion-input type="text"></ion-input>
+    </ion-item>
 
-  <ion-item [class.dark-theme]="isDarkMode">
-    <ion-label position="floating">Comentario</ion-label>
-    <ion-textarea [(ngModel)]="comentario" name="comentario"></ion-textarea>
-  </ion-item>
+    <ion-item [class.dark-theme]="isDarkMode">
+      <ion-label>Calificación</ion-label>
+      <!-- Asegúrate de que el control de calificación no tenga ngModel -->
+      <ion-icon *ngFor="let star of stars; let i = index" [name]="star.icon" [style.color]="star.color"
+        (click)="calificar(i + 1)"></ion-icon>
+        
+    </ion-item>
 
-  <ion-button [style.color]="isDarkMode ? '#fff' : '#fff'" type="submit" expand="block" name="submit" (click)="enviarResena()">Enviar Reseña</ion-button>
+    <ion-item [class.dark-theme]="isDarkMode">
+      <ion-label position="floating">Comentario</ion-label>
+      <!-- Utiliza formControlName para enlazar el control en el FormGroup -->
+      <ion-textarea formControlName="comentario"></ion-textarea>
+    </ion-item>
+
+    <input type="hidden" [value]="reviewForm.get('id_cliente')?.value || ''">
+
+    <ion-button [style.color]="isDarkMode ? '#fff' : '#fff'" type="submit" expand="block" name="submit">Enviar Reseña</ion-button>
+
+  </form>
 
   <ion-card *ngFor="let resena of resenas; let i = index" [class.dark-theme]="isDarkMode">
     
@@ -49,9 +60,8 @@
       <p>Calificación: {{ resena.calificacion }} estrellas</p>
       <p>{{ resena.comentario }}</p>
 
-      <a (click)="eliminarResena(i)">
-        <ion-icon style="margin-left: 290px;" class="custom-trash-icon" name="trash-outline" size="small"
-          slot="end"></ion-icon>
+      <a *ngIf="esClienteActual(resena)">
+        <ion-icon class="custom-trash-icon" name="trash-outline" size="small" slot="end" (click)="eliminarResena(i)"></ion-icon>
       </a>
     </ion-card-content>
 

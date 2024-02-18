@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { Observable, tap, catchError, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { Componente } from 'src/app/interfaces/interfaces';
 
 import { AuthService } from 'src/app/services/auth.service';
+import { EmpresaService } from 'src/app/services/empresa.service';
 import { MenuService } from 'src/app/services/menu.service';
+import { ProvinciasService } from 'src/app/services/provincias.service';
 import { ThemeService } from 'src/app/services/theme.service';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 
@@ -18,20 +20,30 @@ import { UsuariosService } from 'src/app/services/usuarios.service';
 export class ListauserPage implements OnInit {
 
   empleados: any;
-  coloresFilas = ['#FFECBA', '#FFFFFF'];
-  editForm: any;
-  empleadoSeleccionado: any;
-
+  empresas: any;
+  empleado: any;
   rol!: any;
+
+  empleadosFiltrados: any;
+  roles: string[] = [];
+  provincias: any;
+  rolSeleccionado: string = '';
+  filtroEmpresa: any;
+  filtroProvincia: any;
+
+  coloresFilas = ['#FFECBA', '#FFFFFF'];
+
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
-  empleado: any;
+
 
   constructor(
     public userLogin: UsuariosService,
-    private router: Router,
+    public empresaService: EmpresaService,
+    public provinciasService: ProvinciasService,
     public authService: AuthService,
     public menuService: MenuService,
+    private router: Router,
     private alertController: AlertController,
     public themeService: ThemeService
   ) {
@@ -42,7 +54,9 @@ export class ListauserPage implements OnInit {
 
   ngOnInit() {
     this.componentes = this.menuService.getMenuOpts();
+    this.getEmpresas();
     this.getEmpleados();
+    this.getProvincias();
   }
 
   getUserRole() {
@@ -68,11 +82,41 @@ export class ListauserPage implements OnInit {
 
   // Método para obtener la lista de empleados desde el servicio
   getEmpleados() {
-    this.userLogin.getEmpleados().subscribe(async (ans) => {
-      this.empleados = ans;
-      console.log(this.empleados);
+    this.userLogin.getEmpleados().subscribe(
+      (ans) => {
+        this.empleados = ans;
+        this.empleadosFiltrados = ans; // Inicializa empleadosFiltrados
+        console.log('Empleados obtenidos:', this.empleados);
+      },
+      (error) => {
+        console.error('Error al obtener empleados:', error);
+      }
+    );
+  }
+
+  getEmpresas() {
+    this.empresaService.getEmpresas().subscribe(
+      (ans) => {
+        this.empresas = ans;
+        console.log('Empresas obtenidas:', this.empresas);
+      },
+      (error) => {
+        console.error('Error al obtener empresas:', error);
+      }
+    );
+  }
+
+  getProvincias() {
+    this.provinciasService.getProvincias().subscribe(async (ans) => {
+      this.provincias = ans;
     });
   }
+
+  getUsuarioInfo(usuario: any): any {
+    const empresa = this.empresas.find((e: any) => e.id_empresa === usuario.id_empresa);
+    return empresa ? { empresa: empresa.empresa, provincia: empresa.provincia } : { empresa: '', provincia: '' };
+  }
+
 
   actualizarRol(id_user: any) {
     const nuevoRol = this.empleado.rol;
@@ -117,6 +161,72 @@ export class ListauserPage implements OnInit {
     });
 
     await alert.present();
+  }
+
+  filtrarEmpleados(criterio: string, valor: string) {
+    if (!valor) {
+      valor = '';
+    }
+
+    this.empleadosFiltrados = this.empleados.filter((empleado: any) => {
+      const valorLower = valor.toLowerCase();
+      switch (criterio) {
+        case 'nombre':
+          return empleado.nombre.toLowerCase().includes(valorLower);
+        case 'apellido':
+          return empleado.apellido.toLowerCase().includes(valorLower);
+        case 'email':
+          return empleado.email.toLowerCase().includes(valorLower);
+        default:
+          return false;
+      }
+    });
+  }
+
+  filtrarPorRol(rolSeleccionado: string) {
+    if (rolSeleccionado === "") {
+      // Mostrar todos los empleados
+      this.empleadosFiltrados = this.empleados;
+    } else {
+      // Filtrar por el rol seleccionado
+      this.empleadosFiltrados = this.empleados.filter((empleado: any) => {
+        return empleado.rol.toLowerCase().includes(rolSeleccionado.toLowerCase());
+      });
+    }
+  }
+
+  // Método para filtrar empleados por empresa y/o provincia
+  filtrarPorEmpresaProvincia() {
+    // Filtra empleados basados en las selecciones de empresa y provincia
+    this.empleadosFiltrados = this.empleados.filter((empleado: any) => {
+      const filtroEmpresaCumple = !this.filtroEmpresa || empleado.id_empresa === this.filtroEmpresa;
+      const filtroProvinciaCumple = !this.filtroProvincia || this.getUsuarioInfo(empleado).provincia === this.filtroProvincia;
+      return filtroEmpresaCumple && filtroProvinciaCumple;
+    });
+  }
+
+  // Método para manejar el evento de cambio en el desplegable de empresa
+  onEmpresaChange(event: any) {
+    this.filtroEmpresa = event.detail.value;
+    this.filtrarPorEmpresaProvincia();
+  }
+
+  // Método para manejar el evento de cambio en el desplegable de provincia
+  onProvinciaChange(event: any) {
+    this.filtroProvincia = event.detail.value;
+    this.filtrarPorEmpresaProvincia();
+  }
+
+  // Método para manejar el evento de cambio en la opción "Mostrar Todos" del desplegable de empresa
+  onMostrarTodosEmpresas() {
+    this.filtroEmpresa = null;
+    this.filtrarPorEmpresaProvincia();
+  }
+
+  // Método para manejar el evento de cambio en la opción "Mostrar Todos" del desplegable de provincia
+  onMostrarTodosProvincias() {
+    this.filtroProvincia = null;
+    this.filtrarPorEmpresaProvincia();
   }
 
   toggleDarkMode() {

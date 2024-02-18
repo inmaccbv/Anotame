@@ -1,29 +1,58 @@
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* globlal.scss */
+
+/* Modo claro */
+ion-header,
+ion-toolbar {
+    --background: #ffffff;
+    --color: #343541;
 }
 
-// Header
-ion-header {
-    background-color: #ffffff;
-
-    ion-title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #ff830f;
-    }
+ion-title {
+    color: #ff830f !important;
+    /* Mantener el color naranja */
 }
 
-// MENU HAMBURGUESA
+ion-icon[slot="icon-only"][name="menu_outline"] {
+    color: #ff830f !important;
+    /* Mantener el color naranja */
+}
+
+ion-content {
+    --background: #ffffff;
+    color: #343541;
+}
+
+ion-item,
+ion-card {
+    --background: #ffffff;
+    color: #343541;
+}
+
 ion-menu {
     --background: #ffffff;
     --color: #343541;
 }
 
-// MODO OSCURO
+ion-select {
+    --background: var(--light-background-color);
+    --color: var(--light-text-color);
+}
+
+/* Modo oscuro */
 .dark-theme ion-header,
 .dark-theme ion-toolbar {
     --background: #343541;
-    --color: #ff830f;
+    --color: #ffffff;
+}
+
+.dark-theme ion-title {
+    color: #ff830f !important;
+    /* Mantener el color naranja */
+}
+
+.dark-theme ion-icon[slot="icon-only"][name="menu_outline"] {
+    color: #ff830f !important;
+    /* Mantener el color naranja */
 }
 
 .dark-theme ion-content {
@@ -31,25 +60,31 @@ ion-menu {
     color: #ffffff;
 }
 
+body.dark-theme ng-container ion-list {
+    --background: #343541 !important;
+    color: #ffffff;
+}
+
+
 .dark-theme ion-item,
-.dark-theme ion-card,
-.dark-theme ion-list {
+.dark-theme ion-card {
     --background: #343541;
     color: #ffffff;
 }
 
-/* Menú hamburguesa */
-.dark-theme ion-menu {
-    --background: #343541;
-    --color: #ffffff;
+body.dark-theme ion-menu ion-content {
+    --background: #444852 !important;
+    color: #ffffff;
 }
+
 
 .dark-theme ion-select {
     --background: var(--dark-background-color);
     --color: var(--dark-text-color);
 }
 
-//////////////////////////////////////////////////
+
+/* Estilos adicionales */
 .errormessage {
     color: red;
     font-size: 2.5vw;

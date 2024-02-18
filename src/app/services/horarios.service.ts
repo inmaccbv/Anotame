@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, catchError } from 'rxjs';
 import { Horario } from '../interfaces/interfaces';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -12,19 +13,34 @@ export class HorariosService {
   private horariosSubject = new BehaviorSubject<Horario[]>([]);
   horarios$ = this.horariosSubject.asObservable();
 
-  // horarios.service.ts
-  constructor() {
+  BASE_RUTA = "http://localhost/anotame/APIANOTAME/public/";
+
+  RUTA_HORARIO = "Horarios";
+
+  constructor(private http: HttpClient) {
     // Recuperar horarios almacenados en localStorage al inicializar el servicio
     const horariosGuardados = JSON.parse(localStorage.getItem('horarios') || '[]') as Horario[];
     this.actualizarHorarios(horariosGuardados);
   }
 
-
-  agregarHorario(horario: Horario): void {
-    const horarios = this.horariosSubject.getValue();
-    horarios.push(horario);
-    this.horariosSubject.next(horarios);
-    console.log('Horarios actualizados:', horarios);
+  agregarHorario(horario: Horario): Observable<any> {
+    const headers = new HttpHeaders({
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    });
+  
+    const payload = new HttpParams()
+      .set('dia', horario.dia)
+      .set('horaApertura', horario.horaApertura)
+      .set('horaCierre', horario.horaCierre);
+  
+      return this.http.post(this.BASE_RUTA + this.RUTA_HORARIO, payload.toString(), { headers })
+      .pipe(
+        catchError(error => {
+          console.error('Error en la solicitud:', error);
+          throw error; // Propagar el error para que se maneje en el componente
+        })
+      );
   }
 
   borrarHorario(horario: Horario): void {

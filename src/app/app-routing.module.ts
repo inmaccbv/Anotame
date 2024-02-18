@@ -129,10 +129,6 @@ const routes: Routes = [
     loadChildren: () => import('./pages/codigo-qr/codigo-qr.module').then( m => m.CodigoQrPageModule)
   },
   {
-    path: 'ajustes',
-    loadChildren: () => import('./pages/ajustes/ajustes.module').then( m => m.AjustesPageModule)
-  },
-  {
     path: 'registrocli',
     loadChildren: () => import('./pages/registrocli/registrocli.module').then( m => m.RegistrocliPageModule)
   },

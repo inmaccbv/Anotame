@@ -17,7 +17,7 @@ if ($method == 'OPTIONS') {
 
 class LogueoCliente extends ResourceController
 {
-    protected $modelName = 'App\Models\LogueoModelCliente';
+    protected $modelName = 'App\Models\ClienteModel';
     protected $format = 'json';
     protected $table = 'clientes';
     protected $primaryKey = 'id_cliente';
@@ -27,16 +27,13 @@ class LogueoCliente extends ResourceController
         $db = \Config\Database::connect();
 
         $password = hash('sha512', $this->request->getPost('password'));
-        // $password = $this->request->getPost('password');
         $rol = $this->request->getPost('rol');
-
 
         $data = [
             'email'    => $this->request->getPost('email'),
             'password' => $password,
         ];
 
-    
         $builder = $db->table('clientes');
         $builder->select('rol');
         $builder->where($data);
@@ -48,9 +45,8 @@ class LogueoCliente extends ResourceController
                 'code'       => 200,
                 'data'       => $query,
                 'authorized' => 'SI',
-                'texto'      => 'LOGUEADO CLIENTE CORRECTAMENTE',
+                'texto'      => 'LOGUEADO CORRECTAMENTE',
             ]);
-
         } else {
 
             return $this->respond([
@@ -58,7 +54,7 @@ class LogueoCliente extends ResourceController
                 'data'       => $query,
                 // 'data'       => $password,
                 'authorized' => 'NO',
-                'texto'      => 'NINGUN CLIENTE CON ESOS DATOS',
+                'texto'      => 'NINGUN USUARIO CON ESOS DATOS',
             ]);
         }
     }
@@ -90,14 +86,15 @@ class LogueoCliente extends ResourceController
         }
     }
 
-    public function getClientes() {
+    public function getClientes()
+    {
         $db4 = \Config\Database::connect();
 
         $query = $db4->query("SELECT * FROM clientes");
 
         return $this->respond($query->getResult());
     }
-  
+
     public function borrarCliente()
     {
 

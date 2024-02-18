@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 import { Observable } from 'rxjs';
 import { Componente } from 'src/app/interfaces/interfaces';
-
 import { AuthService } from 'src/app/services/auth.service';
 import { ContactoService } from 'src/app/services/contacto.service';
 import { MenuService } from 'src/app/services/menu.service';
@@ -14,119 +15,137 @@ import { ThemeService } from 'src/app/services/theme.service';
   styleUrls: ['./contacto.page.scss'],
 })
 export class ContactoPage implements OnInit {
-  
-  direccion: string = '';
-  telefono1: string = '';
-  telefono2: string = '';
-  texto!: string;
-  datos: any[] = [];
 
+  ionicForm!: FormGroup;
   rol!: any;
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
+  datos: any[] = [];
 
   constructor(
     public router: Router,
+    private formBuilder: FormBuilder,
+    private alertController: AlertController,
     public authService: AuthService,
     public contactService: ContactoService,
     public menuService: MenuService,
     public themeService: ThemeService,
   ) {
     this.getUserRole();
-    console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
+
+    this.ionicForm = this.formBuilder.group({
+      nomLocal: ['', [Validators.required]],
+      direccion: [''],
+      telf1: [''],
+      telf2: [''],
+    });
   }
 
   ngOnInit() {
     this.componentes = this.menuService.getMenuOpts();
-
-    // Obtener datos de localStorage al inicializar
-    const datosGuardados = JSON.parse(localStorage.getItem('datos') || '[]');
-    this.datos = datosGuardados;
+    this.getStoredData(); // Cargar datos almacenados al inicializar
   }
 
   getUserRole() {
     this.rol = this.authService.getUserRole();
-    console.log(this.rol);
-    
+
     if (!(this.rol === 'administrador' || this.rol === 'encargado')) {
       console.error('Usuario con rol', this.rol, 'no tiene permiso para acceder a esta opción.');
       this.authService.logout().subscribe(
         () => {
-
           localStorage.removeItem('role');
           localStorage.removeItem('usuario');
-  
           this.router.navigate(['/inicio']);
         },
         (error) => {
-          console.error('Error al cerrar sesion:', error);
+          console.error('Error al cerrar sesión:', error);
         }
-      )
+      );
     }
   }
-  
-  // Método para agregar datos al array 'datos'
-  agregarDatos() {
-    // Verifico si al menos uno de los campos contiene datos
-    if (this.texto || this.direccion || this.telefono1 || this.telefono2) {
-      const nuevoDato = {
-        nombre: this.texto,
-        direccion: this.direccion,
-        telefono1: this.telefono1,
-        telefono2: this.telefono2,
-      };
-  
-      this.datos.push(nuevoDato);
-  
-      // Guardar en localStorage
-      this.guardarEnLocalStorage();
-  
-      // Reinicio los campos después de agregar datos si es necesario
-      this.texto = '';
-      this.direccion = '';
-      this.telefono1 = '';
-      this.telefono2 = '';
+
+  enviarDatos() {
+    console.log('Datos a enviar:', this.ionicForm.value);
+
+    if (this.ionicForm.valid) {
+      this.contactService.subirDatos(this.ionicForm.value).subscribe(
+        (ans) => {
+          console.log('Respuesta del servidor:', ans);
+
+          if (ans && ans.code === 200) {
+            console.log('Datos subidos con éxito.');
+            this.ionicForm.reset();
+            this.getStoredData(); // Actualizar datos locales
+
+            // Agregar la lógica para guardar en localStorage
+            const storedData = JSON.parse(localStorage.getItem('datos') || '[]');
+            storedData.push(ans.data); // asumiendo que ans.data contiene los nuevos datos
+            localStorage.setItem('datos', JSON.stringify(storedData));
+
+            window.location.reload();
+          } else {
+            console.error('Error en la respuesta del servidor:', ans);
+          }
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        }
+      );
     } else {
-      // Muestra un mensaje cuando no se ingresan datos
-      console.log('Ingresa al menos un dato para guardar.');
+      console.error('El formulario no es válido.');
     }
-    this.contactService.actualizarDatos(this.datos);
   }
 
-  // Método para guardar datos en localStorage
-  private guardarEnLocalStorage() {
-    // Obtener datos actuales de localStorage (si existen)
-    const datosGuardados = JSON.parse(localStorage.getItem('datos') || '[]');
+  private getStoredData() {
+    this.contactService.obtenerDatos().subscribe(
+      (nuevosDatos) => {
+        console.log('Datos locales actualizados:', nuevosDatos);
+        this.datos = nuevosDatos;
+      },
+      (error) => {
+        console.error('Error al obtener datos locales:', error);
+      }
+    );
+  }
 
-    // Agregar el nuevo dato
-    datosGuardados.push({
-      nombre: this.texto,
-      direccion: this.direccion,
-      telefono1: this.telefono1,
-      telefono2: this.telefono2,
+  async eliminarDato(id_datos: number) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar',
+      message: '¿Estás seguro de que deseas eliminar este dato?',
+      cssClass: 'alert-orange-text', 
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          handler: () => {
+            console.log('Eliminación cancelada');
+          }
+        },
+        {
+          text: 'Eliminar',
+          handler: async () => {
+            try {
+              console.log(`Intentando eliminar dato con id: ${id_datos}`);
+  
+              // Lógica para eliminar el dato localmente sin llamar al servicio
+              const updatedDatos = this.datos.filter(dato => dato.id_datos !== id_datos);
+              this.datos = updatedDatos;
+              localStorage.setItem('datos', JSON.stringify(updatedDatos));
+  
+              console.log('Dato eliminado con éxito.');
+            } catch (error) {
+              console.error('Error al eliminar dato:', error);
+            }
+          }
+        }
+      ]
     });
-
-    // Guardar en localStorage
-    localStorage.setItem('datos', JSON.stringify(datosGuardados));
-    localStorage.setItem('datos', JSON.stringify(this.datos));
-  }
-
-  // Método para eliminar un dato del array 'datos'
-  eliminarDato(dato: any): void {
-    // Encontrar el índice del dato a eliminar
-    const index = this.datos.indexOf(dato);
   
-    // Verificar si el índice es válido
-    if (index !== -1) {
-      // Eliminar el dato del array
-      this.datos.splice(index, 1);
-  
-      // Guardar en localStorage
-      this.guardarEnLocalStorage();
-    }
+    console.log(`Intentando eliminar dato con id: ${id_datos}`);
+    await alert.present();
   }
-
+  
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;
     this.themeService.setDarkTheme(this.isDarkMode);

@@ -24,50 +24,41 @@ class Registro extends ResourceController
     
     public function index()
     {
-        try {
-            $db = \Config\Database::connect();
-            $builder = $db->table('usuarios');
-        
-            $data = [
-                'nombre'    => $this->request->getPost('nombre'),
-                'apellido'  => $this->request->getPost('apellido'),
-                'email'     => $this->request->getPost('email'),
-                'password'  => hash('sha512', $this->request->getPost('password')),
-                'rol'       => $this->request->getPost('rol'),
-                'empresa'   => $this->request->getPost('empresa'),
-            ];
-        
-            $builder->select('email');
-            $builder->where('email', $data['email']); // Verifica si el correo ya existe
-            $query = $builder->get()->getResultArray();
-        
-            if (empty($query)) {
-                // El correo no existe, procede con el registro
-                $this->model->insert($data);
-                $idUsuario = $db->insertID(); // Obtener el ID del usuario recién registrado
-        
-                return $this->respond([
-                    'code'       => 200,
-                    'data'       => $data,
-                    'idUsuario'  => $idUsuario, // Envía el ID del usuario al cliente
-                    'authorized' => 'SI',
-                    'texto'      => 'Registro realizado con éxito',
-                ]);
-            } else {
-                // El correo ya existe, devuelve un error
-                return $this->respond([
-                    'code'       => 500,
-                    'data'       => $query,
-                    'authorized' => 'NO',
-                    'texto'      => 'Usuario ya existe',
-                ]);
-            }
-        } catch (\Exception $e) {
-            log_message('error', $e->getMessage());
+        $db = \Config\Database::connect();
+        $builder = $db->table('usuarios');
+    
+        $data = [
+            'nombre'    => $this->request->getPost('nombre'),
+            'apellido'  => $this->request->getPost('apellido'),
+            'email'     => $this->request->getPost('email'),
+            'password'  => hash('sha512', $this->request->getPost('password')),
+            'rol'       => $this->request->getPost('rol'),
+            'id_empresa'   => $this->request->getPost('id_empresa')
+        ];
+    
+        $builder->select('email');
+        $builder->where('email', $data['email']); // Verifica si el correo ya existe
+        $query = $builder->get()->getResultArray();
+    
+        if (empty($query)) {
+            // El correo no existe, procede con el registro
+            $this->model->insert($data);
+            $idUsuario = $db->insertID(); // Obtener el ID del usuario recién registrado
+    
+            return $this->respond([
+                'code'       => 200,
+                'data'       => $data,
+                'idUsuario'  => $idUsuario, // Envía el ID del usuario al cliente
+                'authorized' => 'SI',
+                'texto'      => 'Registro realizado con exito',
+            ]);
+        } else {
+            // El correo ya existe, devuelve un error
             return $this->respond([
                 'code'       => 500,
+                'data'       => $query,
                 'authorized' => 'NO',
-                'texto'      => 'Error en el servidor al procesar la solicitud',
+                'texto'      => 'Usuario ya existe',
             ]);
         }
     }
@@ -89,10 +80,20 @@ class Registro extends ResourceController
     }
 
     public function getEmpresas() {
-        $db4 = \Config\Database::connect();
-
-        $query = $db4->query("SELECT id_empresa, empresa FROM empresas");
-
-        return $this->respond($query->getResult());
+        try {
+            $db = \Config\Database::connect();
+            $query = $db->query("SELECT id_empresa, empresa FROM empresas");
+            $result = $query->getResult();
+    
+            return $this->respond([
+                'code' => 200,
+                'data' => $result,
+            ]);
+        } catch (\Exception $e) {
+            return $this->respond([
+                'code' => 500,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }

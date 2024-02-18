@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { FormControl, FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { AlertController } from '@ionic/angular';
+
+import { UsuariosService } from '../../services/usuarios.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { UsuariosService } from 'src/app/services/usuarios.service';
 
 @Component({
   selector: 'app-login',
@@ -19,10 +21,11 @@ export class LoginPage implements OnInit {
 
   constructor(
     public formBuilder: FormBuilder,
+    private router: Router,
     public alertController: AlertController,
     public userLogin: UsuariosService,
     public authService: AuthService,
-  ) { 
+  ) {
     this.loginForm = this.formBuilder.group({
       email: new FormControl("", Validators.compose([Validators.required, Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")])),
       password: new FormControl("", Validators.compose([Validators.required, Validators.minLength(6)])),
@@ -87,7 +90,7 @@ export class LoginPage implements OnInit {
         }
   
         console.log('Rol almacenado en el localStorage:', localStorage.getItem('role'));
-        window.location.href = '/home';
+        this.router.navigate(['/home']);
       },
       (error: any) => {
         console.error('Error al obtener el rol del usuario:', error);
@@ -95,7 +98,7 @@ export class LoginPage implements OnInit {
       }
     );
   }
-
+  
   async presentAlert(header: string, message: string) {
     const alert = await this.alertController.create({
       header: header,

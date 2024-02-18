@@ -1,6 +1,5 @@
 <ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'administrador'">
   <ion-toolbar>
-
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/config-empleados" style="--color: #ff830f;"></ion-back-button>
     </ion-buttons>
@@ -17,14 +16,42 @@
         <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
       </ion-button>
     </ion-buttons>
-
   </ion-toolbar>
+
 </ion-header>
 
 <ion-content>
 
-  <ion-grid class="tabla-ancha tabla-centrada" *ngIf="rol === 'administrador'">
+  <ion-toolbar>
+    <ion-searchbar placeholder="Buscar por nombre"
+      (ionInput)="filtrarEmpleados('nombre', $event.target.value || '')"></ion-searchbar>
+    <ion-searchbar placeholder="Buscar por apellido"
+      (ionInput)="filtrarEmpleados('apellido', $event.target.value || '')"></ion-searchbar>
+    <ion-searchbar placeholder="Buscar por correo electrónico"
+      (ionInput)="filtrarEmpleados('email', $event.target.value || '')"></ion-searchbar>
 
+    <ion-select placeholder="Filtrar por Rol" (ionChange)="filtrarPorRol($event.detail.value)">
+      <ion-select-option value="">Todos</ion-select-option>
+      <ion-select-option value="encargado">Encargado</ion-select-option>
+      <ion-select-option value="camarero">Camarero</ion-select-option>
+      <ion-select-option value="administrador">Administrador</ion-select-option>
+    </ion-select>
+
+    <ion-label position="floating">Empresas</ion-label>
+    <ion-select (ionChange)="onEmpresaChange($event)">
+      <ion-select-option value="">Mostrar Todos</ion-select-option>
+      <ion-select-option *ngFor="let empresa of empresas" [value]="empresa.id_empresa">{{ empresa.empresa }}</ion-select-option>
+    </ion-select>
+
+    <ion-label position="floating">Provincias</ion-label>
+    <ion-select (ionChange)="onProvinciaChange($event)">
+      <ion-select-option value="">Mostrar Todos</ion-select-option>
+      <ion-select-option *ngFor="let provincia of provincias" [value]="provincia.provincia">{{ provincia.provincia }}</ion-select-option>
+    </ion-select>
+
+  </ion-toolbar>
+
+  <ion-grid class="tabla-ancha tabla-centrada" *ngIf="rol === 'administrador'">
     <ion-row class="fila-bordes" style="text-align: center;font-weight: bold;">
       <ion-col class="columna encabezado-naranja">ID</ion-col>
       <ion-col class="columna encabezado-naranja">NOMBRE</ion-col>
@@ -36,22 +63,21 @@
       <ion-col class="columna iconos"></ion-col>
     </ion-row>
 
-    <ion-row class="fila-bordes" *ngFor="let empleado of empleados; let i = index"
+    <ion-row class="fila-bordes" *ngFor="let empleado of empleadosFiltrados; let i = index"
       [ngStyle]="{ 'background-color': coloresFilas[i % coloresFilas.length] }" style="text-align: center;">
       <ion-col class="columna">{{ empleado.id_user }}</ion-col>
       <ion-col class="columna">{{ empleado.nombre }}</ion-col>
       <ion-col class="columna">{{ empleado.apellido }}</ion-col>
       <ion-col class="columna">{{ empleado.email }}</ion-col>
       <ion-col class="columna">{{ empleado.rol }}</ion-col>
-      <ion-col class="columna">{{ empleado.empresa }}</ion-col>
-      <ion-col class="columna">{{ empleado.provincia }}</ion-col>
+      <ion-col class="columna">{{ getUsuarioInfo(empleado).empresa }}</ion-col>
+      <ion-col class="columna">{{ getUsuarioInfo(empleado).provincia }}</ion-col>
       <ion-col class="columna iconos">
         <a (click)="borrarEmpleado(empleado.id_user)">
           <ion-icon name="trash-outline" size="small"></ion-icon>
         </a>
       </ion-col>
     </ion-row>
-
   </ion-grid>
 
 </ion-content>

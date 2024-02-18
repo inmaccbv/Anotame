@@ -1,5 +1,19 @@
+/* app.scss */
+
+/* Define el fondo del ion-content en el menú hamburguesa */
 ion-menu ion-content {
     --background: var(--ion-item-background, var(--ion-background-color, #fff));
+}
+
+/* Define el fondo oscuro del ion-content en el menú hamburguesa en modo oscuro */
+.dark-theme ion-menu ion-content {
+    --background: #343541;
+}
+
+ion-menu ion-icon {
+    &[class*="ion-icon"] {
+        color: #ff830f !important;
+    }
 }
 
 ion-menu.md ion-content {

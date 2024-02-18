@@ -1,4 +1,6 @@
-<?php namespace Config;
+<?php 
+
+namespace Config;
 
 use CodeIgniter\Config\BaseConfig;
 
@@ -21,7 +23,8 @@ class App extends BaseConfig
 	| environments.
 	|
 	*/
-	public $baseURL = 'http://localhost:8080/';
+	public $baseURL = 'http://localhost/anotame/APIANOTAME/public/';
+    public $indexPage = '';
 
 	/*
 	|--------------------------------------------------------------------------
@@ -33,7 +36,7 @@ class App extends BaseConfig
 	| variable so that it is blank.
 	|
 	*/
-	public $indexPage = 'index.php';
+	//public $indexPage = 'index.php';
 
 	/*
 	|--------------------------------------------------------------------------

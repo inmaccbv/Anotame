@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Observable } from 'rxjs';
@@ -56,7 +56,6 @@ export class ReservascliPage implements OnInit, AfterViewInit {
     // Inicialización del formulario
     this.reservaForm = this.formBuilder.group({
       nombre: ['', Validators.required],
-      email: ['', Validators.required],
       telf: ['', Validators.required],
       numPax: ['', Validators.required],
       fechaHoraReserva: ['', Validators.required],
@@ -163,7 +162,6 @@ export class ReservascliPage implements OnInit, AfterViewInit {
     this.reservaForm.patchValue({
       id_cliente: opcion.id_cliente,
       nombre: opcion.nombre,
-      email: opcion.email,
       telf: opcion.telf,
     });
 

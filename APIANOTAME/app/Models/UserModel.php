@@ -13,6 +13,6 @@ class UserModel extends Model {
         'email',
         'password',
         'rol',
-        'empresa',
+        'id_empresa',
     ];
 }

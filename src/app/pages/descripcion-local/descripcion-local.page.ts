@@ -8,6 +8,7 @@ import { ThemeService } from 'src/app/services/theme.service';
 import { MenuService } from 'src/app/services/menu.service';
 
 import { Componente } from 'src/app/interfaces/interfaces';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-descripcion-local',
@@ -15,16 +16,18 @@ import { Componente } from 'src/app/interfaces/interfaces';
   styleUrls: ['./descripcion-local.page.scss'],
 })
 export class DescripcionLocalPage implements OnInit {
-       
-  nomLocal: string = '';    
-  texto: string = ''; 
 
+  nomLocal: string = '';
+  texto: string = '';
+
+  ionicForm!: FormGroup;
   rol!: any;
-  isDarkMode: any; 
-  componentes!: Observable<Componente[]>;  
+  isDarkMode: any;
+  componentes!: Observable<Componente[]>;
 
   constructor(
-    public router: Router, 
+    public router: Router,
+    private formBuilder: FormBuilder,
     public textoService: TextoService,
     public authService: AuthService,
     public menuService: MenuService,
@@ -33,16 +36,21 @@ export class DescripcionLocalPage implements OnInit {
     this.getUserRole();
     console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
+
+    this.ionicForm = this.formBuilder.group({
+      nomLocal: ['', [Validators.required]],
+      texto: [''],
+    });
   }
 
-  ngOnInit() { 
+  ngOnInit() {
     this.componentes = this.menuService.getMenuOpts();
   }
 
   getUserRole() {
     this.rol = this.authService.getUserRole();
     console.log(this.rol);
-    
+
     if (!(this.rol === 'administrador')) {
       console.error('Usuario con rol', this.rol, 'no tiene permiso para acceder a esta opción.');
       this.authService.logout().subscribe(
@@ -62,11 +70,24 @@ export class DescripcionLocalPage implements OnInit {
 
   // Método para enviar el texto introducido
   enviarTexto() {
-    localStorage.setItem('tituloGuardado', this.nomLocal);
-    localStorage.setItem('textoGuardado', this.texto);
-    // Limpiar el contenido del texto después de guardarlo
-    this.nomLocal = '';
-    this.texto = '';
+    if (this.ionicForm.valid) {
+      this.nomLocal = this.ionicForm.get('nomLocal')?.value;
+      this.texto = this.ionicForm.get('texto')?.value;
+
+      localStorage.setItem('tituloGuardado', this.nomLocal);
+      localStorage.setItem('textoGuardado', this.texto);
+
+      this.textoService.subirTexto(this.ionicForm.value).subscribe(
+        (ans) => {
+          console.log('Respuesta del servidor:', ans);
+          // Limpiar el formulario después de enviarlo
+          this.ionicForm.reset();
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        }
+      );
+    }
   }
 
   toggleDarkMode() {

@@ -48,17 +48,14 @@
       Email no valido
     </ion-label>
 
-    <ion-item lines="full" [ngClass]="{'dark-mode': isDarkMode}">
-      <ion-label position="floating" [ngClass]="{'dark-mode-label': isDarkMode}">Selecciona Empresa</ion-label>
-      <ion-select formControlName="empresa" [ngClass]="{'dark-mode-input': isDarkMode}">
-        <ion-select-option *ngFor="let empresa of empresas" [value]="empresa.empresa">
-          {{ empresa.empresa }}
-        </ion-select-option>
+    <ion-item lines="full">
+      <ion-label position="floating">Empresa</ion-label>
+      <ion-select formControlName="id_empresa">
+        <ion-select-option [value]="null">Selecciona una empresa</ion-select-option>
+        <ion-select-option *ngFor="let empresa of empresas" [value]="empresa.id_empresa">{{ empresa.empresa }}</ion-select-option>
       </ion-select>
     </ion-item>
-    <ion-label *ngIf="f['empresa'].getError('required') != null" class="errormessage" position="floating">
-      Empresa requerida
-    </ion-label>
+    <ion-label *ngIf="f['id_empresa'].getError('required')!=null" class="errormessage" position="floating">Empresa requerida</ion-label>
 
     <ion-item lines="full" [ngClass]="{'dark-mode': isDarkMode}">
       <ion-label position="floating" [ngClass]="{'dark-mode-label': isDarkMode}">Selecciona Rol</ion-label>

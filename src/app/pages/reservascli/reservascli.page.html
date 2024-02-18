@@ -34,7 +34,7 @@
 
         <!-- Campos autocompletados -->
         <ion-item
-        *ngIf="mostrarAutocompletadoCampo === 'id_cliente' || mostrarAutocompletadoCampo === 'nombre' || mostrarAutocompletadoCampo === 'email' || mostrarAutocompletadoCampo === 'telf'"
+        *ngIf="mostrarAutocompletadoCampo === 'id_cliente' || mostrarAutocompletadoCampo === 'nombre' || mostrarAutocompletadoCampo === 'telf'"
         [ngClass]="{'dark-theme': isDarkMode}" style="display: none;">
         <ion-label position="floating">ID</ion-label>
         <ion-chip (click)="eliminarOpcion('id_cliente')" [ngClass]="{'dark-theme': isDarkMode}">
@@ -44,7 +44,7 @@
       </ion-item>
 
         <ion-item
-        *ngIf="mostrarAutocompletadoCampo === 'id_cliente' || mostrarAutocompletadoCampo === 'nombre' || mostrarAutocompletadoCampo === 'email' || mostrarAutocompletadoCampo === 'telf'"
+        *ngIf="mostrarAutocompletadoCampo === 'id_cliente' || mostrarAutocompletadoCampo === 'nombre' || mostrarAutocompletadoCampo === 'telf'"
           [ngClass]="{'dark-theme': isDarkMode}">
           <ion-label position="floating">Nombre</ion-label>
           <ion-chip (click)="eliminarOpcion('nombre')" [ngClass]="{'dark-theme': isDarkMode}">
@@ -54,17 +54,7 @@
         </ion-item>
 
         <ion-item
-        *ngIf="mostrarAutocompletadoCampo === 'id_cliente' || mostrarAutocompletadoCampo === 'nombre' || mostrarAutocompletadoCampo === 'email' || mostrarAutocompletadoCampo === 'telf'"
-          [ngClass]="{'dark-theme': isDarkMode}">
-          <ion-label position="floating">Email</ion-label>
-          <ion-chip (click)="eliminarOpcion('email')" [ngClass]="{'dark-theme': isDarkMode}">
-            {{ opcion.email }}
-            <ion-icon name="close-circle"></ion-icon>
-          </ion-chip>
-        </ion-item>
-
-        <ion-item
-        *ngIf="mostrarAutocompletadoCampo === 'id_cliente' || mostrarAutocompletadoCampo === 'nombre' || mostrarAutocompletadoCampo === 'email' || mostrarAutocompletadoCampo === 'telf'"
+        *ngIf="mostrarAutocompletadoCampo === 'id_cliente' || mostrarAutocompletadoCampo === 'nombre' || mostrarAutocompletadoCampo === 'telf'"
           [ngClass]="{'dark-theme': isDarkMode}">
           <ion-label position="floating">Teléfono</ion-label>
           <ion-chip (click)="eliminarOpcion('telf')" [ngClass]="{'dark-theme': isDarkMode}">

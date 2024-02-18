@@ -38,28 +38,28 @@ export class ListaReservascliPage implements OnInit {
   ngOnInit() {
     console.log('Página Lista reservas cargada.');
     this.componentes = this.menuCli.getMenuOptsCli();
-    this.obtenerReservasCliente();
+    //this.obtenerReservasCliente();
   }
 
-  obtenerReservasCliente() {
-    const idCliente = this.authServiceCli.getClienteId();
+  // obtenerReservasCliente() {
+  //   const idCliente = this.authServiceCli.getClienteId();
     
-    if (idCliente) {
-      this.reservasService.getReservasPorCliente(idCliente).subscribe(
+  //   if (idCliente) {
+  //     this.reservasService.getReservasPorCliente(idCliente).subscribe(
 
-        (reservas) => {
+  //       (reservas) => {
 
-          this.reservas = this.reservasService.getReservasArray();
-          console.log('Reservas del cliente:', this.reservas);
-        },
-        (error) => {
-          console.error('Error al obtener reservas del cliente:', error);
-        }
-      );
-    } else {
-      console.log('ID del cliente no válido.');
-    }
-  }  
+  //         this.reservas = this.reservasService.getReservasArray();
+  //         console.log('Reservas del cliente:', this.reservas);
+  //       },
+  //       (error) => {
+  //         console.error('Error al obtener reservas del cliente:', error);
+  //       }
+  //     );
+  //   } else {
+  //     console.log('ID del cliente no válido.');
+  //   }
+  // }  
   
   getUserRole() {
     this.rol = this.authService.getUserRole();

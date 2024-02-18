@@ -35,7 +35,7 @@ class RegistroCliente extends ResourceController
             'password'  => hash('sha512', $this->request->getPost('password')),
             'rol'       => $this->request->getPost('rol')
         ];
-    
+
         $builder->select('email');
         $builder->where('email', $data['email']); // Verifica si el correo ya existe
         $query = $builder->get()->getResultArray();
@@ -43,7 +43,7 @@ class RegistroCliente extends ResourceController
         if (empty($query)) {
 
             $this->model->insert($data);
-            $idUsuario = $db->insertID(); 
+            $idUsuario = $db->insertID();
 
             return $this->respond([
                 'code'       => 200,
@@ -65,7 +65,8 @@ class RegistroCliente extends ResourceController
         }
     }
 
-    public function getClientes() {
+    public function getClientes()
+    {
         $db4 = \Config\Database::connect();
 
         $query = $db4->query("SELECT * FROM clientes");
@@ -73,4 +74,59 @@ class RegistroCliente extends ResourceController
         return $this->respond($query->getResult());
     }
 
+    public function getClienteIdByEmail()
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('clientes');
+    
+        $email = $this->request->getGet('email'); // Obtén el parámetro del correo electrónico desde la solicitud
+    
+        $builder->select('id_cliente');
+        $builder->where('email', $email);
+    
+        $result = $builder->get()->getRow();
+    
+        if ($result) {
+            return $this->respond([
+                'code'       => 200,
+                'idCliente'  => $result->id_cliente,
+                'authorized' => 'SI',
+                'texto'      => 'ID del cliente obtenido con éxito',
+            ], 200);
+        } else {
+            return $this->respond([
+                'code'       => 404,
+                'authorized' => 'NO',
+                'texto'      => 'Cliente no encontrado',
+            ], 404);
+        }
+    }
+
+    public function obtenerDetallesCliente($idCliente)
+    {
+        try {
+            $cliente = $this->model->find($idCliente);
+
+            if ($cliente) {
+                return $this->respond([
+                    'code'    => 200,
+                    'success' => true,
+                    'data'    => $cliente,
+                ]);
+            } else {
+                return $this->respond([
+                    'code'    => 404,
+                    'success' => false,
+                    'message' => 'Cliente no encontrado',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return $this->respond([
+                'code'    => 500,
+                'success' => false,
+                'message' => 'Error al obtener detalles del cliente: ' . $e->getMessage(),
+            ]);
+        }
+    }
+    
 }

@@ -23,6 +23,15 @@
 
 <ion-content>
 
+  <ion-searchbar placeholder="Buscar por nombre"
+    (ionInput)="filtrarClientes('nombre', $event.target.value || '')"></ion-searchbar>
+  <ion-searchbar placeholder="Buscar por apellido"
+    (ionInput)="filtrarClientes('apellido', $event.target.value || '')"></ion-searchbar>
+  <ion-searchbar placeholder="Buscar por correo electrónico"
+    (ionInput)="filtrarClientes('email', $event.target.value || '')"></ion-searchbar>
+  <ion-searchbar placeholder="Buscar por teléfono"
+    (ionInput)="filtrarClientes('telf', $event.target.value || '')"></ion-searchbar>
+
   <ion-grid class="tabla-ancha tabla-centrada" *ngIf="rol === 'administrador'">
 
     <ion-row class="fila-bordes" style="text-align: center;font-weight: bold;">
@@ -34,13 +43,14 @@
       <ion-col class="columna iconos"></ion-col>
     </ion-row>
 
-    <ion-row class="fila-bordes" *ngFor="let cliente of clientes; let i = index"
+    <ion-row class="fila-bordes" *ngFor="let cliente of clientesFiltrados ? clientesFiltrados : clientes; let i = index"
       [ngStyle]="{ 'background-color': coloresFilas[i % coloresFilas.length] }" style="text-align: center;">
       <ion-col class="columna">{{ cliente.id_cliente }}</ion-col>
       <ion-col class="columna">{{ cliente.nombre }}</ion-col>
       <ion-col class="columna">{{ cliente.apellido }}</ion-col>
       <ion-col class="columna">{{ cliente.email }}</ion-col>
       <ion-col class="columna">{{ cliente.telf }}</ion-col>
+      
       <ion-col class="columna iconos">
         <a (click)="borrarCliente(cliente.id_cliente)">
           <ion-icon name="trash-outline" size="small"></ion-icon>

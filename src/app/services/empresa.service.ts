@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse, HttpRequest, HttpParams } from '@angular/common/http';
-import { throwError } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { map, catchError, retry, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -76,17 +76,17 @@ export class EmpresaService {
 
 
   getEmpresas() {
-    var headers = new Headers();
-    headers.append("Accept", "application/json");
-    headers.append("Content-Type", "application/json");
-
-    return this.http.post(this.BASE_RUTA + this.RUTA_EMPRESA + '/getEmpresas', '')
-    .pipe(
-      dat => {
-        console.log('res ' + JSON.stringify(dat));
-        return dat;
-      }
-    );
+    return this.http.get(this.BASE_RUTA + this.RUTA_EMPRESA + '/getEmpresas')
+      .pipe(
+        tap((ans) => {
+          console.log('Empresas obtenidas:', ans);
+          return ans;
+        }),
+        catchError(error => {
+          console.error('Error al obtener las empresas:', error);
+          throw error;
+        })
+      );
   }
 
   borrarEmpresa(id_empresa: any) {

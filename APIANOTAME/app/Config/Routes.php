@@ -5,7 +5,7 @@ use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Routing\RouterInterface;
 
-class App extends BaseConfig implements \Config\App
+class AppRoutes extends BaseConfig
 {
     public $baseURL = 'http://localhost/anotame/APIANOTAME/public/';
     public $indexPage = '';
@@ -26,7 +26,7 @@ $routes->setTranslateURIDashes(false);
 $routes->set404Override();
 $routes->setAutoRoute(true);
 
-$routes->post('Registro', 'Registro::index'); // Ruta para la acción de registro
+
 
 // Otras rutas pueden agregarse según sea necesario
 

@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
+
+
 
 import { Componente } from 'src/app/interfaces/interfaces';
 
@@ -16,7 +19,9 @@ import { ThemeService } from 'src/app/services/theme.service';
 })
 export class ReviewsPage implements OnInit {
 
-  resenas!: any[];
+  getResenas: any;
+  resenas: any[] = [];
+  resenasFiltrados: any[] = [];
 
   rol!: any; 
   isDarkMode: any; 
@@ -30,28 +35,52 @@ export class ReviewsPage implements OnInit {
     public themeService: ThemeService
   ) {
     this.getUserRole(); 
+    this.getResena();
     console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
   }
 
   ngOnInit() {
     this.componentes = this.menuService.getMenuOpts();
-    
-    this.reviewsService.resenas$.subscribe((resenas) => {
+  
+   this.obtenerDetallesClientes();
+  }  
 
-      this.resenas = resenas;
+  getResena() {
+    this.reviewsService.obtenerResenas().subscribe(
+      (ans: any) => {
+        this.getResenas = ans;
+        this.resenasFiltrados = ans;
+        console.log('Reseñas obtenidas:', this.getResenas);
+  
+        // Llamada a la función que obtiene los detalles del cliente
+        this.obtenerDetallesClientes();
+      },
+      (error) => {
+        console.error('Error al obtener reseñas:', error);
+      }
+    );
+  }  
+  
+  obtenerDetallesClientes() {
+    const observables: Observable<any>[] = this.resenasFiltrados.map((resena: any) => {
+      const idCliente = resena.id_cliente;
+      return this.reviewsService.obtenerDetallesCliente(idCliente);
     });
   
-    // Cargar reseñas guardadas al inicializar el componente
-    this.cargarResenasGuardadas();
+    forkJoin(observables).subscribe(
+      (detallesClientes: any[]) => {
+        detallesClientes.forEach((detallesCliente: any, index: number) => {
+          this.resenasFiltrados[index].nombreCliente = detallesCliente.nombre_cliente;
+          console.log('Detalles del cliente:', detallesCliente);
+        });
+      },
+      (error) => {
+        console.error('Error al obtener detalles del cliente:', error);
+      }
+    );
   }
   
-  cargarResenasGuardadas() {
-    const resenasGuardadas = localStorage.getItem('resenas');
-    if (resenasGuardadas) {
-      this.reviewsService.actualizarResenas(JSON.parse(resenasGuardadas));
-    }
-  }
 
   // Método para obtener el rol del usuario
   getUserRole() {
