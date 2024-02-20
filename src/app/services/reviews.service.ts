@@ -10,7 +10,6 @@ export class ReviewsService {
 
   BASE_RUTA = "http://localhost/anotame/APIANOTAME/public/";
   RUTA_REVIEWS = "SubirResena";
-  RUTA_CLIENTE = "RegistroCliente";
 
   resenasFiltrados: any[] = [];
 
