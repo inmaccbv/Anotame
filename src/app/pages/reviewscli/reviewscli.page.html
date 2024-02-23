@@ -60,7 +60,7 @@
       <p>Calificación: {{ resena.calificacion }} estrellas</p>
       <p>{{ resena.comentario }}</p>
 
-      <a *ngIf="esClienteActual(resena)">
+      <a>
         <ion-icon class="custom-trash-icon" name="trash-outline" size="small" slot="end" (click)="eliminarResena(i)"></ion-icon>
       </a>
     </ion-card-content>

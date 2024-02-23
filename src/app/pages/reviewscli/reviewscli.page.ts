@@ -56,18 +56,6 @@ export class ReviewscliPage implements OnInit {
     this.componentes = this.menuCli.getMenuOptsCli();
   }
 
-  esClienteActual(resena: any): boolean {
-    const clienteString = localStorage.getItem('cliente');
-    if (clienteString) {
-      const cliente = JSON.parse(clienteString);
-      console.log('Cliente actual:', cliente);
-      console.log('id_cliente de la reseña:', resena.id_cliente);
-      // Verificar si el email del cliente actual coincide con el id_cliente de la reseña
-      return resena.id_cliente === cliente.email;
-    }
-    return false;
-  }
-  
   inicializarEstrellas() {
     this.stars = Array(5).fill({ icon: 'star-outline', color: 'medium' });
   }
@@ -84,7 +72,6 @@ export class ReviewscliPage implements OnInit {
       color: i < index ? 'warning' : 'medium',
     }));
   }
-
 
   obtenerIdCliente(): Observable<string | null> {
     const clienteString = localStorage.getItem('cliente');

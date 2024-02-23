@@ -11,6 +11,7 @@ import { MenuCliService } from 'src/app/services/menu-cli.service';
 import { ReservasService } from 'src/app/services/reservas.service';
 import { ThemeService } from 'src/app/services/theme.service';
 import { ClientesService } from 'src/app/services/clientes.service';
+import { NotificacionService } from 'src/app/services/notificacion.service';
 
 @Component({
   selector: 'app-reservascli',
@@ -22,7 +23,6 @@ export class ReservascliPage implements OnInit, AfterViewInit {
 
   reservaForm!: FormGroup;
   reservas: any;
-  reservasArray: any[] = [];
 
   fechaSeleccionada: any;
   fechaCreacionActual: string = '';
@@ -35,17 +35,16 @@ export class ReservascliPage implements OnInit, AfterViewInit {
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
 
-
   constructor(
     private formBuilder: FormBuilder,
     public alertController: AlertController,
     private changeDetectorRef: ChangeDetectorRef,
-    private reservasService: ReservasService,
-    private clienteService: ClientesService,
     private router: Router,
     private menuCli: MenuCliService,
+    private reservasService: ReservasService,
+    private clienteService: ClientesService,
     public authServiceCli: AuthClienteService,
-    public authService: AuthService,
+    private notificacionService: NotificacionService,
     public themeService: ThemeService
   ) {
     this.getUserRole();
@@ -54,7 +53,6 @@ export class ReservascliPage implements OnInit, AfterViewInit {
     // Inicializa el formulario para las reservas
     this.reservaForm = this.formBuilder.group({
       nombre: ['', Validators.required],
-      telf: ['', Validators.required],
       numPax: ['', Validators.required],
       fechaHoraReserva: ['', Validators.required],
       notasEspeciales: ['', Validators.required],
@@ -67,8 +65,7 @@ export class ReservascliPage implements OnInit, AfterViewInit {
   ngOnInit() {
     this.componentes = this.menuCli.getMenuOptsCli();
     this.obtenerFechaActual();
-
-   
+    this.cargarReservaGuardadas();
   }
 
   ngAfterViewInit(): void {
@@ -80,41 +77,22 @@ export class ReservascliPage implements OnInit, AfterViewInit {
     this.fechaSeleccionada = event.detail.value;
   }
 
-  esClienteActual(resena: any): boolean {
-    const clienteString = localStorage.getItem('cliente');
-    if (clienteString) {
-      const cliente = JSON.parse(clienteString);
-      console.log('Cliente actual:', cliente);
-      console.log('id_cliente de la reseña:', resena.id_cliente);
-      console.log('Email del cliente actual:', cliente.email);
-      
-      // Verificar si el email del cliente actual coincide con el id_cliente de la reseña
-      const resultado = resena.id_cliente === cliente.email;
-      console.log('Resultado de la comparación:', resultado);
-      
-      return resultado;
-    }
-    console.error('No se pudo obtener el cliente actual desde el almacenamiento local.');
-    return false;
-  }  
-  
-
   obtenerIdCliente(): Observable<string | null> {
     const clienteString = localStorage.getItem('cliente');
-  
+
     if (clienteString) {
       const cliente = JSON.parse(clienteString);
       const email = cliente.email;
-  
+
       return this.clienteService.getUserByEmail(email).pipe(
-        tap(response => {
-          console.log('Respuesta del servidor en obtenerIdCliente:', response);
-        }),
         map(response => {
-          if (response && response.code === 200 && response.data && response.data.id_cliente) {
-            return response.data.id_cliente.toString();
+          console.log('Respuesta del servidor en obtenerIdCliente:', response);
+
+          if (response && response.code === 200 && response.data) {
+            // Puedes acceder a la propiedad id_cliente según la estructura real de tu respuesta
+            return response.data.id_cliente ? response.data.id_cliente.toString() : null;
           } else {
-            console.error('No se pudo obtener el id_cliente del usuario:', response);
+            console.error('No se pudieron obtener los datos del usuario:', response.texto);
             return null;
           }
         }),
@@ -128,17 +106,12 @@ export class ReservascliPage implements OnInit, AfterViewInit {
       return of(null);
     }
   }
-  
-  
 
   enviarReserva() {
     if (this.reservaForm.valid) {
       this.obtenerIdCliente().subscribe(
         (id_cliente) => {
           if (id_cliente) {
-
-            const nombre = this.reservaForm.get('nombre')?.value;
-            const telf = this.reservaForm.get('telf')?.value;
             const numPax = this.reservaForm.get('numPax')?.value;
             const fechaHoraReserva = this.reservaForm.get('fechaHoraReserva')?.value;
             const notasEspeciales = this.reservaForm.get('notasEspeciales')?.value;
@@ -146,8 +119,6 @@ export class ReservascliPage implements OnInit, AfterViewInit {
             const fechaCreacion = this.reservaForm.get('fechaCreacion')?.value;
 
             const nuevaReserva = {
-              nombre: nombre,
-              telf: telf,
               numPax: numPax,
               fechaHoraReserva: fechaHoraReserva,
               notasEspeciales: notasEspeciales,
@@ -155,6 +126,9 @@ export class ReservascliPage implements OnInit, AfterViewInit {
               estadoReserva: estadoReserva,
               fechaCreacion: fechaCreacion,
             };
+
+            // Envía la reserva al servicio de notificaciones
+            this.notificacionService.enviarNotificacion(nuevaReserva);
 
             this.reservasService.addReserva(nuevaReserva).subscribe(
               (response) => {
@@ -178,42 +152,24 @@ export class ReservascliPage implements OnInit, AfterViewInit {
       console.error('El formulario de reseña no es válido.');
     }
   }
-  
+
   guardarReservaEnLocalStorage(reserva: any) {
-    // Obtener las reservas almacenadas actualmente
+    // Obtener las reseñas almacenadas actualmente
     const reservasGuardadas = localStorage.getItem('reservas') || '[]';
     const reservas = JSON.parse(reservasGuardadas);
-  
-    // Agregar la nueva reserva al arreglo
+
+    // Agregar la nueva reseña al arreglo
     reservas.push(reserva);
-  
+
     // Guardar el arreglo actualizado en el localStorage
     localStorage.setItem('reservas', JSON.stringify(reservas));
   }
-  
-  
-  
 
-  async mostrarAlertaOK(titulo: string, mensaje: string) {
-    const alert = await this.alertController.create({
-      header: titulo,
-      message: mensaje,
-      buttons: ['OK'],
-      cssClass: 'custom-alert-header',
-    });
-
-    await alert.present();
-  }
-
-  async mostrarAlertaNO(titulo: string, mensaje: string) {
-    const alert = await this.alertController.create({
-      header: titulo,
-      message: mensaje,
-      buttons: ['OK'],
-      cssClass: 'custom-alert-header',
-    });
-
-    await alert.present();
+  cargarReservaGuardadas() {
+    const reservasGuardadas = localStorage.getItem('reservas');
+    if (reservasGuardadas) {
+      this.reservas = JSON.parse(reservasGuardadas);
+    }
   }
 
   eliminarOpcion(campo: string): void {
@@ -227,13 +183,17 @@ export class ReservascliPage implements OnInit, AfterViewInit {
   }
 
   getUserRole() {
-    this.rol = this.authService.getUserRole();
+    this.rol = this.authServiceCli.getUserRole();
+    console.log(this.rol);
 
     if (!(this.rol === 'cliente')) {
-      this.authService.logout().subscribe(
+      console.error('Cliente con rol', this.rol, 'no tiene permiso para acceder a esta opción.');
+
+      this.authServiceCli.logout().subscribe(
         () => {
           localStorage.removeItem('role');
           localStorage.removeItem('usuario');
+
           this.router.navigate(['/inicio']);
         },
         (error) => {

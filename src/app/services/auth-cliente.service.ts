@@ -7,12 +7,10 @@ import { Observable, catchError, of, switchMap, take, tap, throwError } from 'rx
 })
 export class AuthClienteService {
 
-  userValue: any;
   private usuario: any;
 
   BASE_RUTA = "http://localhost/anotame/APIANOTAME/public/";
   RUTA_REGISTRO = 'RegistroCliente';
-
 
   constructor(
     private http: HttpClient,
@@ -24,6 +22,7 @@ export class AuthClienteService {
     localStorage.removeItem('role');
     localStorage.removeItem('darkMode');
     localStorage.removeItem('cliente');
+    localStorage.removeItem('resena');
 
     // Redirige al usuario a la página de inicio de sesión
     window.location.href = '/logincli';
@@ -44,7 +43,7 @@ export class AuthClienteService {
 
   isAuthenticated(): boolean {
     return !!localStorage.getItem('role');
-  }
+  } 
 
   // REVIEWS
   getClienteId(): Observable<string | null> {
@@ -67,34 +66,6 @@ export class AuthClienteService {
     }
   }
 
-
-  obtenerUsuarioDesdeServidor(): Observable<any> {
-    const url = 'http://localhost/anotame/APIANOTAME/public/RegistroCliente/getClienteIdByEmail/';
-
-    return this.getClienteId().pipe(
-      take(1),
-      switchMap(idCliente => {
-        if (idCliente) {
-          // Si se obtiene el ID del cliente, realiza la solicitud para obtener la información completa
-          return this.http.get<any>(`${url}${idCliente}`).pipe(
-            catchError(error => {
-              console.error('Error al obtener la información del usuario:', error);
-              return throwError(error);
-            })
-          );
-        } else {
-          // Si no se obtiene el ID del cliente, devuelve un objeto vacío
-          return of({});
-        }
-      }),
-      switchMap(usuario => {
-        // Actualiza this.usuario con la información del usuario obtenida
-        this.usuario = usuario;
-        return of(usuario);
-      })
-    );
-  }
-
   private fetchUsuarioFromServer(): Observable<any> {
     const url = 'http://localhost/anotame/APIANOTAME/public/RegistroCliente/getClienteIdByEmail/';
   
@@ -113,6 +84,4 @@ export class AuthClienteService {
       })
     );
   }
-
-
 }

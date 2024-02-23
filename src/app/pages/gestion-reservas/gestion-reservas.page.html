@@ -1,37 +1,54 @@
-<ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'administrador' || rol === 'encargado'">
+<!-- reservas.page.html -->
+
+<ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'administrador' || rol === 'encargado' || rol === 'cliente'">
   <ion-toolbar>
-
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home" style="--color: #ff830f;"></ion-back-button>
+      <ion-back-button defaultHref="/home" style="--color: #ff830f"></ion-back-button>
     </ion-buttons>
-
     <ion-title>Gestión Reservas</ion-title>
-
     <ion-buttons slot="end">
       <ion-button (click)="toggleDarkMode()">
-        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'" class="icon-with-margin"
-          style="color: #ff830f; font-size: 24px;"></ion-icon>
+        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'" style="color: #ff830f; font-size: 24px"></ion-icon>
       </ion-button>
-
       <ion-button (click)="cerrarSesion()">
         <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
       </ion-button>
     </ion-buttons>
-
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="rol === 'administrador' || rol === 'encargado'">
+<ion-content *ngIf="rol === 'administrador' || rol === 'encargado' || rol === 'cliente'">
 
-  <ion-list>
-    <ion-item class="custom-item" href='/reservas'>
-      <ion-icon name="book-outline" class="ion-padding-end" color="primary"></ion-icon>
-      <span class="text-with-margin">Reservar</span>
-    </ion-item>
-    <ion-item href='/lista-reservas'>
-      <ion-icon name="fast-food-outline" class="ion-padding-end" color="primary"></ion-icon>
-      <span class="text-with-margin">Listar Reservas</span>
-    </ion-item>
-  </ion-list>
+  <ion-card>
+    <ion-card-content>
+      <ion-card-title>Lista de Reservas</ion-card-title>
 
+      <ion-grid class="tabla-ancha tabla-centrada">
+        <ion-row class="fila-bordes header-row">
+          <ion-col class="columna">id reserva</ion-col>
+          <ion-col class="columna">Fecha y Hora</ion-col>
+          <ion-col class="columna">Número de Personas</ion-col>
+          <ion-col class="columna">Notas Especiales</ion-col>
+          <ion-col class="columna">Estado de Reserva</ion-col>
+          <ion-col class="columna">Fecha de Creación</ion-col>
+          <ion-col class="columna">ID Cliente</ion-col>
+        </ion-row>
+
+        <ion-row class="fila-bordes data-row" *ngFor="let reserva of reservas; let i = index"
+          [ngStyle]="{ 'background-color': coloresFilas[i % coloresFilas.length] }">
+          <ion-col class="columna">{{ reserva.id_reserva }}</ion-col>
+          <ion-col class="columna">{{ reserva.fechaHoraReserva }}</ion-col>
+          <ion-col class="columna">{{ reserva.numPax }}</ion-col>
+          <ion-col class="columna">{{ reserva.notasEspeciales }}</ion-col>
+          <ion-col class="columna">
+            <ion-button (click)="cambiarEstadoReserva(reserva)" fill="clear">
+              <ion-icon [name]="'ellipse'" [class]="getEstadoColor(reserva.estadoReserva)"></ion-icon>
+            </ion-button>            
+          </ion-col>
+          <ion-col class="columna">{{ reserva.fechaCreacion }}</ion-col>
+          <ion-col class="columna">{{ reserva.id_cliente }}</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

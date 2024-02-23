@@ -7,16 +7,12 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class AuthService {
-  [x: string]: any;
-  userValue: any;
-  getCurrentUser: any;
 
   BASE_RUTA = "http://localhost/anotame/APIANOTAME/public/";
   RUTA_REGISTRO = 'Registro';
 
   constructor(
     private http: HttpClient,
-    private router: Router 
   ) { }
   
   // Metodo para cerrar sesión
@@ -33,11 +29,6 @@ export class AuthService {
     return of(true);
   }
 
-  // Almacena el ID del usuario en localStorage después del registro o inicio de sesión.
-  storeUserId(id: number): void {
-    localStorage.setItem('userId', id.toString());
-  }  
-
   // Metodo para obtener el rol del usuario actual
   storeUserRole(role: any) {
     // Guarda solo el valor de la propiedad 'rol'
@@ -46,20 +37,6 @@ export class AuthService {
 
   getUserRole(): string | null {
     return localStorage.getItem('role');
-  }
-
-  // Método para realizar la autenticación
-  private realizarAutenticacion(username: string, password: string): boolean {
-    // Aquí se realiza la lógica de autenticación
-    // Devuelve true si la autenticación es exitosa, false si falla
-    return (username === 'user' && password === 'password') ||
-      (username === 'administrador' && password === 'password');
-  }
-
-  private obtenerRolDesdeServidor(userId: number): Observable<string> {
-    // Realiza una solicitud HTTP al servidor para obtener el rol
-    const url = `${this.BASE_RUTA}${this.RUTA_REGISTRO}/${userId}`;
-    return this.http.get<string>(url);
   }
 
   // Metodo para comprobar si el usario esta autenticado

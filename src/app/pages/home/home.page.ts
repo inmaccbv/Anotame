@@ -13,9 +13,9 @@ import { PerfilPage } from '../perfil/perfil.page';
 export class HomePage  {
 
   cards = [
-    { title: 'Reservas',                    image: './assets/img/ic_reservas2.png',       alt: 'Imagen 1', href: '/gestion-reservas',  roles: ['administrador', 'encargado', 'camarero'] },
+    { title: 'Reservas',                    image: './assets/img/ic_reservar.png',        alt: 'Imagen 1', href: '/gestion-reservas',          roles: ['administrador', 'encargado', 'camarero'] },
     { title: 'Reseñas',                     image: './assets/img/ic-reviews.png',         alt: 'Imagen 2', href: '/reviews',           roles: ['administrador', 'encargado', 'camarero'] },
-    { title: 'Gestión carta/menú',          image: './assets/img/ic-carta.png',           alt: 'Imagen 3', href: 'gestion-menu-carta', roles: ['administrador', 'encargado'] },
+    { title: 'Gestión carta/menú',          image: './assets/img/ic-carta.png',           alt: 'Imagen 3', href: '/gestion-menu-carta', roles: ['administrador', 'encargado'] },
     { title: 'Descripción Local',           image: './assets/img/ic-descripcion.png',     alt: 'Imagen 4', href: '/descripcion-local', roles: ['administrador', 'encargado'] },
     { title: 'Contacto',                    image: './assets/img/ic-contacto.png',        alt: 'Imagen 5', href: '/contacto',          roles: ['administrador', 'encargado'] },
     { title: 'Generar QR',                  image: './assets/img/ic-qr.png',              alt: 'Imagen 6', href: '/codigo-qr',         roles: ['administrador', 'encargado'] },

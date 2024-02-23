@@ -33,7 +33,6 @@ export class ReviewsService {
       id_cliente: resena.id_cliente
     };
 
-
     return this.http.post(this.BASE_RUTA + this.RUTA_REVIEWS, datos, { headers })
       .pipe(
         catchError((error: any) => {
@@ -43,6 +42,7 @@ export class ReviewsService {
       );
   }
 
+  // Para el admin 
   obtenerResenas() {
     return this.http.get(this.BASE_RUTA + this.RUTA_REVIEWS + '/obtenerResenas')
       .pipe(
@@ -58,7 +58,7 @@ export class ReviewsService {
   }
 
   obtenerDetallesCliente(idCliente: number): Observable<any> {
-     return this.http.get(this.BASE_RUTA + this.RUTA_REVIEWS + '/obtenerDetallesCliente')
+    return this.http.get(this.BASE_RUTA + this.RUTA_REVIEWS + '/obtenerDetallesCliente')
       .pipe(
         tap((ans) => {
           console.log('Reseñas obtenidos:', ans);
@@ -69,10 +69,5 @@ export class ReviewsService {
           throw error;
         })
       );
-  }
-
-  actualizarResenas(resenas: any[]) {
-    this.resenasFiltrados = resenas || [];
-    this.resenasSubject.next(this.resenasFiltrados);
   }
 }

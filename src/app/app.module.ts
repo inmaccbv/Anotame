@@ -15,6 +15,7 @@ import { ContactoService } from './services/contacto.service';
 import { HorariosService } from './services/horarios.service';
 import { DiasService } from './services/dias.service';
 import { TextoService } from './services/texto.service';
+import { NotificacionService } from './services/notificacion.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -36,6 +37,7 @@ import { TextoService } from './services/texto.service';
     HorariosService,
     DiasService,
     ThemeService,
+    NotificacionService,
     TextoService
   ],
   bootstrap: [AppComponent],

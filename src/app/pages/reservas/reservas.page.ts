@@ -6,6 +6,7 @@ import { Componente } from 'src/app/interfaces/interfaces';
 import { AuthClienteService } from 'src/app/services/auth-cliente.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { MenuService } from 'src/app/services/menu.service';
+import { NotificacionService } from 'src/app/services/notificacion.service';
 import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
@@ -24,6 +25,7 @@ export class ReservasPage implements OnInit {
     public authServiceCli: AuthClienteService,
     private router: Router,
     public menuService: MenuService,
+    private notificacionService: NotificacionService,
     public themeService: ThemeService
   ) {
     this.getUserRole();
@@ -33,6 +35,13 @@ export class ReservasPage implements OnInit {
 
   ngOnInit() {
     this.componentes = this.menuService.getMenuOpts();
+
+     // Suscribirse a las notificaciones
+     this.notificacionService.notificacion$.subscribe((notificacion) => {
+      // Realizar la lógica para manejar la notificación aquí
+      console.log('Notificación recibida:', notificacion);
+      // Puedes mostrar una alerta, actualizar datos, etc.
+    });
   }
 
   getUserRole() {

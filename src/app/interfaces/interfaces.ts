@@ -31,3 +31,13 @@ export interface DatosContacto {
     telefono2: string;
     direccion: string;
 }
+
+export interface Reserva {
+    id_reserva: number;
+    fechaHoraReserva: string;
+    numPax: number;
+    notasEspeciales: string;
+    estadoReserva: string;
+    fechaCreacion: string;
+    id_cliente: number;
+}

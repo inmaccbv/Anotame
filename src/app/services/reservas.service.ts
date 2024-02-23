@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 
 @Injectable({
   providedIn: 'root',
@@ -24,53 +24,56 @@ export class ReservasService {
 
     const payload = {
       numPax: reserva.numPax,
-      fechaHoraReserva: this.formatDate(reserva.fechaHoraReserva),
+      fechaHoraReserva: reserva.fechaHoraReserva,
       notasEspeciales: reserva.notasEspeciales,
       estadoReserva: reserva.estadoReserva,
-      fechaCreacion: this.formatDate(reserva.fechaCreacion),
+      fechaCreacion: reserva.fechaCreacion,
       id_cliente: reserva.id_cliente,
     };
 
-    this.reservasArray.push(reserva);
-
-    return this.http.post(this.BASE_RUTA + this.RUTA_RESERVAS + '/addReserva', payload, { headers })
-    .pipe(
-      tap(response => {
-        console.log('Reserva añadida:', response);
-      }),
-      catchError(error => {
-        console.error('Error al añadir reserva:', error);
-        return throwError(error);
-      })
-    );
-  }
-
-
-  // Método para obtener todas las reservas de un cliente
-  getReservasPorCliente(id_cliente: string): Observable<any> {
-    const url = `${this.BASE_RUTA}${this.RUTA_RESERVAS}/getReservasPorCliente?id_cliente=${id_cliente}`;
-    
-    return this.http.get<any>(url)
+    return this.http.post(this.BASE_RUTA + this.RUTA_RESERVAS, payload, { headers })
       .pipe(
-        tap(reservas => console.log('Reservas por cliente:', reservas)),
-        catchError(this.handleError)
+        catchError((error: any) => {
+          console.error('Error en la solicitud:', error);
+          return throwError(error);
+        })
       );
   }
 
-  // Método para obtener todas las reservas
-  getReservas(): Observable<any> {
+  editarEstadoReserva(id_reserva: number, estadoReserva: string): Observable<any> {
+    console.log('Iniciando updateEstadoReserva. ID Reserva:', id_reserva, 'Nuevo Estado:', estadoReserva);
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });
 
-    return this.http.post(this.BASE_RUTA + this.RUTA_RESERVAS + '/getReservas', '', { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
+    const body = {
+      id_reserva: id_reserva,
+      estadoReserva: estadoReserva,
+    };
+    
+    console.log('Cuerpo de la solicitud:', body);
 
-  private formatDate(date: Date): string {
-    return format(date, 'yyyy-MM-dd HH:mm:ss');
+    return this.http.put(`${this.BASE_RUTA}${this.RUTA_RESERVAS}/editarEstadoReserva`, body, { headers })
+      .pipe(
+        catchError((error: any) => {
+          console.error('Error al actualizar el estado de la reserva:', error);
+          return throwError(error);
+        })
+      );
+  }  
+  
+  getReservas() {
+    return this.http.get(this.BASE_RUTA + this.RUTA_RESERVAS + '/getReservas')
+      .pipe(
+        tap((ans) => {
+          console.log('Reservas obtenidos:', ans);
+          return ans;
+        }),
+        catchError(error => {
+          console.error('Error al obtener la reserva:', error);
+          throw error;
+        })
+      );
   }
 
   // Método para manejar errores

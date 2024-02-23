@@ -25,7 +25,7 @@ export class HomecliPage implements OnInit {
     { title: 'Contacto', image: './assets/img/ic-local.png', alt: 'Imagen 2', href: '/contactocli' },
     { title: 'Reservas', image: './assets/img/ic_reservar.png', alt: 'Imagen 3', href: '/gestion-reservascli' },
     { title: 'Descripción Local', image: './assets/img/ic-descripcion.png', alt: 'Descripción Local', href: '/descripcion-cliente' },
-    { title: 'Reseñas', image: './assets/img/ic-reviews.png', alt: 'Reseñas', href: '/reviewscli' },
+    { title: 'Reseñas', image: './assets/img/ic-reviews.png', alt: 'Reseñas', href: '/gestion-reservas' },
   ];
 
   texto!: string;
