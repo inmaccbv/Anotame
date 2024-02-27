@@ -86,6 +86,33 @@ class LogueoCliente extends ResourceController
         }
     }
 
+    public function getUserAndEmpresaByEmail()
+    {
+        $email = $this->request->getVar('email');  // Obtener el correo electrónico del cuerpo POST
+
+        $db = \Config\Database::connect();
+        $builder = $db->table('clientes');
+        $builder->select('id_cliente, nombre, apellido, email, rol, id_empresa');
+        $builder->where('email', $email);  // Utilizar el correo electrónico en la consulta
+        $query = $builder->get()->getRow();
+
+        if ($query) {
+            return $this->respond([
+                'code'       => 200,
+                'data'       => $query,
+                'authorized' => 'SI',
+                'texto'      => 'Datos del usuario obtenidos correctamente'
+            ]);
+        } else {
+            return $this->respond([
+                'code'       => 500,
+                'data'       => null,
+                'authorized' => 'NO',
+                'texto'      => 'No se ha podido obtener los datos del usuario'
+            ]);
+        }
+    }
+
     public function getClientes()
     {
         $db4 = \Config\Database::connect();
@@ -125,4 +152,6 @@ class LogueoCliente extends ResourceController
             ]);
         }
     }
+
 }
+

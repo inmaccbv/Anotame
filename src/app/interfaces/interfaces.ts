@@ -26,10 +26,11 @@ export interface provincias {
 }
 
 export interface DatosContacto {
-    nombre: string;
-    telefono1: string;
-    telefono2: string;
+    nomLocal: string;
+    telf1: string;
+    telf2: string;
     direccion: string;
+    id_cliente: number;
 }
 
 export interface Reserva {
@@ -41,3 +42,16 @@ export interface Reserva {
     fechaCreacion: string;
     id_cliente: number;
 }
+
+export interface Texto {
+    nomLocal: string;
+    texto: string;
+}
+
+export interface CartaData {
+    id_carta: string;
+    carta_img: string;
+    base64Data?: string;
+}
+
+

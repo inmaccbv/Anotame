@@ -10,5 +10,7 @@ class TextoModel extends Model {
     protected $allowedFields = [
         'nomLocal',
         'texto',
+        'id_user',
+        'id_empresa',
     ];
 }

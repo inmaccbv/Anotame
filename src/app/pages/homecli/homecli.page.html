@@ -22,34 +22,38 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [class.dark-theme]="isDarkMode" *ngIf="rol === 'cliente'">
-  <ion-grid class="ion-no-padding ion-align-items-center ion-justify-content-center">
-    <!-- Itera sobre las tarjetas en pares -->
+<ion-content [class.dark-theme]="isDarkMode" class="cliente-content">
+  <ion-grid>
     <ng-container *ngFor="let card of cards; let i = index">
-      <!-- Comienza una nueva fila para cada par de tarjetas -->
       <ion-row *ngIf="i % 2 === 0">
-        <!-- Columna para la primera tarjeta -->
-        <ion-col size="6" size-md="4" size-lg="2">
-          <ion-card [class]="isDarkMode ? 'dark-theme' : ''">
+        
+        <!-- Columna para tarjeta en posición par -->
+        <ion-col size="6" size-md="4" size-lg="2" *ngIf="showCard(cards[i])">
+          <ion-card class="cliente-card" [class]="isDarkMode ? 'dark-theme' : ''">
             <ion-card-header></ion-card-header>
-            <ion-card-content>
-              <!-- Cambia aquí para usar [attr.href] -->
+            <ion-card-content class="cliente-card-content">
+              <!-- Enlace a la página correspondiente al hacer clic en la tarjeta -->
               <a [attr.href]="card.href" (click)="navigateToPage(card)">
-                <img src="{{ card.image }}" alt="{{ card.alt }}" class="card-image" [class.image-dark]="isDarkMode">
-                <p style="font-size: 18px !important;">{{ card.title }}</p>
+                <!-- Imagen de la tarjeta -->
+                <img src="{{ card.image }}" alt="{{ card.alt }}" class="cliente-card-image" [class.cliente-image-dark]="isDarkMode">
+                <!-- Título de la tarjeta -->
+                <p color="primary" class="cliente-card-title">{{ card.title }}</p>
               </a>
             </ion-card-content>
           </ion-card>
         </ion-col>
-        <!-- Columna para la segunda tarjeta, si existe -->
-        <ion-col size="6" size-md="4" size-lg="2" *ngIf="i + 1 < cards.length">
-          <ion-card [class]="isDarkMode ? 'dark-theme' : ''">
+        
+        <!-- Columna para tarjeta en posición impar -->
+        <ion-col size="6" size-md="4" size-lg="2" *ngIf="i + 1 < cards.length && showCard(cards[i + 1])">
+          <ion-card class="cliente-card" [class]="isDarkMode ? 'dark-theme' : ''">
             <ion-card-header></ion-card-header>
-            <ion-card-content>
-              <!-- Cambia aquí para usar [attr.href] -->
+            <ion-card-content class="cliente-card-content">
+              <!-- Enlace a la página correspondiente al hacer clic en la tarjeta -->
               <a [attr.href]="cards[i + 1].href" (click)="navigateToPage(cards[i + 1])">
-                <img src="{{ cards[i + 1].image }}" alt="{{ cards[i + 1].alt }}" class="card-image" [class.image-dark]="isDarkMode">
-                <p style="font-size: 18px !important;">{{ cards[i + 1].title }}</p>
+                <!-- Imagen de la tarjeta -->
+                <img src="{{ cards[i + 1].image }}" alt="{{ cards[i + 1].alt }}" class="cliente-card-image" [class.cliente-image-dark]="isDarkMode">
+                <!-- Título de la tarjeta -->
+                <p color="primary" class="cliente-card-title">{{ cards[i + 1].title }}</p>
               </a>
             </ion-card-content>
           </ion-card>

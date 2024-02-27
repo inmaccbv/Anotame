@@ -11,5 +11,6 @@ class ReviewsModel extends Model {
         'calificacion',
         'comentario',
         'id_cliente',
+        'id_empresa',
     ];
 }

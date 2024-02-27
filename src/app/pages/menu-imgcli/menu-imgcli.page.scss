@@ -1,7 +1,9 @@
+/* Estilo para el título de la página */
 ion-title {
     text-align: center;
 }
 
+/* Estilo para las etiquetas de texto */
 label {
     font-size: large; 
     color: #ff830f; 
@@ -9,6 +11,7 @@ label {
     margin-left: 2px; 
 }
 
+/* Estilo para el color de salida */
 .color-salir {
     color: #ff830f; 
 }
@@ -19,6 +22,7 @@ label {
     align-items: center; 
 }
 
+/* Estilo para el botón de carga de imágenes */
 .upload-button {
     width: 120px; 
 }
@@ -33,7 +37,7 @@ label {
     overflow: hidden; 
 }
 
-/* Estilo para imágenes dentro de las tarjetas */
+/* Estilo para las imágenes dentro de las tarjetas */
 .card-image {
     width: calc(100% - 12px); /* Ancho ajustado con margen */
     height: auto; 
@@ -42,7 +46,7 @@ label {
     max-height: 300px; 
 }
 
-/* Estilo para encabezado de las tarjetas */
+/* Estilo para el encabezado de las tarjetas */
 ion-card-header {
     text-align: center; 
     overflow: visible;
@@ -62,8 +66,8 @@ ion-card-header {
     margin-bottom: 2px; 
 }
 
+/* Estilo para el icono de eliminación en las tarjetas */
 .trash-icon {
     cursor: pointer; 
     margin-left: 5px; 
 }
-

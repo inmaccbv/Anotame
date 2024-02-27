@@ -24,13 +24,15 @@
 
 <ion-content [class]="{'dark-theme': isDarkMode}" *ngIf="rol === 'cliente'">
 
-  <div class="text-container" *ngFor="let dato of datos">
+  <input type="number" #idEmpresaInput [value]="idEmpresa">
+
+  <div class="text-container" *ngFor="let dato of datosFiltrados">
 
     <ion-icon name="restaurant-outline" style="font-size: 1.5em;"></ion-icon>
-    <p style="font-weight: bold; font-size: 30px;">{{ dato.nombre }}</p>
+    <p style="font-weight: bold; font-size: 30px;">{{ dato.nomLocal }}</p>
     <ion-icon name="call-outline" style="font-size: 1.5em;"></ion-icon>
-    <p>{{ dato.telefono1 }}</p>
-    <p>{{ dato.telefono2 }}</p>
+    <p>{{ dato.telf1 }}</p>
+    <p>{{ dato.telf2 }}</p>
     <ion-icon name="location-outline" style="font-size: 1.5em;"></ion-icon>
     <p>{{ dato.direccion }}</p>
 

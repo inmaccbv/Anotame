@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable, catchError, map, of } from 'rxjs';
@@ -24,10 +24,18 @@ export class ReviewscliPage implements OnInit {
   stars: { icon: string, color: string }[] = [];
   resenas: { nombre: string, calificacion: number, comentario: string }[] = [];
 
+  clienteData: any;
+  idEmpresa: any;
+
+  reviews: any;
+  reviewsFiltrados: any;
+
   reviewForm!: FormGroup;
   rol!: any;
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
+
+  @ViewChild('idEmpresaInput') idEmpresaInput!: ElementRef;
 
   constructor(
     private router: Router,
@@ -43,10 +51,11 @@ export class ReviewscliPage implements OnInit {
     console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
     this.inicializarEstrellas();
-    this.cargarResenasGuardadas();
+    this.obtenerDatosUsuario();
 
     this.reviewForm = this.formBuilder.group({
       id_cliente: [''],
+      id_empresa: [''],
       calificacion: [0, Validators.required],
       comentario: ['', Validators.required],
     });
@@ -54,7 +63,19 @@ export class ReviewscliPage implements OnInit {
 
   ngOnInit() {
     this.componentes = this.menuCli.getMenuOptsCli();
+  
+    // Recuperar el valor de id_empresa del localStorage
+    const idEmpresaString = localStorage.getItem('id_empresa');
+    this.idEmpresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;  // Asignar a this.idEmpresa
+  
+    console.log('ID Empresa:', this.idEmpresa);
+  
+    // Llama a getReservas con el idEmpresa actual
+    if (this.idEmpresa) {
+      this.getReviews(this.idEmpresa);
+    }
   }
+  
 
   inicializarEstrellas() {
     this.stars = Array(5).fill({ icon: 'star-outline', color: 'medium' });
@@ -105,29 +126,36 @@ export class ReviewscliPage implements OnInit {
 
   enviarResena() {
     if (this.reviewForm.valid) {
+      // Obtener el id_cliente y id_empresa antes de enviar la reseña
       this.obtenerIdCliente().subscribe(
         (id_cliente) => {
           if (id_cliente) {
-            const calificacion = this.reviewForm.get('calificacion')?.value; // Obtener directamente del formulario
+            // También necesitas obtener el id_empresa de alguna manera
+            // Aquí asumo que puedes obtenerlo del clienteData, pero debes ajustarlo según tus necesidades
+           // Recuperar el valor de id_empresa del localStorage
+           const idEmpresaString = localStorage.getItem('id_empresa');
+           const id_empresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;
 
-            // No necesitas verificar si es un número, ya que lo estás obteniendo del formulario
-            console.log('Valor de calificación:', calificacion);
+            const calificacion = this.reviewForm.get('calificacion')?.value;
 
             const nuevaResena = {
               id_cliente: id_cliente,
+              id_empresa: id_empresa,
               calificacion: calificacion,
               comentario: this.reviewForm.get('comentario')?.value,
             };
 
+            // Enviar la reseña al servicio
             this.reviewsService.subirResena(nuevaResena).subscribe(
               (response) => {
-                // Luego de enviar la reseña, guardarla en el localStorage
-                this.guardarResenaEnLocalStorage(nuevaResena);
-
+                // Recargar la página para mostrar la nueva reseña
                 setTimeout(() => {
                   window.location.reload();
                 }, 500);
               },
+              (error) => {
+                console.error('Error al enviar la reseña:', error);
+              }
             );
           } else {
             console.error('Id_cliente no encontrado.');
@@ -142,24 +170,65 @@ export class ReviewscliPage implements OnInit {
     }
   }
 
-  guardarResenaEnLocalStorage(resena: any) {
-    // Obtener las reseñas almacenadas actualmente
-    const reseñasGuardadas = localStorage.getItem('resenas') || '[]';
-    const reseñas = JSON.parse(reseñasGuardadas);
+  obtenerDatosUsuario() {
+    const clienteString = localStorage.getItem('cliente');
+    if (!clienteString) {
+      console.error('Usuario no encontrado en el almacenamiento local');
+      return;
+    }
 
-    // Agregar la nueva reseña al arreglo
-    reseñas.push(resena);
+    const cliente = JSON.parse(clienteString);
+    const email = cliente.email;
 
-    // Guardar el arreglo actualizado en el localStorage
-    localStorage.setItem('resenas', JSON.stringify(reseñas));
+    // Obtener datos del usuario del servicio
+    this.clienteService.getUserByEmail(email).subscribe(
+      (response) => {
+        if (response && response.code === 200 && response.data) {
+          this.clienteData = response.data;
+          const clienteId = response.data.id_cliente;
+          this.getReviews(clienteId);
+        } else {
+          console.error('No se pudieron obtener los datos del usuario:', response.texto);
+        }
+      },
+      (error) => {
+        console.error('Error al obtener datos del usuario:', error);
+      }
+    );
   }
 
-  cargarResenasGuardadas() {
-    const resenasGuardadas = localStorage.getItem('resenas');
-    if (resenasGuardadas) {
-      this.resenas = JSON.parse(resenasGuardadas);
+  getReviews(id_empresa: number) {
+    if (this.idEmpresa !== null) {
+      this.reviewsService.getReviewsByEmpresa(this.idEmpresa).subscribe(
+        (ans: any) => {
+          // Comprueba si 'ans' tiene la propiedad 'code'
+          if ('code' in ans) {
+            if (ans.code === 200) {
+              // La solicitud fue exitosa, asigna los textos
+              // Comprueba si 'ans' tiene la propiedad 'data'
+              if ('data' in ans) {
+                this.reviews = ans.data;
+                this.reviewsFiltrados = ans.data;
+                console.log('Textos obtenidos:', this.reviews);
+              } else {
+                console.error('Error en la respuesta: Propiedad "data" no encontrada.');
+              }
+            } else {
+              console.error('Error en la respuesta:', ans.reviews);
+            }
+          } else {
+            console.error('Error en la respuesta: Propiedad "code" no encontrada.');
+          }
+        },
+        (error) => {
+          console.error('Error al obtener los textos:', error);
+        }
+      );
+    } else {
+      console.error('ID de empresa no válido.');
     }
   }
+  
 
   eliminarResena(index: number) {
     this.resenas.splice(index, 1);

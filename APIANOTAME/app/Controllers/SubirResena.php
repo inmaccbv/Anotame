@@ -37,6 +37,7 @@ class SubirResena extends ResourceController
             $calificacion = $request_data->calificacion;
             $comentario = $request_data->comentario;
             $id_cliente = $request_data->id_cliente;
+            $id_empresa = $request_data->id_empresa;
 
             // Verificar si la calificación es numérica o cadena
             if (!is_numeric($calificacion) && !is_string($calificacion)) {
@@ -71,10 +72,21 @@ class SubirResena extends ResourceController
                 ]);
             }
 
+            if (!is_numeric($id_empresa)) {
+                return $this->respond([
+                    'code' => 422,
+                    'authorized' => 'NO',
+                    'texto' =>
+                        'Error de validación: El id_empresa debe ser un número.',
+                    'request_data' => $request_data,
+                ]);
+            }
+
             $data = [
                 'calificacion' => $calificacion,
                 'comentario' => $comentario,
                 'id_cliente' => $id_cliente,
+                'id_empresa' => $id_empresa,
             ];
 
             // Insertar los datos en la base de datos
@@ -101,6 +113,41 @@ class SubirResena extends ResourceController
             ]);
         }
     }
+
+    public function getReviewsByEmpresa() {
+        // Obtener el id_empresa del cuerpo de la solicitud
+        $id_empresa = $this->request->getGet('id_empresa'); // Cambiar a getGet
+    
+        // Validar que se proporcionó el id_empresa
+        if (empty($id_empresa)) {
+            return $this->respond([
+                'code'       => 400,
+                'data'       => null,
+                'authorized' => 'NO',
+                'texto'      => 'Error: Se requiere el ID de la empresa.',
+            ]);
+        }
+    
+        // Puedes realizar la consulta en la base de datos para obtener los textos relacionados con la empresa
+        $db = \Config\Database::connect();
+        $query = $db->query("SELECT * FROM reviews WHERE id_empresa = ?", [$id_empresa]);
+    
+        // Devolver la respuesta en formato JSON
+        return $this->respond([
+            'code'       => 200,
+            'data'       => $query->getResult(),
+            'authorized' => 'SI',
+            'texto'      => 'Textos obtenidos con éxito.',
+        ]);
+    }
+
+    public function getReviews()
+    {
+        $db4 = \Config\Database::connect();
+        $query = $db4->query('SELECT * FROM reviews');
+        return $this->respond($query->getResult());
+    }
+
 
     public function obtenerResenas()
     {

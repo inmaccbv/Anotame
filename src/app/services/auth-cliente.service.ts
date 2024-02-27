@@ -12,6 +12,9 @@ export class AuthClienteService {
   BASE_RUTA = "http://localhost/anotame/APIANOTAME/public/";
   RUTA_REGISTRO = 'RegistroCliente';
 
+  private idEmpresa: number | null = null;
+  private idUsuario: number | null = null;
+
   constructor(
     private http: HttpClient,
   ) { }
@@ -44,6 +47,27 @@ export class AuthClienteService {
   isAuthenticated(): boolean {
     return !!localStorage.getItem('role');
   } 
+
+  setIdEmpresa(idEmpresa: number): void {
+    this.idEmpresa = idEmpresa;
+    console.log('Id de Empresa establecido:', idEmpresa);
+  }
+
+  setIdUsuario(idUsuario: number): void {
+    this.idUsuario = idUsuario;
+    console.log('Id de Usuario establecido:', idUsuario);
+  }
+  
+  getIdEmpresa(): number {
+    return this.idEmpresa || 0; // Devuelve 0 si es null
+  }
+
+  getIdUsuario(): number {
+    return this.idUsuario || 0; // Devuelve 0 si es null
+  }
+
+  
+
 
   // REVIEWS
   getClienteId(): Observable<string | null> {

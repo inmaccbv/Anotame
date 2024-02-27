@@ -35,7 +35,8 @@ export class MenuUploadService {
           return {
             id_menu: image.id_menu,
             menu_img: image.menu_img,
-            imageUrl: this.BASE_RUTA + 'uploads/' + image.menu_img
+            imageUrl: this.BASE_RUTA + 'uploads/' + image.menu_img,
+            dia: image.dia  
           };
         });
       })

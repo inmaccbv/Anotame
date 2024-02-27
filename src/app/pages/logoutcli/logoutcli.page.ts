@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthClienteService } from '../../services/auth-cliente.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-logoutcli',
@@ -9,16 +10,19 @@ import { AuthClienteService } from '../../services/auth-cliente.service';
 export class LogoutcliPage {
 
   constructor(
-    private authService: AuthClienteService
+    private authServicecli: AuthClienteService,
+    private router: Router
   ) { }
 
   logout(): void {
-    this.authService.logout().subscribe(
+    this.authServicecli.logout().subscribe(
       () => {
         // Elimina cualquier informacion de session almacenada localmente
         localStorage.removeItem('role');
         localStorage.removeItem('darkMode');
         localStorage.removeItem('cliente');
+        localStorage.removeItem('id_empresa');
+        localStorage.removeItem('empresa');
 
         // Redirige al usuario a la pagina de inicion de sesion
         window.location.href = '/logincli';
@@ -28,4 +32,5 @@ export class LogoutcliPage {
       }
     )
   }
+
 }

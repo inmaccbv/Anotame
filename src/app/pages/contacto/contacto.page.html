@@ -50,6 +50,9 @@
       <ion-input formControlName="telf2" placeholder="opcional.." type="tel"></ion-input>
     </ion-row>
 
+    <input type="hidden" formControlName="id_empresa" [value]="id_empresa">
+    <input type="hidden" formControlName="id_user" [value]="id_user">
+
     <!-- Botón para agregar datos -->
     <ion-button (click)="enviarDatos()" expand="block" fill="clear" shape="round" class="color-btn">
       Añadir datos

@@ -23,23 +23,30 @@
 </ion-header>
 
 <ion-content *ngIf="rol === 'administrador' || rol === 'encargado'" class="center-content">
-  <label for="fileInput" class="label">Subir Carta</label>
-  <br>
-  <div class="upload-row">
-      <input type="file" id="fileInput" accept="image/*" (change)="onFileSelected($event)" class="upload-input">
-      <ion-button (click)="uploadImage()" class="upload-button">Subir imagen</ion-button>
-  </div>
+  <form [formGroup]="formCarta">
 
-  <div class="gallery-container" style="margin-left: 10px;margin-right: 25px;">
-    <ion-card *ngFor="let carta of cartas" class="card-container">
-      <img [src]="carta.imageUrl" [alt]="carta.carta_img" class="card-image">
-      <ion-card-header>
-        <ion-card-title class="card-title" [ngStyle]="{'color': isDarkMode ? 'white' : 'inherit'}">{{ carta.carta_img }}</ion-card-title>
+    <label for="fileInput" class="label">Subir Carta</label>
+    <br>
 
-        <ion-icon name="trash-outline" (click)="borrarImg(carta.id_carta)" size="small" class="trash-icon"></ion-icon>
-      </ion-card-header>
-    </ion-card>
-  </div>
+    <input type="hidden" formControlName="id_empresa" [value]="id_empresa">
+    <input type="hidden" formControlName="id_user" [value]="id_user">
+    
+    <div class="upload-row">
+        <input type="file" id="fileInput" accept="image/*" (change)="onFileSelected($event)" class="upload-input">
+        <ion-button (click)="uploadImage()" class="upload-button">Subir imagen</ion-button>
+    </div>
+
+  </form>
+
+<div class="gallery-container" style="margin-left: 10px;margin-right: 25px;">
+  <ion-card *ngFor="let carta of cartas" class="card-container">
+    <img [src]="carta.imageUrl" [alt]="carta.carta_img" class="card-image">
+    <ion-card-header>
+      <ion-card-title class="card-title" [ngStyle]="{'color': isDarkMode ? 'white' : 'inherit'}">{{ carta.carta_img }}</ion-card-title>
+      <ion-icon name="trash-outline" (click)="borrarImg(carta.id_carta)" size="small" class="trash-icon"></ion-icon>
+    </ion-card-header>
+  </ion-card>
+</div>
 
 </ion-content>
 

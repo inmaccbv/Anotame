@@ -12,5 +12,7 @@ class DatosModel extends Model {
         'direccion',
         'telf1',
         'telf2',
+        'id_empresa',
+        'id_user',
     ];
 }

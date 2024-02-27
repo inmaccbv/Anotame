@@ -77,6 +77,19 @@ export class UsuariosService {
     );
   }
 
+  getIdEmpresaPorEmail(email: string): Observable<any> {
+    const payload = new HttpParams().set('email', email);
+  
+    return this.http.post(this.BASE_RUTA + this.RUTA_LOGIN + '/getIdEmpresaPorEmail', payload)
+      .pipe(
+        map(response => response || {}), // Manejar respuesta undefined
+        catchError(error => {
+          console.error('Error al obtener id_empresa por email:', error);
+          throw error;
+        })
+      );
+  }
+
 
   registroUsuario(datos: any) {
 
@@ -134,6 +147,21 @@ export class UsuariosService {
       );
   }
 
+  getUserAndEmpresaByEmail(email: string): Observable<any> {
+    const payload = new HttpParams().set('email', email);
+
+    return this.http.post(this.BASE_RUTA + this.RUTA_LOGIN + '/getUserAndEmpresaByEmail', payload)
+      .pipe(
+        dat => {
+          console.log('res ' + JSON.stringify(dat));
+
+          return dat;
+        }
+      );
+  }
+
+  
+
 
   actualizarRol(id_user: any, nuevoRol: string): Observable<any> {
     const payload = new HttpParams()
@@ -174,5 +202,7 @@ export class UsuariosService {
 
     return this.http.post(this.BASE_RUTA + this.RUTA_REGISTRO + '/getEmpresas', '', { headers });
   }
+
+
 
 }

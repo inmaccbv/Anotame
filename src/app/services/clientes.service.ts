@@ -54,29 +54,44 @@ export class ClientesService {
     const payload = new HttpParams()
       .set('rol', datos.rol)
       .set('email', datos.email)
-      .set('password', datos.password)
+      .set('password', datos.password);
 
     return this.http.post(this.BASE_RUTA + this.LOGIN_CLIENTE, payload).pipe(
       map((response: any) => {
         console.log('Respuesta del servidor:', response);
-
-        if (response && response.rol && response.id_cliente) {
-          // Almacena todos los datos del usuario en localStorage
-          localStorage.setItem('cliente', JSON.stringify(response));
-
-          // Devuelve la respuesta del servidor
+        // Si el servidor devuelve un objeto con la propiedad "rol", entonces lo devolvemos.
+        if (response && response.rol) {
+          // Primero se establece el valor del rol en el localStorage
+          localStorage.setItem('rol', response.rol);
+          // Luego se devuelve el valor del rol de la respuesta del servidor
           return response;
         } else {
           // Si no, devolvemos una cadena vacía.
+          //console.log('No se encontró el rol del usuario en la respuesta del servicio');
           return response;
         }
       }),
       catchError((error: any) => {
-        console.error('Error al obtener el rol del cliente:', error);
-        return of(''); // Otra opción: return throwError(''); si prefieres lanzar un error observable
+        console.error('Error al obtener el rol del usuario:', error);
+        // Devolvemos una cadena vacía.
+        return of('');
       })
     );
   }
+
+  getIdEmpresaPorEmail(email: string): Observable<any> {
+    const payload = new HttpParams().set('email', email);
+  
+    return this.http.post(this.BASE_RUTA + this.LOGIN_CLIENTE + '/getIdEmpresaPorEmail', payload)
+      .pipe(
+        map(response => response || {}), // Manejar respuesta undefined
+        catchError(error => {
+          console.error('Error al obtener id_empresa por email:', error);
+          throw error;
+        })
+      );
+  }
+  
 
   registroCliente(datos: any) {
 
@@ -120,13 +135,54 @@ export class ClientesService {
       );
   }
 
+  getClientePorId(id_cliente: number): Observable<any> {
+    const payload = new HttpParams().set('id_cliente', id_cliente.toString());
+  
+    return this.http.post(this.BASE_RUTA + this.REGISTRO_CLIENTE + '/obtenerDetallesCliente', payload)
+      .pipe(
+        map(response => response || {}), // Manejar respuesta undefined
+        catchError(error => {
+          console.error('Error al obtener detalles del cliente:', error);
+          throw error;
+        })
+      );
+  }
+
+  getDatosClienteParaTabla(id_cliente: number): Observable<any> {
+    const payload = new HttpParams().set('id_cliente', id_cliente.toString());
+  
+    return this.http.post<{ cliente: any }>(this.BASE_RUTA + this.REGISTRO_CLIENTE + '/obtenerDatosClienteParaTabla', payload)
+      .pipe(
+        map(response => response.cliente || {}),  // Devolver la propiedad 'cliente' de la respuesta
+        catchError(error => {
+          console.error('Error al obtener datos del cliente para la tabla:', error);
+          throw error;
+        })
+      );
+  }
+  
+  getUserAndEmpresaByEmail(email: string): Observable<any> {
+    const payload = new HttpParams().set('email', email);
+
+    return this.http.post(this.BASE_RUTA + this.LOGIN_CLIENTE + '/getUserAndEmpresaByEmail', payload)
+      .pipe(
+        dat => {
+          console.log('res ' + JSON.stringify(dat));
+
+          return dat;
+        }
+      );
+  }
+  
+  
+
   getUserByEmail(email: string): Observable<any> {
     const payload = new HttpParams().set('email', email);
 
     return this.http.post(this.BASE_RUTA + this.LOGIN_CLIENTE + '/getUserByEmail', payload)
       .pipe(
         dat => {
-          console.log('res ' + JSON.stringify(dat));
+          // console.log('res ' + JSON.stringify(dat));
 
           return dat;
         }

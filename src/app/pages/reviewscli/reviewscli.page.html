@@ -44,13 +44,14 @@
       <ion-textarea formControlName="comentario"></ion-textarea>
     </ion-item>
 
+    <input type="number" #idEmpresaInput [value]="idEmpresa">
     <input type="hidden" [value]="reviewForm.get('id_cliente')?.value || ''">
 
     <ion-button [style.color]="isDarkMode ? '#fff' : '#fff'" type="submit" expand="block" name="submit">Enviar Reseña</ion-button>
 
   </form>
 
-  <ion-card *ngFor="let resena of resenas; let i = index" [class.dark-theme]="isDarkMode">
+  <ion-card *ngFor="let resena of reviewsFiltrados; let i = index" [class.dark-theme]="isDarkMode">
     
     <ion-card-header>
       <ion-card-title [style.color]="isDarkMode ? '#ff830f' : '#ff830f'">{{ resena.nombre }}</ion-card-title>

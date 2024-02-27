@@ -19,6 +19,8 @@ export class LogoutPage {
         localStorage.removeItem('role');
         localStorage.removeItem('darkMode');
         localStorage.removeItem('usuario');
+        localStorage.removeItem('id_empresa');
+        localStorage.removeItem('empresa');
 
         window.location.href = '/login';
       },

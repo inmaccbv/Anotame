@@ -18,33 +18,28 @@ export class ContactoService {
 
   constructor(private http: HttpClient) { }
 
-  subirDatos(datos: any): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-  
-    // Verifica si nomLocal es nulo o una cadena vacía
-    if (!datos.nomLocal || datos.nomLocal.trim() === '') {
-      console.error('El valor de nomLocal no puede ser nulo o una cadena vacía.');
-      return throwError('El valor de nomLocal no puede ser nulo o una cadena vacía.');
-    }
-  
-    return this.http.post(this.BASE_RUTA + this.RUTA_DATOS, datos, { headers })
-      .pipe(
-        catchError((error: any) => {
-          console.error('Error en la solicitud:', error);
-          return throwError(error);
-        })
-      );
-  }  
 
-  obtenerDatos(): Observable<any[]> {
-    // Simulando una llamada a la API o cualquier lógica de obtención de datos
-    // En tu caso, podrías hacer una solicitud HTTP GET para obtener los datos del servidor.
-    const datosGuardados = JSON.parse(localStorage.getItem('datos') || '[]');
-    this.datosSubject.next(datosGuardados);
-    return this.datos$;
+  subirDatos(datos: any, idEmpresa: number, idUsuario: number): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+
+    const dataToSend = { ...datos, id_empresa: idEmpresa, id_user: idUsuario };
+
+    return this.http.post(this.BASE_RUTA + this.RUTA_DATOS, dataToSend, { headers }).pipe(
+      catchError((error: any) => {
+        console.error('Error en la solicitud:', error);
+        return throwError(error);
+      })
+    );
   }
+
+
+  obtenerDatosByEmpresa(idEmpresa: number): Observable<any> {
+    const params = new HttpParams().set('id_empresa', idEmpresa.toString());
+    return this.http.get(`${this.BASE_RUTA}${this.RUTA_DATOS}/obtenerDatosByEmpresa`, { params });
+  }
+  
 
 
   eliminarDato(id_datos: number): Observable<any> {

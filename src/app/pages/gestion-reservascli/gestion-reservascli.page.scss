@@ -1,15 +1,129 @@
+.dark-list {
+    background-color: #444852; 
+    color: #fff;
+}
+
+/* Estilos generales para ion-toolbar, ion-title y ion-col */
+ion-toolbar,
+ion-title,
+ion-col {
+    font-size: 2.0vw;
+}
+
+/* Estilos específicos para ion-title */
 ion-title {
     text-align: center;
 }
 
+/* Estilos para el color de salir */
 .color-salir {
     color: #ff830f;
 }
 
-.icon-with-margin {
-    margin-right: 8px;
+/* Estilos para diferentes colores de texto */
+.color-naranja {
+    color: #FFA500; 
 }
 
-.text-with-margin {
-    margin-left: 18px;
+.color-verde {
+    color: #008000; 
+}
+
+.color-rojo {
+    color: #FF0000; 
+}
+
+/* Estilos para íconos generales */
+.iconos ion-icon {
+    font-size: 1.5vw;
+    color: #ff830f;
+    overflow: visible;
+}
+
+/* Configuración y estilo para la tabla centrada */
+.tabla-centrada {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* Estilos para filas de la tabla */
+.fila-bordes {
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90vw; /* Reduzco el ancho para dejar espacio para el borde */
+    color: black !important;
+    margin-bottom: 8px;
+}
+
+/* Estilos específicos para el encabezado naranja */
+.encabezado-naranja {
+    color: #ff830f !important;
+}
+
+/* Estilos para columnas (títulos y datos) */
+.columna {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+}
+
+/* Estilos para íconos en la tabla */
+.iconos {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex: 1;
+}
+
+/* Estilos para íconos en la tabla */
+.iconos ion-icon {
+    font-size: 1.5vw;
+}
+
+/* Estilos específicos para el modo oscuro */
+.dark-theme {
+    filter: none;
+}
+
+/* Estilos específicos para pantallas pequeñas */
+@media screen and (max-width: 768px) {
+    ion-title.tabla-centrada {
+        font-size: 3vw;
+    }
+
+    /* Diseño de columna en pantallas pequeñas */
+    .columna,
+    .iconos {
+        flex: 1;
+        font-size: 2.5vw;
+    }
+
+    /* Tamaño de fuente para íconos en pantallas pequeñas */
+    ion-icon {
+        font-size: 4vw;
+    }
+}
+
+/* Estilos para el punto de estado de reserva */
+.estado-reserva-dot {
+    width: 20px; /* Ajusta según sea necesario */
+    height: 20px; /* Ajusta según sea necesario */
+    background-size: cover;
+    border-radius: 50%; /* Esto hace que el elemento sea un círculo */
+}
+
+/* Estilos para filas de encabezado y datos en la tabla */
+.header-row {
+    font-weight: bold;
+}
+
+.data-row {
+    font-size: 2.0rem; /* Ajusta el tamaño de fuente según tus preferencias */
 }

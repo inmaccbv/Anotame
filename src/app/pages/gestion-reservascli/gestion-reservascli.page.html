@@ -5,7 +5,7 @@
       <ion-back-button defaultHref="/homecli" style="--color: #ff830f;"></ion-back-button>
     </ion-buttons>
 
-    <ion-title>Gestión Reservas</ion-title>
+    <ion-title style="font-size: 20px;">Gestión Reservas</ion-title>
 
     <ion-buttons slot="end">
       <ion-button (click)="toggleDarkMode()">
@@ -21,17 +21,40 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="rol === 'cliente'">
+<ion-content [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'cliente'">
 
-  <ion-list>
+  <ion-list [class]="isDarkMode ? 'dark-list' : ''">
     <ion-item class="custom-item" href='/reservascli'>
       <ion-icon name="book-outline" class="ion-padding-end" color="primary"></ion-icon>
       <span class="text-with-margin">Reservar</span>
     </ion-item>
-    <ion-item href='/lista-reservascli'>
-      <ion-icon name="fast-food-outline" class="ion-padding-end" color="primary"></ion-icon>
-      <span class="text-with-margin">Listar Reservas</span>
-    </ion-item>
   </ion-list>
+
+  <ion-card>
+    <ion-card-content>
+      <ion-card-title style="text-align: center; color: #ff830f;">Lista de Reservas</ion-card-title>
+
+      <ion-grid class="tabla-ancha tabla-centrada">
+        <ion-row class="fila-bordes header-row">
+          <ion-col class="columna">Fecha y Hora</ion-col>
+          <ion-col class="columna">Número de Personas</ion-col>
+          <ion-col class="columna">Notas Especiales</ion-col>
+          <ion-col class="columna">Estado de Reserva</ion-col>
+        </ion-row>
+
+        <ion-row class="fila-bordes data-row" *ngFor="let reserva of reservasFiltradas; let i = index"
+          [ngStyle]="{ 'background-color': coloresFilas[i % coloresFilas.length] }">
+
+          <ion-col class="columna">{{ formatFechaHora(reserva.fechaHoraReserva) }}</ion-col>
+          <ion-col class="columna">{{ reserva.numPax }}</ion-col>
+          <ion-col class="columna">{{ reserva.notasEspeciales }}</ion-col>
+          <ion-col class="columna">
+            <ion-icon [name]="'ellipse'" [class]="getEstadoColor(reserva.estadoReserva)">{{ reserva.estadoReserva }}</ion-icon>       
+          </ion-col>
+
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
 
 </ion-content>

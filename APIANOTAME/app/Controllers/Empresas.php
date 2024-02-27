@@ -120,6 +120,33 @@ class Empresas extends ResourceController
         }
     }
 
+    public function setEmpresaSeleccionada()
+    {
+
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: POST");
+        header("Access-Control-Allow-Headers: Content-Type");
+        
+        $id_empresa = $this->request->getPost('id_empresa');
+        
+        // Registro de depuración
+        log_message('debug', 'ID de empresa recibido: ' . $id_empresa);
+    
+        // Puedes almacenar la información en la sesión del usuario, por ejemplo
+        $session = session();
+        $session->set('id_empresa', $id_empresa);
+    
+        // Devuelve la respuesta como JSON
+        return $this->response->setJSON([
+            'code'       => 200,
+            'id_empresa' => $id_empresa,
+            'authorized' => 'SI',
+            'texto'      => 'Empresa seleccionada correctamente',
+        ]);
+    }
+    
+
+
     protected $modelName2  = 'App\Models\ProvinciasModel';
     protected $format2     = 'json';
     protected $table2      = 'provincias';
@@ -133,4 +160,6 @@ class Empresas extends ResourceController
 
         return $this->respond($query2->getResult());
     }
+
+  
 }

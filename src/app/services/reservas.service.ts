@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { format, parse } from 'date-fns';
+import { catchError, map, tap } from 'rxjs/operators';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +10,6 @@ export class ReservasService {
 
   BASE_RUTA = "http://localhost/anotame/APIANOTAME/public/";
   RUTA_RESERVAS = "Reservas";
-
-  reservasArray: any[] = [];
 
   constructor(private http: HttpClient) { }
 
@@ -29,17 +26,19 @@ export class ReservasService {
       estadoReserva: reserva.estadoReserva,
       fechaCreacion: reserva.fechaCreacion,
       id_cliente: reserva.id_cliente,
+      id_empresa: reserva.id_empresa,
     };
 
     return this.http.post(this.BASE_RUTA + this.RUTA_RESERVAS, payload, { headers })
       .pipe(
         catchError((error: any) => {
-          console.error('Error en la solicitud:', error);
+          console.error('Error en la solicitud al agregar reserva:', error);
           return throwError(error);
         })
       );
   }
 
+  // Método para editar el estado de una reserva
   editarEstadoReserva(id_reserva: number, estadoReserva: string): Observable<any> {
     console.log('Iniciando updateEstadoReserva. ID Reserva:', id_reserva, 'Nuevo Estado:', estadoReserva);
     const headers = new HttpHeaders({
@@ -50,7 +49,7 @@ export class ReservasService {
       id_reserva: id_reserva,
       estadoReserva: estadoReserva,
     };
-    
+
     console.log('Cuerpo de la solicitud:', body);
 
     return this.http.put(`${this.BASE_RUTA}${this.RUTA_RESERVAS}/editarEstadoReserva`, body, { headers })
@@ -61,19 +60,42 @@ export class ReservasService {
         })
       );
   }  
-  
-  getReservas() {
+
+  // Método para obtener reservas desde el servidor
+  getReservas(): Observable<any> {
     return this.http.get(this.BASE_RUTA + this.RUTA_RESERVAS + '/getReservas')
       .pipe(
         tap((ans) => {
-          console.log('Reservas obtenidos:', ans);
+          // console.log('Reservas obtenidas:', ans);
           return ans;
         }),
         catchError(error => {
-          console.error('Error al obtener la reserva:', error);
-          throw error;
+          console.error('Error al obtener las reservas:', error);
+          return throwError(error);
         })
       );
+  }
+
+  getReservasPorEmpresa(idEmpresa: number): Observable<any> {
+    const params = new HttpParams().set('id_empresa', idEmpresa.toString());
+    
+    return this.http.get(`${this.BASE_RUTA}${this.RUTA_RESERVAS}/getReservasPorEmpresa`, { params })
+      .pipe(
+        tap((ans) => {
+          // console.log('Reservas obtenidas:', ans);
+          return ans;
+        }),
+        catchError(error => {
+          console.error('Error al obtener las reservas por empresa:', error);
+          return throwError(error);
+        })
+      );
+  }
+
+  // Método para borrar una reserva desde el servidor
+  borrarReserva(idReserva: any): Promise<void> {
+    const payload = new HttpParams().set('id_reserva', idReserva);
+    return this.http.post<void>(this.BASE_RUTA + this.RUTA_RESERVAS + '/borrarReserva', payload).toPromise();
   }
 
   // Método para manejar errores

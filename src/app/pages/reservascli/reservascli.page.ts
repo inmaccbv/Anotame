@@ -21,8 +21,11 @@ import { NotificacionService } from 'src/app/services/notificacion.service';
 export class ReservascliPage implements OnInit, AfterViewInit {
   @Output() reservaEnviada = new EventEmitter<any>();
 
+  envioReservaEnProceso = false;
+
   reservaForm!: FormGroup;
   reservas: any;
+  idEmpresa: any;
 
   fechaSeleccionada: any;
   fechaCreacionActual: string = '';
@@ -66,6 +69,12 @@ export class ReservascliPage implements OnInit, AfterViewInit {
     this.componentes = this.menuCli.getMenuOptsCli();
     this.obtenerFechaActual();
     this.cargarReservaGuardadas();
+
+       // Recuperar el valor de id_empresa del localStorage
+       const idEmpresaString = localStorage.getItem('id_empresa');
+       this.idEmpresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;
+   
+       console.log('ID Empresa:', this.idEmpresa);
   }
 
   ngAfterViewInit(): void {
@@ -109,49 +118,67 @@ export class ReservascliPage implements OnInit, AfterViewInit {
 
   enviarReserva() {
     if (this.reservaForm.valid) {
-      this.obtenerIdCliente().subscribe(
-        (id_cliente) => {
-          if (id_cliente) {
-            const numPax = this.reservaForm.get('numPax')?.value;
-            const fechaHoraReserva = this.reservaForm.get('fechaHoraReserva')?.value;
-            const notasEspeciales = this.reservaForm.get('notasEspeciales')?.value;
-            const estadoReserva = this.reservaForm.get('estadoReserva')?.value;
-            const fechaCreacion = this.reservaForm.get('fechaCreacion')?.value;
-
-            const nuevaReserva = {
-              numPax: numPax,
-              fechaHoraReserva: fechaHoraReserva,
-              notasEspeciales: notasEspeciales,
-              id_cliente: id_cliente,
-              estadoReserva: estadoReserva,
-              fechaCreacion: fechaCreacion,
-            };
-
-            // Envía la reserva al servicio de notificaciones
-            this.notificacionService.enviarNotificacion(nuevaReserva);
-
-            this.reservasService.addReserva(nuevaReserva).subscribe(
-              (response) => {
-                // Luego de enviar la reseña, guardarla en el localStorage
-                this.guardarReservaEnLocalStorage(nuevaReserva);
-
-                setTimeout(() => {
-                  window.location.reload();
-                }, 500);
-              },
-            );
-          } else {
-            console.error('Id_cliente no encontrado.');
+      // Añade una verificación para evitar envíos múltiples
+      if (!this.envioReservaEnProceso) {
+        this.envioReservaEnProceso = true;
+  
+        this.obtenerIdCliente().subscribe(
+          (id_cliente) => {
+            if (id_cliente) {
+              const numPax = this.reservaForm.get('numPax')?.value;
+              const fechaHoraReserva = this.reservaForm.get('fechaHoraReserva')?.value;
+              const notasEspeciales = this.reservaForm.get('notasEspeciales')?.value;
+              const estadoReserva = this.reservaForm.get('estadoReserva')?.value;
+              const fechaCreacion = this.reservaForm.get('fechaCreacion')?.value;
+  
+              // Recuperar el valor de id_empresa del localStorage
+              const idEmpresaString = localStorage.getItem('id_empresa');
+              const id_empresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;
+  
+              const nuevaReserva = {
+                numPax: numPax,
+                fechaHoraReserva: fechaHoraReserva,
+                notasEspeciales: notasEspeciales,
+                id_cliente: id_cliente,
+                estadoReserva: estadoReserva,
+                fechaCreacion: fechaCreacion,
+                id_empresa: id_empresa // Agrega el id_empresa al objeto nuevaReserva
+              };
+  
+              // Envía la reserva al servicio de notificaciones
+              this.notificacionService.enviarNotificacion(nuevaReserva);
+  
+              this.reservasService.addReserva(nuevaReserva).subscribe(
+                (response) => {
+                  // Luego de enviar la reseña, guardarla en el localStorage
+                  this.guardarReservaEnLocalStorage(nuevaReserva);
+                  this.envioReservaEnProceso = false;
+  
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 500);
+                },
+                (error) => {
+                  console.error('Error al agregar reserva:', error);
+                  this.envioReservaEnProceso = false;
+                }
+              );
+            } else {
+              console.error('Id_cliente no encontrado.');
+              this.envioReservaEnProceso = false;
+            }
+          },
+          (error) => {
+            console.error('Error al obtener el id_cliente:', error);
+            this.envioReservaEnProceso = false;
           }
-        },
-        (error) => {
-          console.error('Error al obtener el id_cliente:', error);
-        }
-      );
+        );
+      }
     } else {
       console.error('El formulario de reseña no es válido.');
     }
   }
+  
 
   guardarReservaEnLocalStorage(reserva: any) {
     // Obtener las reseñas almacenadas actualmente
@@ -175,13 +202,15 @@ export class ReservascliPage implements OnInit, AfterViewInit {
   eliminarOpcion(campo: string): void {
     this.reservaForm.get(campo)?.reset();
   }
-
+  
   obtenerFechaActual(): void {
     const ahora = new Date();
-    this.fechaCreacionActual = format(ahora, 'dd/MM/yyyy HH:mm:ss');
+    this.fechaCreacionActual = ahora.toISOString(); // Esto captura la fecha en formato ISO (yyyy-MM-ddTHH:mm:ss.sssZ)
+    console.log(this.fechaCreacionActual); // Imprime la fecha en la consola para verificar
+  
     this.reservaForm.get('fechaCreacion')?.setValue(this.fechaCreacionActual);
   }
-
+  
   getUserRole() {
     this.rol = this.authServiceCli.getUserRole();
     console.log(this.rol);

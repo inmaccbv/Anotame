@@ -87,6 +87,73 @@ class Logueo extends ResourceController
         }
     }
 
+    public function getUserAndEmpresaByEmail()
+    {
+        $email = $this->request->getVar('email');  // Obtener el correo electrónico del cuerpo POST
+
+        $db = \Config\Database::connect();
+        $builder = $db->table('usuarios');
+        $builder->select('id_user, nombre, apellido, email, rol, id_empresa');
+        $builder->where('email', $email);  // Utilizar el correo electrónico en la consulta
+        $query = $builder->get()->getRow();
+
+        if ($query) {
+            return $this->respond([
+                'code'       => 200,
+                'data'       => $query,
+                'authorized' => 'SI',
+                'texto'      => 'Datos del usuario obtenidos correctamente'
+            ]);
+        } else {
+            return $this->respond([
+                'code'       => 500,
+                'data'       => null,
+                'authorized' => 'NO',
+                'texto'      => 'No se ha podido obtener los datos del usuario'
+            ]);
+        }
+    }
+
+    public function getIdEmpresaPorEmail()
+    {
+        // Obtener el email del cuerpo de la solicitud
+        $email = $this->request->getPost('email'); // Cambiar a getPost
+    
+        // Validar que se proporcionó el email
+        if (empty($email)) {
+            return $this->respond([
+                'code'       => 400,
+                'data'       => null,
+                'authorized' => 'NO',
+                'texto'      => 'Error: Se requiere el email.',
+            ]);
+        }
+    
+        // Puedes realizar la consulta en la base de datos para obtener el id_empresa relacionado con el email
+        $db = \Config\Database::connect();
+        $query = $db->query("SELECT id_empresa FROM usuarios WHERE email = ?", [$email]);
+    
+        // Obtener el resultado de la consulta
+        $result = $query->getRow();
+    
+        // Verificar si se encontró un resultado
+        if ($result) {
+            return $this->respond([
+                'code'       => 200,
+                'data'       => ['id_empresa' => $result->id_empresa],
+                'authorized' => 'SI',
+                'texto'      => 'ID de empresa obtenido con éxito.',
+            ]);
+        } else {
+            return $this->respond([
+                'code'       => 404,
+                'data'       => null,
+                'authorized' => 'NO',
+                'texto'      => 'No se encontró ninguna empresa asociada al email proporcionado.',
+            ]);
+        }
+    }
+
     public function getEmpleados()
     {
         $db4 = \Config\Database::connect();
@@ -127,4 +194,49 @@ class Logueo extends ResourceController
             ]);
         }
     }
+
+    public function userData()
+    {
+        // Obtiene el id del usuario desde la solicitud POST
+        $idUsuario = $this->request->getPost('id_user');
+    
+        $db = \Config\Database::connect();
+    
+        $builder = $db->table('usuarios');
+        $builder->select('id_user, nombre, apellido, email, rol, id_empresa');  // Asegúrate de incluir id_empresa
+        $builder->where('id_user', $idUsuario);
+        $query = $builder->get()->getRow();
+    
+        if ($query) {
+            // Ahora, obtén información de la empresa utilizando id_empresa
+            $builderEmpresa = $db->table('empresas');
+            $builderEmpresa->select('id_empresa, empresa');
+            $builderEmpresa->where('id_empresa', $query->id_empresa);
+            $empresaData = $builderEmpresa->get()->getRow();
+    
+            return $this->respond([
+                'code'       => 200,
+                'data'       => [
+                    'id_user' => $query->id_user,
+                    'id_empresa' => $query->id_empresa,
+                    'nombre' => $query->nombre,
+                    'apellido' => $query->apellido,
+                    'email' => $query->email,
+                    'rol' => $query->rol,
+                    'empresa' => $empresaData,
+                ],
+                'authorized' => 'SI',
+                'texto'      => 'Datos del usuario y la empresa obtenidos correctamente'
+            ]);
+        } else {
+            return $this->respond([
+                'code'       => 500,
+                'data'       => null,
+                'authorized' => 'NO',
+                'texto'      => 'No se ha podido obtener los datos del usuario y la empresa'
+            ]);
+        }
+    }
+    
+
 }

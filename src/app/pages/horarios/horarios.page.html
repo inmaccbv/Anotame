@@ -1,5 +1,6 @@
 <ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'administrador' || rol === 'encargado'">
   <ion-toolbar>
+
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home" style="--color: #ff830f;"></ion-back-button>
     </ion-buttons>
@@ -16,6 +17,7 @@
         <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
       </ion-button>
     </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 
@@ -28,25 +30,20 @@
       <ion-col>Hora de Cierre</ion-col>
       <ion-col></ion-col>
     </ion-row>
-
-    <!-- En lugar de *ngFor="let horarioForm of horarioControls" -->
-    <ng-container *ngFor="let horarioForm of horarioControls.controls; let i = index">
-      <!-- <ion-row [formGroup]="horarioForm"> -->
-        <ion-col>{{ diasSemana[i] }}</ion-col>
-        <ion-col>
-          <ion-input formControlName="horaApertura" type="time"></ion-input>
-        </ion-col>
-        <ion-col>
-          <ion-input formControlName="horaCierre" type="time"></ion-input>
-        </ion-col>
-        <ion-col>
-          <ion-button (click)="agregarHorario(i)">Agregar</ion-button>
-        </ion-col>
-      <!-- </ion-row> -->
-    </ng-container>
-    
-
-
+    <ion-row *ngFor="let dia of diasSemana">
+      <ion-col>{{ dia }}</ion-col>
+      <ion-col>
+        <ion-input type="time" [(ngModel)]="horarioApertura[dia]"></ion-input>
+      </ion-col>
+      <ion-col>
+        <ion-input type="time" [(ngModel)]="horarioCierre[dia]"></ion-input>
+      </ion-col>
+      <ion-col>
+        <ion-button (click)="agregarHorario(dia)" [disabled]="diasSeleccionados.has(dia)">
+          Agregar
+        </ion-button>
+      </ion-col>
+    </ion-row>
   </ion-grid>
 
   <!-- Tabla para mostrar los horarios seleccionados -->
@@ -57,11 +54,10 @@
       <ion-col>Hora de Cierre</ion-col>
       <ion-col></ion-col>
     </ion-row>
-
     <ion-row *ngFor="let horario of horariosSeleccionados">
       <ion-col>{{ horario.dia }}</ion-col>
-      <ion-col>{{ horario.horaApertura | date:'HH:mm' }}</ion-col>
-      <ion-col>{{ horario.horaCierre | date:'HH:mm' }}</ion-col>
+      <ion-col>{{ horario.horaApertura }}</ion-col>
+      <ion-col>{{ horario.horaCierre }}</ion-col>
       <ion-col>
         <ion-button (click)="borrarHorario(horario)">Borrar</ion-button>
       </ion-col>

@@ -17,14 +17,19 @@
 </ion-header>
 
 <ion-content *ngIf="rol === 'cliente'" class="center-content">
+
   <div class="gallery-container" style="margin-left: 10px; margin-right: 25px;">
+
     <ion-card *ngFor="let menu of menusArr" class="card-container">
       <img [src]="menu.imageUrl" [alt]="menu.menu_img" class="card-image">
       <ion-card-header>
         <ion-card-title class="card-title" [ngStyle]="{'color': isDarkMode ? 'white' : 'inherit'}">
-          {{ menu.dia ? menu.dia : 'Día no disponible' }}
+          {{ menu.dia ? 'Día: ' + menu.dia : 'Día no disponible' }}
         </ion-card-title>
       </ion-card-header>
     </ion-card>
+    
   </div>
+
 </ion-content>
+

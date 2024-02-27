@@ -23,27 +23,40 @@ class CartaUpload extends ResourceController
     protected $table = 'carta';
     protected $primaryKey = 'id_carta';
 
-    public function do_upload()
+    public function index()
     {
         $db = \Config\Database::connect();
-
+    
         helper(['form', 'url']);
-
+    
+        $id_user = $this->request->getPost('id_user');
+        $id_empresa = $this->request->getPost('id_empresa');
+    
+        // Verifica que id_user e id_empresa tengan valores antes de continuar
+        if (empty($id_user) || empty($id_empresa)) {
+            return $this->respond([
+                'code'       => 400,
+                'data'       => null,
+                'authorized' => 'NO',
+                'texto'      => 'Error: Falta el ID de usuario o de empresa.',
+            ]);
+        }
+    
         $file = $this->request->getFile('carta_img');
-
+    
         if ($file->isValid() && !$file->hasMoved()) {
-            $file->move(FCPATH . 'uploads');
+            $file->move(WRITEPATH . 'uploads');
 
             $data = [
-                'carta_img' => $file->getName()
+                'carta_img'  => $file->getName(),
+                'id_user'    => $id_user,
+                'id_empresa' => $id_empresa,
             ];
-
+    
             $this->model->insert($data);
-
-
-
+    
             $url = base_url('uploads/' . $file->getName());
-
+    
             return $this->respond([
                 'code'       => 200,
                 'data'       => $data,
@@ -60,15 +73,45 @@ class CartaUpload extends ResourceController
             ]);
         }
     }
+    
+
+    public function getCartasByEmpresa()
+    {
+        // Obtener el id_empresa del cuerpo de la solicitud
+        $id_empresa = $this->request->getGet('id_empresa'); // Cambiar a getGet
+    
+        // Validar que se proporcionó el id_empresa
+        if (empty($id_empresa)) {
+            return $this->respond([
+                'code'       => 400,
+                'data'       => null,
+                'authorized' => 'NO',
+                'texto'      => 'Error: Se requiere el ID de la empresa.',
+            ]);
+        }
+    
+        // Puedes realizar la consulta en la base de datos para obtener los textos relacionados con la empresa
+        $db = \Config\Database::connect();
+        $query = $db->query("SELECT * FROM carta WHERE id_empresa = ?", [$id_empresa]);
+    
+        // Devolver la respuesta en formato JSON
+        return $this->respond([
+            'code'       => 200,
+            'data'       => $query->getResult(),
+            'authorized' => 'SI',
+            'texto'      => 'Textos obtenidos con éxito.',
+        ]);
+    }
 
     public function getImg()
     {
         $db4 = \Config\Database::connect();
-
+    
         $query = $db4->query("SELECT id_carta, carta_img FROM carta");
-
+    
         return $this->respond($query->getResult());
     }
+    
 
     public function borrarImg()
     {

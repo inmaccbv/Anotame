@@ -1,46 +1,43 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+
+import { Observable, catchError, throwError } from "rxjs";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TextoService {
-
   BASE_RUTA = "http://localhost/anotame/APIANOTAME/public/";
-
   RUTA_TEXTO = "SubirTexto";
+  RUTA_USER = 'Logueo';
+  RUTA_EMPRESA = 'Empresas';
 
-  textoGuardado: string = '';
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient) { }
-
-  setTextoGuardado(texto: string) {
-    this.textoGuardado = texto;
+  getTexto(): Observable<any> {
+    return this.http.get(this.BASE_RUTA + this.RUTA_TEXTO + '/getTexto');
   }
 
-  getTextoGuardado(): string {
-    return this.textoGuardado;
-  }
-
-  subirTexto(datos: any): Observable<any> {
+  subirTexto(datos: any, idEmpresa: number, idUsuario: number): Observable<any> {
     const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     });
 
-    // Asegúrate de que datos.nomLocal tenga un valor antes de enviar la solicitud
-    if (!datos.nomLocal) {
-      console.error('El valor de nomLocal no puede ser nulo.');
-      return throwError('El valor de nomLocal no puede ser nulo.');
-    }
+    const dataToSend = { ...datos, id_empresa: idEmpresa, id_user: idUsuario };
 
-    return this.http.post(this.BASE_RUTA + this.RUTA_TEXTO, datos, { headers })
-      .pipe(
-        catchError((error: any) => {
-          console.error('Error en la solicitud:', error);
-          return throwError(error); // Puedes manejar el error aquí o simplemente relanzarlo
-        })
-      );
+    return this.http.post(this.BASE_RUTA + this.RUTA_TEXTO, dataToSend, { headers }).pipe(
+      catchError((error: any) => {
+        console.error('Error en la solicitud:', error);
+        return throwError(error);
+      })
+    );
   }
+
+  getTextosByEmpresa(idEmpresa: number): Observable<any> {
+    const params = new HttpParams().set('id_empresa', idEmpresa.toString());
+    return this.http.get(`${this.BASE_RUTA}${this.RUTA_TEXTO}/getTextosByEmpresa`, { params });
+  }
+  
+  
+  
 }

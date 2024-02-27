@@ -29,7 +29,6 @@ export class AppComponent implements OnInit {
     private renderer: Renderer2,
     private menuService: MenuService,
     private authService: AuthService,
-    private menuCliService: MenuCliService,
     public themeService: ThemeService
   ) {
     this.isDarkMode = this.themeService.isDarkTheme();

@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-
-import { Componente } from 'src/app/interfaces/interfaces';
-
+import { Componente, Texto } from 'src/app/interfaces/interfaces';
 import { AuthClienteService } from 'src/app/services/auth-cliente.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { EmpresaService } from 'src/app/services/empresa.service';
 import { MenuCliService } from 'src/app/services/menu-cli.service';
+import { TextoService } from 'src/app/services/texto.service';
 import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
@@ -19,14 +19,24 @@ export class DescripcionClientePage implements OnInit {
   texto: string = '';
   titulo: string = '';
 
+  textos: any;
+  textosFiltrados: any;
+
+  idEmpresa!: number | null;
+  empresaSeleccionada: any;
+
   rol!: any;
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
+
+  @ViewChild('idEmpresaInput') idEmpresaInput!: ElementRef;
 
   constructor(
     public router: Router, 
     public authService: AuthService,
     private menuCli: MenuCliService,
+    private textoService: TextoService,
+    private empresaService: EmpresaService,
     public authServiceCliente: AuthClienteService,
     public themeService: ThemeService
   ) {
@@ -37,9 +47,39 @@ export class DescripcionClientePage implements OnInit {
 
   ngOnInit() {
     this.componentes = this.menuCli.getMenuOptsCli();
-    this.texto = localStorage.getItem('textoGuardado') || '';
-    this.titulo = localStorage.getItem('tituloGuardado') || '';
+    
+    // Recuperar el valor de id_empresa del localStorage
+    const idEmpresaString = localStorage.getItem('id_empresa');
+    this.idEmpresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;
+
+    console.log('ID Empresa:', this.idEmpresa);
+
+    this.getTexto();
   }
+
+  getTexto() {
+    if (this.idEmpresa !== null) {
+      this.textoService.getTextosByEmpresa(this.idEmpresa).subscribe(
+        (ans) => {
+          if (ans.code === 200) {
+            // La solicitud fue exitosa, asigna los textos
+            this.textos = ans.data;
+            this.textosFiltrados = ans.data;
+            console.log('Textos obtenidos:', this.textos);
+          } else {
+            console.error('Error en la respuesta:', ans.texto);
+          }
+        },
+        (error) => {
+          console.error('Error al obtener los textos:', error);
+        }
+      );
+    } else {
+      console.error('ID de empresa no válido.');
+    }
+  }
+  
+  
 
   getUserRole() {
     this.rol = this.authService.getUserRole();
@@ -49,17 +89,14 @@ export class DescripcionClientePage implements OnInit {
       console.error('Cliente con rol', this.rol, 'no tiene permiso para acceder a esta opción.');
       this.authService.logout().subscribe(
         () => {
-
           localStorage.removeItem('role');
           localStorage.removeItem('cliente');
-
           this.router.navigate(['/logincli']);
         },
         (error) => {
           console.error('Error al cerrar sesion:', error);
-
         }
-      )
+      );
     }
   }
 

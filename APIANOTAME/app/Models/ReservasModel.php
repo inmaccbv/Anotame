@@ -11,6 +11,7 @@ class ReservasModel extends Model {
         'notasEspeciales',
         'estadoReserva',
         'id_cliente',
-        'fechaCreacion'
+        'fechaCreacion',
+        'id_empresa',
     ];
 }

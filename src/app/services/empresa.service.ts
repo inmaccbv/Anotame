@@ -12,6 +12,7 @@ export class EmpresaService {
 
   RUTA_EMPRESA= "Empresas";
 
+  public empresaSeleccionada: any; 
 
   constructor(
 
@@ -119,5 +120,32 @@ export class EmpresaService {
         return dat;
       }
     );
+  }
+  setEmpresaSeleccionada(id_empresa: string): Observable<any> {
+    const payload = new HttpParams().set('id_empresa', id_empresa);
+    return this.http.post(this.BASE_RUTA + this.RUTA_EMPRESA + '/setEmpresaSeleccionada', payload)
+    .pipe(
+        map(dat => {
+            console.log('Response: ' + JSON.stringify(dat));
+            return dat;
+        }),
+        catchError(error => {
+            console.error('Error:', error);
+            let errorMessage = 'Something bad happened; please try again later.';
+            
+            // Puedes personalizar el mensaje de error según la respuesta del servidor
+            if (error && error.error && error.error.text) {
+                errorMessage = error.error.text;
+            }
+
+            return throwError(errorMessage);
+        })
+    );
+      }
+  
+  
+
+  getEmpresaSeleccionada(): any {
+    return this.empresaSeleccionada;
   }
 }

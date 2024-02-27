@@ -1,6 +1,6 @@
 <!-- reservas.page.html -->
 
-<ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'administrador' || rol === 'encargado' || rol === 'cliente'">
+<ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'administrador' || rol === 'encargado' || rol === 'camarero'">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home" style="--color: #ff830f"></ion-back-button>
@@ -17,7 +17,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="rol === 'administrador' || rol === 'encargado' || rol === 'cliente'">
+<ion-content *ngIf="rol === 'administrador' || rol === 'encargado' || rol === 'camarero'">
 
   <ion-card>
     <ion-card-content>
@@ -25,19 +25,16 @@
 
       <ion-grid class="tabla-ancha tabla-centrada">
         <ion-row class="fila-bordes header-row">
-          <ion-col class="columna">id reserva</ion-col>
           <ion-col class="columna">Fecha y Hora</ion-col>
           <ion-col class="columna">Número de Personas</ion-col>
           <ion-col class="columna">Notas Especiales</ion-col>
           <ion-col class="columna">Estado de Reserva</ion-col>
-          <ion-col class="columna">Fecha de Creación</ion-col>
-          <ion-col class="columna">ID Cliente</ion-col>
+          <ion-col class="columna">Cliente</ion-col>
         </ion-row>
 
         <ion-row class="fila-bordes data-row" *ngFor="let reserva of reservas; let i = index"
           [ngStyle]="{ 'background-color': coloresFilas[i % coloresFilas.length] }">
-          <ion-col class="columna">{{ reserva.id_reserva }}</ion-col>
-          <ion-col class="columna">{{ reserva.fechaHoraReserva }}</ion-col>
+          <ion-col class="columna">{{ formatFechaHora(reserva.fechaHoraReserva) }}</ion-col>
           <ion-col class="columna">{{ reserva.numPax }}</ion-col>
           <ion-col class="columna">{{ reserva.notasEspeciales }}</ion-col>
           <ion-col class="columna">
@@ -45,8 +42,15 @@
               <ion-icon [name]="'ellipse'" [class]="getEstadoColor(reserva.estadoReserva)"></ion-icon>
             </ion-button>            
           </ion-col>
-          <ion-col class="columna">{{ reserva.fechaCreacion }}</ion-col>
-          <ion-col class="columna">{{ reserva.id_cliente }}</ion-col>
+
+          <ion-col class="columna iconos">
+            <ion-icon *ngIf="reserva?.id_cliente" (click)="mostrarDetallesCliente($event, reserva)" name="eye-outline" style="font-size: 20px; cursor: pointer;">
+              {{ reserva.id_cliente }}
+            </ion-icon>
+          </ion-col>
+
+          <input type="number" #idEmpresaInput [value]="idEmpresa">
+          
         </ion-row>
       </ion-grid>
     </ion-card-content>

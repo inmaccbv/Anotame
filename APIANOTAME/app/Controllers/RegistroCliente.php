@@ -78,14 +78,14 @@ class RegistroCliente extends ResourceController
     {
         $db = \Config\Database::connect();
         $builder = $db->table('clientes');
-    
+
         $email = $this->request->getGet('email'); // Obtén el parámetro del correo electrónico desde la solicitud
-    
+
         $builder->select('id_cliente');
         $builder->where('email', $email);
-    
+
         $result = $builder->get()->getRow();
-    
+
         if ($result) {
             return $this->respond([
                 'code'       => 200,
@@ -102,31 +102,59 @@ class RegistroCliente extends ResourceController
         }
     }
 
-    public function obtenerDetallesCliente($idCliente)
+    public function obtenerDetallesCliente()
     {
-        try {
-            $cliente = $this->model->find($idCliente);
+        $db = \Config\Database::connect();
+        $builder = $db->table('clientes');
 
-            if ($cliente) {
-                return $this->respond([
-                    'code'    => 200,
-                    'success' => true,
-                    'data'    => $cliente,
-                ]);
-            } else {
-                return $this->respond([
-                    'code'    => 404,
-                    'success' => false,
-                    'message' => 'Cliente no encontrado',
-                ]);
-            }
-        } catch (\Exception $e) {
+        $id_cliente = $this->request->getPost('id_cliente'); // Cambiado a getPost para reflejar el método POST en Angular
+
+        $builder->select('nombre, email, telf');
+        $builder->where('id_cliente', $id_cliente);
+
+        $result = $builder->get()->getRow();
+
+        if ($result) {
             return $this->respond([
-                'code'    => 500,
-                'success' => false,
-                'message' => 'Error al obtener detalles del cliente: ' . $e->getMessage(),
-            ]);
+                'code'       => 200,
+                'cliente'    => $result,  // Cambiado a 'cliente' en lugar de 'idCliente'
+                'authorized' => 'SI',
+                'texto'      => 'Detalles del cliente obtenidos con éxito',
+            ], 200);
+        } else {
+            return $this->respond([
+                'code'       => 404,
+                'authorized' => 'NO',
+                'texto'      => 'Cliente no encontrado',
+            ], 404);
         }
     }
-    
+
+    public function obtenerDatosClienteParaTabla()
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('clientes');
+
+        $id_cliente = $this->request->getPost('id_cliente'); // Cambiado a getPost para reflejar el método POST en Angular
+
+        $builder->select('fechaHoraReserva, numPax, notasEspeciales');
+        $builder->where('id_cliente', $id_cliente);
+
+        $result = $builder->get()->getRow();
+
+        if ($result) {
+            return $this->respond([
+                'code'       => 200,
+                'cliente'    => $result,  // Cambiado a 'cliente' en lugar de 'idCliente'
+                'authorized' => 'SI',
+                'texto'      => 'Detalles del cliente obtenidos con éxito',
+            ], 200);
+        } else {
+            return $this->respond([
+                'code'       => 404,
+                'authorized' => 'NO',
+                'texto'      => 'Cliente no encontrado',
+            ], 404);
+        }
+    }
 }

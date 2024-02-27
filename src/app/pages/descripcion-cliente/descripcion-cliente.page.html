@@ -9,9 +9,10 @@
 
     <ion-buttons slot="end">
       <ion-button (click)="toggleDarkMode()">
-        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'" style="color: #ff830f; font-size: 24px;"></ion-icon>
+        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"
+          style="color: #ff830f; font-size: 24px;"></ion-icon>
       </ion-button>
-      
+
       <ion-button (click)="cerrarSesion()">
         <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
       </ion-button>
@@ -22,8 +23,18 @@
 
 <ion-content [class]="{'dark-theme': isDarkMode}" *ngIf="rol === 'cliente'">
 
-  <ion-title style="font-weight: bold; font-size: 15px; color: #ff830f; text-align: center; font-size: 25px;"> {{ titulo }}</ion-title>
+  <input type="number" #idEmpresaInput [value]="idEmpresa">
 
-  <p style="font-size: 18px; text-align: center; margin: 0 auto;">{{ texto }}</p>
+  <ion-content [class]="{'dark-theme': isDarkMode}" *ngIf="rol === 'cliente'">
+    <div *ngFor="let texto of textosFiltrados" class="texto-container">
+      <ion-title style="font-weight: bold; font-size: 15px; color: #ff830f; text-align: center; font-size: 25px;"> 
+        {{ texto.nomLocal }}
+      </ion-title>
+      <p style="font-size: 18px; text-align: center;">{{ texto.texto }}</p>
+    </div>
+  </ion-content>
+  
+
+
 
 </ion-content>

@@ -29,7 +29,7 @@ class SubirDatos extends ResourceController
         $data = $this->request->getJSON(true);
 
         // Validar que se proporcionaron los datos necesarios
-        if (empty($data['nomLocal']) || empty($data['direccion']) || empty($data['telf1']) || empty($data['telf2'])) {
+        if (empty($data['nomLocal']) || empty($data['direccion']) || empty($data['telf1']) || empty($data['telf2']) || empty($data['id_user']) || empty($data['id_empresa'])) {
             return $this->respond([
                 'code'       => 400,
                 'data'       => null,
@@ -130,4 +130,37 @@ class SubirDatos extends ResourceController
             ]);
         }
     }    
+
+    
+
+
+    public function obtenerDatosByEmpresa()
+    {
+        // Obtener el id_empresa de la URL
+        $id_empresa = $this->request->getGet('id_empresa');
+    
+        // Validar que se proporcionó el id_empresa
+        if (empty($id_empresa)) {
+            return $this->respond([
+                'code'       => 400,
+                'data'       => null,
+                'authorized' => 'NO',
+                'texto'      => 'Error: Se requiere el ID de la empresa.',
+            ]);
+        }
+    
+        // Puedes realizar la consulta en la base de datos para obtener los datos relacionados con la empresa
+        $db = \Config\Database::connect();
+        $query = $db->query("SELECT * FROM datos WHERE id_empresa = ?", [$id_empresa]);
+    
+        // Devolver la respuesta en formato JSON
+        return $this->respond([
+            'code'       => 200,
+            'data'       => $query->getResult(),
+            'authorized' => 'SI',
+            'texto'      => 'Datos obtenidos con éxito.',
+        ]);
+    }
+    
+
 }

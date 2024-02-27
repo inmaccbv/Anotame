@@ -6,6 +6,8 @@ class CartaModel extends Model {
     protected $table = 'carta';
     protected $primaryKey = 'id_carta';
     protected $allowedFields = [
-        'carta_img'
+        'carta_img',
+        'id_empresa',
+        'id_user',
     ];
 }

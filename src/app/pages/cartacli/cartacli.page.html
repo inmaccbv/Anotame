@@ -25,13 +25,16 @@
 
 <ion-content *ngIf="rol === 'cliente'" class="center-content">
 
+  <input type="number" #idEmpresaInput [value]="idEmpresa">
+
   <div class="gallery-container" style="margin-left: 10px;margin-right: 25px;">
     <ion-card *ngFor="let carta of cartas" class="card-container">
       <img [src]="carta.imageUrl" [alt]="carta.carta_img" class="card-image">
       <ion-card-header>
-        <ion-card-title class="card-title" [ngStyle]="{'color': isDarkMode ? 'white' : 'inherit'}"></ion-card-title>
+        <ion-card-title class="card-title" [ngStyle]="{'color': isDarkMode ? 'white' : 'inherit'}">
+          <!-- {{ carta.carta_img }} -->
+        </ion-card-title>
       </ion-card-header>
     </ion-card>
   </div>
-
 </ion-content>

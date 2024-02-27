@@ -1,20 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
 
-import { Componente } from 'src/app/interfaces/interfaces';
+import { Componente, Horario } from 'src/app/interfaces/interfaces';
+
 import { HorariosService } from '../../services/horarios.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { ThemeService } from 'src/app/services/theme.service';
 import { MenuService } from 'src/app/services/menu.service';
-
-interface Horario {
-  dia: string;
-  horaApertura: string;
-  horaCierre: string;
-  id: string;
-}
+import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
   selector: 'app-horarios',
@@ -25,24 +18,24 @@ export class HorariosPage implements OnInit {
 
   diasSemana: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
   horariosSeleccionados: Horario[] = [];
+
+  // Variable para almacenar horarios de apertura y cierre por día
   horarioApertura: { [key: string]: string } = {};
   horarioCierre: { [key: string]: string } = {};
-  diasSeleccionados: Set<string> = new Set<string>();
 
-  horarioControls: FormArray;
-  horarioForm: FormGroup;
+  // Conjunto para rastrear los días seleccionados
+  diasSeleccionados: Set<string> = new Set<string>();
 
   rol!: any;
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
 
   constructor(
-    private formBuilder: FormBuilder,
-    private router: Router,
     public horariosService: HorariosService,
     public authService: AuthService,
     public themeService: ThemeService,
     public menuService: MenuService,
+    private router: Router
   ) {
     this.getUserRole();
     console.log('Rol obtenido:', this.rol);
@@ -53,18 +46,11 @@ export class HorariosPage implements OnInit {
       this.horariosSeleccionados = nuevosHorarios || [];
       console.log('this.horariosSeleccionados:', this.horariosSeleccionados);
     });
-
-    this.horarioControls = this.formBuilder.array([]);  // Inicializado como FormArray
-
-    this.horarioForm = this.formBuilder.group({
-      horarios: this.horarioControls,
-    });
-    
   }
 
   ngOnInit() {
     this.componentes = this.menuService.getMenuOpts();
-
+    
     this.horariosService.horarios$.subscribe((nuevosHorarios) => {
       console.log('Nuevos horarios recibidos en HorariosPage:', nuevosHorarios);
       this.horariosSeleccionados = nuevosHorarios || [];
@@ -74,80 +60,34 @@ export class HorariosPage implements OnInit {
   getUserRole() {
     this.rol = this.authService.getUserRole();
     console.log(this.rol);
-
+    
     if (!(this.rol === 'administrador' || this.rol === 'encargado')) {
       console.error('Usuario con rol', this.rol, 'no tiene permiso para acceder a esta opción.');
       this.authService.logout().subscribe(
         () => {
+
           localStorage.removeItem('role');
           localStorage.removeItem('usuario');
+
           this.router.navigate(['/login']);
         },
         (error) => {
-          console.error('Error al cerrar sesión:', error);
+          console.error('Error al cerrar sesion:', error);
+          // Manejo de errores
         }
       )
     }
   }
-  
 
-  getHorarioValue(index: number, controlName: string): string {
-    const horariosArray = this.horarioForm.get('horarios') as FormArray;
-    const horarioGroup = horariosArray.at(index) as FormGroup;
-  
-    const control = horarioGroup.get(controlName);
-  
-    return (control?.value || '') as string;
-  }
-  
-  setHorarioValue(index: number, controlName: string, value: string): void {
-    const horariosArray = this.horarioForm.get('horarios') as FormArray;
-    const horarioGroup = horariosArray.at(index) as FormGroup;
-  
-    if (horarioGroup.get(controlName)) {
-      horarioGroup.get(controlName)!.setValue(value || '');
-    }
-  }
-  
-  agregarHorario(index: number): void {
-    const horariosArray = this.horarioForm.get('horarios') as FormArray;
-    const horarioForm = horariosArray.at(index) as FormGroup;
-  
-    const formData: Horario = {
-      dia: this.diasSemana[index],
-      horaApertura: horarioForm.get('horaApertura')?.value || '',
-      horaCierre: horarioForm.get('horaCierre')?.value || '',
-      id: '',
-    };
-  
-    if (horarioForm.valid) {
-      this.horariosService.agregarHorario(formData).subscribe(
-        (respuesta: any) => {
-          console.log('Respuesta del servidor:', respuesta);
-  
-          horarioForm.reset();
-  
-          this.horariosService.obtenerHorarios().subscribe((nuevosHorarios) => {
-            console.log('Nuevos horarios recibidos en HorariosPage:', nuevosHorarios);
-            this.horariosSeleccionados = nuevosHorarios || [];
-            console.log('this.horariosSeleccionados:', this.horariosSeleccionados);
-          });
-        },
-        (error: any) => {
-          console.error('Error en la solicitud:', error);
-        }
-      );
-    } else {
-      console.log('El formulario no es válido. Realiza la validación necesaria.');
-    }
-  }
-  
-  
-
-  agregarHorarioLocalStorage(dia: string): void {
+  agregarHorario(dia: string): void {
     const horaApertura = this.horarioApertura[dia];
     const horaCierre = this.horarioCierre[dia];
 
+    console.log('Dia:', dia);
+    console.log('Hora de Apertura:', horaApertura);
+    console.log('Hora de Cierre:', horaCierre);
+
+    // Verificar si ambas horas están ingresadas
     if (horaApertura && horaCierre) {
       const nuevoHorario: Horario = {
         dia: dia,
@@ -156,13 +96,17 @@ export class HorariosPage implements OnInit {
         id: ''
       };
 
+      // Verificar si el día ya fue seleccionado
       if (!this.diasSeleccionados.has(dia)) {
+        // Agregar el nuevo horario y actualizar el conjunto de días seleccionados
         this.horariosSeleccionados.push(nuevoHorario);
         this.diasSeleccionados.add(dia);
 
+        // Limpiar los campos de entrada
         this.horarioApertura[dia] = '';
         this.horarioCierre[dia] = '';
 
+        // Guardar los horarios en el servicio y en localStorage
         this.horariosService.actualizarHorarios(this.horariosSeleccionados);
         localStorage.setItem('horarios', JSON.stringify(this.horariosSeleccionados));
       } else {
@@ -171,12 +115,14 @@ export class HorariosPage implements OnInit {
     }
   }
 
+  // Borrar un horario existente
   borrarHorario(horario: Horario): void {
     const index = this.horariosSeleccionados.indexOf(horario);
     if (index !== -1) {
       this.horariosSeleccionados.splice(index, 1);
       this.diasSeleccionados.delete(horario.dia);
 
+      // Guardar los horarios en el servicio y en localStorage
       this.horariosService.actualizarHorarios(this.horariosSeleccionados);
       localStorage.setItem('horarios', JSON.stringify(this.horariosSeleccionados));
     }

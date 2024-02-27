@@ -1,54 +1,113 @@
 .my-custom-menu {
-    --width: 500px;
+  --width: 500px; 
 }
 
+/* Estilos para el contenido principal */
 ion-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Estilos para las tarjetas generales */
 ion-card {
-    width: 150px;
-    height: 195px;
-    margin: 10px;
-    margin-left: 1px;
-    margin-bottom: 1px;
+  width: 150px;
+  height: 195px;
+  margin: 10px;
+  margin-left: 1px;
+  margin-bottom: 1px;
 }
 
+/* Estilos para las imágenes en las tarjetas */
 .card-image {
-    width: 50%;
-    height: 50%;
-    object-fit: cover;
+  width: 50%;
+  height: 50%;
+  object-fit: cover;
 }
 
+/* Estilos específicos para el modo oscuro en las imágenes */
 .dark-theme .image-dark {
-    filter: invert(100%);
+  filter: invert(100%);
 }
 
+/* Estilos para el contenido dentro de las tarjetas generales */
 ion-card-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
 }
 
+/* Estilos para el título dentro del contenido de las tarjetas generales */
 ion-card-content p.card-title {
-    font-size: 18px !important;
+  font-size: 18px !important;
 }
 
+/* Estilos generales para los párrafos dentro del contenido de las tarjetas generales */
 ion-card-content p {
-    font-size: 14px !important;
-    margin: 25px !important;
-    margin-bottom: 10px !important;
-    color: #ff830f !important;
+  font-size: 14px !important;
+  margin: 25px !important;
+  margin-bottom: 10px !important;
+  color: #ff830f !important; 
 }
 
+/* Color específico para el texto de salir */
 .color-salir {
-    color: #ff830f;
+  color: #ff830f;
 }
 
+/* Estilos para el título centrado */
 ion-title {
-    text-align: center;
+  text-align: center;
+}
+
+/* Estilos para el contenido del cliente */
+ion-content.cliente-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Estilos para las tarjetas específicas del cliente */
+ion-card.cliente-card {
+  width: 150px;
+  height: 195px;
+  margin: 10px;
+  margin-left: 8px;
+  margin-bottom: 1px;
+}
+
+/* Estilos para las imágenes en las tarjetas del cliente */
+.cliente-card-image {
+  width: 50%;
+  height: 50%;
+  object-fit: cover;
+}
+
+/* Estilos específicos para el modo oscuro en las imágenes del cliente */
+.dark-theme .cliente-image-dark {
+  filter: invert(100%);
+}
+
+/* Estilos para el contenido dentro de las tarjetas del cliente */
+ion-card-content.cliente-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
+}
+
+/* Estilos para el título dentro del contenido de las tarjetas del cliente */
+.cliente-card-content p.cliente-card-title {
+  font-size: 18px !important;
+}
+
+/* Estilos generales para los párrafos dentro del contenido de las tarjetas del cliente */
+.cliente-card-content p {
+  font-size: 14px !important;
+  margin: 25px !important;
+  margin-bottom: 10px !important;
+  color: #ff830f !important;
 }

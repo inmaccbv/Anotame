@@ -1,7 +1,9 @@
+/* Estilo para el título de la página */
 ion-title {
     text-align: center;
 }
 
+/* Estilo para las etiquetas en el formulario */
 label {
     font-size: large; 
     color: #ff830f; 
@@ -9,6 +11,7 @@ label {
     margin-left: 2px; 
 }
 
+/* Estilo para elementos con la clase 'color-salir' */
 .color-salir {
     color: #ff830f; 
 }
@@ -19,6 +22,7 @@ label {
     align-items: center; 
 }
 
+/* Estilo para el botón de carga de imágenes */
 .upload-button {
     width: 120px; 
 }
@@ -42,7 +46,7 @@ label {
     max-height: 300px; 
 }
 
-/* Estilo para encabezado de las tarjetas */
+/* Estilo para el encabezado de las tarjetas */
 ion-card-header {
     text-align: center; 
     overflow: visible;
@@ -62,6 +66,7 @@ ion-card-header {
     margin-bottom: 2px; 
 }
 
+/* Estilo para el icono de eliminación en las tarjetas */
 .trash-icon {
     cursor: pointer; 
     margin-left: 5px; 

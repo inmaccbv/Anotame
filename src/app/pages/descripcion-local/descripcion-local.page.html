@@ -34,6 +34,10 @@
       <ion-input formControlName="texto" placeholder="Introduce texto" maxlength="2000"></ion-input>
     </ion-item>
 
+    <!-- Campos ocultos para id_user e id_empresa -->
+    <input type="hidden" formControlName="id_empresa" [value]="id_empresa">
+    <input type="hidden" formControlName="id_user" [value]="id_user">
+
     <ion-button type="submit" class="custom-button">Enviar</ion-button>
   </form>
 
@@ -44,8 +48,6 @@
   <div *ngIf="ionicForm.get('texto')?.invalid && ionicForm.get('texto')?.touched" class="error-message">
     Texto no válido.
   </div>
-  
-  <!-- ... (otros códigos) ... -->
   
   <div style="overflow-wrap: break-word; max-width: 350px; color: #ff830f;">
     <p style="font-size: 25px;">{{ ionicForm.get('nomLocal')?.value }}</p>

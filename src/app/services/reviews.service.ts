@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +17,7 @@ export class ReviewsService {
 
   resenas$ = this.resenasSubject.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) { } 
 
   subirResena(resena: any): Observable<any> {
     const headers = new HttpHeaders({
@@ -30,7 +30,8 @@ export class ReviewsService {
     const datos = {
       calificacion: calificacion,
       comentario: comentario,
-      id_cliente: resena.id_cliente
+      id_cliente: resena.id_cliente,
+      id_empresa: resena.id_empresa
     };
 
     return this.http.post(this.BASE_RUTA + this.RUTA_REVIEWS, datos, { headers })
@@ -41,6 +42,27 @@ export class ReviewsService {
         })
       );
   }
+
+  getReviewsByEmpresa(idEmpresa: number) {
+    const params = new HttpParams().set('id_empresa', idEmpresa.toString());
+    return this.http.get(`${this.BASE_RUTA}${this.RUTA_REVIEWS}/getReviewsByEmpresa`, { params });
+  }
+
+  getReviews(): Observable<any> {
+    return this.http.get(this.BASE_RUTA + this.RUTA_REVIEWS + '/getReviews')
+      .pipe(
+        tap((ans) => {
+          // console.log('Reservas obtenidas:', ans);
+          return ans;
+        }),
+        catchError(error => {
+          console.error('Error al obtener las reservas:', error);
+          return throwError(error);
+        })
+      );
+  }
+
+  
 
   // Para el admin 
   obtenerResenas() {

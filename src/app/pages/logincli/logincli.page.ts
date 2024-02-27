@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { FormControl, FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { AlertController } from '@ionic/angular';
 
 import { ClientesService } from 'src/app/services/clientes.service';
 import { AuthClienteService } from 'src/app/services/auth-cliente.service';
@@ -16,12 +16,12 @@ export class LogincliPage implements OnInit {
   loginForm!: FormGroup;
   submitted = false;
   recordarDatos = false;
+  clientes: any;
 
   BASE_RUTA = "http://localhost/anotame/APIANOTAME/public/";
 
   constructor(
     public formBuilder: FormBuilder,
-    private router: Router,
     public alertController: AlertController,
     public clienteService: ClientesService,
     public authCliente: AuthClienteService,
@@ -72,8 +72,6 @@ export class LogincliPage implements OnInit {
       return;
     }
 
-    this.enviarDatos();
-    
     // Mostrar los valores del formulario en caso de éxito
     // alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.loginForm.value, null, 4));
   }
@@ -93,7 +91,7 @@ export class LogincliPage implements OnInit {
        
         console.log('Rol almacenado en el localStorage:', localStorage.getItem('role'));
         // Redirigir a la página principal solo si la autenticación es exitosa
-        this.router.navigate(['/homecli']);
+        window.location.href = '/seleccion-empresa';
       },
       (error: any) => {
         console.error('Error al obtener el rol del cliente:', error);
@@ -106,12 +104,19 @@ export class LogincliPage implements OnInit {
   }
   
   async presentAlert(header: string, message: string) {
+    console.log('Mostrando alerta:', header, message);
+  
     const alert = await this.alertController.create({
       header: header,
       message: message,
       buttons: ['OK']
     });
-
+  
+    alert.onDidDismiss().then(() => {
+      console.log('Alerta cerrada');
+    });
+  
     await alert.present();
   }
+  
 }

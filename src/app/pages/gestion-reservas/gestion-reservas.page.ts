@@ -1,15 +1,18 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
-import { Observable } from 'rxjs';
+import { AlertController, PopoverController } from '@ionic/angular';
+import { Observable, interval } from 'rxjs';
 
-
+import { DatePipe } from '@angular/common';
 import { Componente } from 'src/app/interfaces/interfaces';
-import { AuthClienteService } from 'src/app/services/auth-cliente.service';
+import { DetallesclientePage } from '../detallescliente/detallescliente.page';
+
 import { AuthService } from 'src/app/services/auth.service';
 import { MenuService } from 'src/app/services/menu.service';
 import { ReservasService } from 'src/app/services/reservas.service';
 import { ThemeService } from 'src/app/services/theme.service';
+import { ClientesService } from 'src/app/services/clientes.service';
+import { UsuariosService } from 'src/app/services/usuarios.service';
 
 @Component({
   selector: 'app-gestion-reservas',
@@ -20,57 +23,78 @@ export class GestionReservasPage implements OnInit {
 
   reservasFiltradas: any;
   reservas: any;
-
+  cliente: any;
+  idEmpresa!: number | null;
   coloresFilas = ['#FFECBA', '#FFFFFF'];
-
   rol!: any;
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
 
+  @ViewChild('idEmpresaInput') idEmpresaInput!: ElementRef;
+
   constructor(
-    public authService: AuthService,
-    private changeDetectorRef: ChangeDetectorRef,
-    public authServiceCli: AuthClienteService,
-    private router: Router,
-    public menuService: MenuService,
     public alertController: AlertController,
+    private popoverController: PopoverController,
+    private router: Router,
+    public authService: AuthService,
+    public usuariosService: UsuariosService,
+    public menuService: MenuService,
+    private clientesService: ClientesService,
     private reservasService: ReservasService,
     public themeService: ThemeService
   ) {
     this.getUserRole();
     console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
+
+    // Programar la ejecución periódica para verificar y eliminar reservas expiradas
+    const intervaloEjecucion = 60 * 60 * 1000; // Cada hora en milisegundos
+    interval(intervaloEjecucion).subscribe(() => {
+      this.verificarYEliminarReservasExpiradas();
+    });
+
+    this.getReservas(); 
   }
 
   ngOnInit() {
     this.componentes = this.menuService.getMenuOpts();
 
-    this.getReservas();
+    // Programar la ejecución periódica para verificar y eliminar reservas expiradas cada minuto
+    setInterval(() => {
+      this.verificarYEliminarReservasExpiradas();
+    }, 60000);
   }
 
+  // Función para dar formato a fechas y horas
+  formatFechaHora(fecha: Date | string | null): string {
+    const datePipe = new DatePipe('en-US');
+    // Validar si la fecha es válida
+    const isValidDate = fecha && !isNaN(new Date(fecha).getTime());
+    // Utilizar el operador ternario para proporcionar un valor predeterminado si la fecha no es válida
+    return isValidDate ? datePipe.transform(fecha, 'dd/MM/yyyy HH:mm') ?? '' : '';
+  }
+
+  // Función para cambiar el estado de una reserva
   async cambiarEstadoReserva(reserva: any): Promise<void> {
     console.log('Cambiando estado de reserva:', reserva);
-  
     const opcionesEstado = [
       { estado: 'pendiente', color: '#ff830f' },
       { estado: 'aceptada', color: '#008000' },
       { estado: 'cancelada', color: '#FF0000' }
     ];
-  
     const buttons = opcionesEstado.map(opcion => ({
       text: opcion.estado.charAt(0).toUpperCase() + opcion.estado.slice(1),
       handler: () => {
         console.log('Cambiando estado:', opcion.estado);
-  
         const body = {
           id_reserva: reserva.id_reserva,
           estadoReserva: opcion.estado,
         };
-  
         this.reservasService.editarEstadoReserva(reserva.id_reserva, opcion.estado)
           .subscribe(
             (response) => {
               console.log('Actualizada estado de reserva:', response);
+              // Filtrar la reserva actual y agregarla con el nuevo estado y color
               this.reservas = this.reservas.filter((r: any) => r.id_reserva !== reserva.id_reserva);
               this.reservas.push({
                 ...reserva,
@@ -78,7 +102,6 @@ export class GestionReservasPage implements OnInit {
                 estadoColor: opcion.color // Utiliza el color de la opción
               });
               this.actualizarReservaLocalStorage(reserva);
-
               window.location.reload();
             },
             (error) => {
@@ -87,25 +110,67 @@ export class GestionReservasPage implements OnInit {
           );
       }
     }));
-  
+    // Mostrar un cuadro de diálogo con botones para cambiar el estado
     const alert = await this.alertController.create({
       header: 'Cambiar Estado',
       buttons: buttons
     });
-  
     await alert.present();
   }
-  
-  
-  
- 
+
+  // Función para mostrar detalles del cliente en un popover
+  async mostrarDetallesCliente(event: any, reserva: any) {
+    try {
+      const idCliente = reserva?.id_cliente;
+      if (idCliente) {
+        // Agregar un retraso de 1000 milisegundos
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Obtener detalles del cliente por ID
+        const detallesCliente = await this.clientesService.getClientePorId(idCliente).toPromise();
+        if (detallesCliente) {
+          // Mostrar popover con detalles del cliente
+          const popover = await this.popoverController.create({
+            component: DetallesclientePage,
+            event: event,
+            componentProps: { cliente: detallesCliente },
+            translucent: true,
+            backdropDismiss: false,
+          });
+          await popover.present();
+        } else {
+          console.error('No se pudieron obtener los detalles del cliente para la reserva:', reserva);
+        }
+      } else {
+        console.error('ID del cliente no definido en la reserva:', reserva);
+      }
+    } catch (error) {
+      console.error('Error al obtener detalles del cliente:', error);
+    }
+  }
+
+  // Función para verificar y eliminar reservas expiradas
+  verificarYEliminarReservasExpiradas(): void {
+    const tiempoExpiracion = 60000; // 1 minuto en milisegundos
+    this.reservas.forEach(async (reserva: any) => {
+      const fechaHoraReserva = new Date(reserva.fechaHoraReserva).getTime();
+      const tiempoActual = new Date().getTime();
+      if (tiempoActual - fechaHoraReserva > tiempoExpiracion) {
+        // Borrar reserva expirada de la base de datos
+        await this.reservasService.borrarReserva(reserva.id_reserva);
+        console.log(`Eliminando reserva expirada de la base de datos: ${reserva.id_reserva}`);
+        window.location.reload();
+      }
+    });
+  }
+
+  // Funciones auxiliares relacionadas con la gestión de reservas
   private obtenerEstadoColor(reserva: any, opcionesEstado: any[]): any {
     const estadoReserva = reserva.estadoReserva.toLowerCase();
     const color = this.getEstadoColor(estadoReserva);
-  
     return { estado: estadoReserva, color: color };
   }
-  
+
+  // Función para obtener el color asociado a un estado de reserva
   public getEstadoColor(estado: string): string {
     switch (estado) {
       case 'pendiente':
@@ -118,61 +183,103 @@ export class GestionReservasPage implements OnInit {
         return 'color-naranja';
     }
   }
-  
 
+  // Función para actualizar el estado de una reserva en el almacenamiento local
   private actualizarReservaLocalStorage(reserva: any): void {
     const reservasLocalStorage: any[] = JSON.parse(localStorage.getItem('reservas') || '[]');
     const index = reservasLocalStorage.findIndex(r => r.id_reserva && r.id_reserva === reserva.id_reserva);
-
     if (index !== -1) {
+      // Actualizar estado y color de la reserva en el almacenamiento local
       reservasLocalStorage[index].estadoReserva = reserva.estadoReserva;
       reservasLocalStorage[index].estadoColor = reserva.estadoColor;
-
-      // Actualiza toda la lista de reservas en el localStorage
+      // Actualizar toda la lista de reservas en el almacenamiento local
       localStorage.setItem('reservas', JSON.stringify(reservasLocalStorage));
     }
   }
 
+  // Funciones relacionadas con la obtención y gestión de reservas
   getReservas() {
-    this.reservasService.getReservas().subscribe(
-      (ans) => {
-        this.reservas = ans;
-        this.reservasFiltradas = ans; // Inicializa empleadosFiltrados
-        console.log('Reservas obtenidas:', this.reservas);
-      },
-      (error) => {
-        console.error('Error al obtener las reservas:', error);
+    // Verificar si el rol del usuario es 'administrador', 'encargado' o 'camarero'
+    if (this.rol === 'administrador' || this.rol === 'encargado' || this.rol === 'camarero') {
+      // Obtener el email del usuario
+      const email = this.authService.getUserEmail();
+  
+      // Verificar si el email no es nulo antes de llamar a la función
+      if (email !== null) {
+        this.usuariosService.getIdEmpresaPorEmail(email).subscribe(
+          (response) => {
+            if (response.code === 200 && response.data && response.data.id_empresa) {
+              this.idEmpresa = response.data.id_empresa;
+              console.log('ID Empresa del usuario:', this.idEmpresa);
+  
+              // Ahora que tenemos el idEmpresa, podemos obtener las reservas
+              const idEmpresaAsNumber = this.idEmpresa as number; // Convertir a número
+              if (!isNaN(idEmpresaAsNumber)) {
+                this.reservasService.getReservasPorEmpresa(idEmpresaAsNumber).subscribe(
+                  (reservasResponse) => {
+                    if (reservasResponse.code === 200 && Array.isArray(reservasResponse.data)) {
+                      // Verificar si la respuesta tiene el código 200 y data es un array
+                      this.reservas = reservasResponse.data;
+                      this.reservasFiltradas = reservasResponse.data; // Inicializar reservasFiltradas
+                      console.log('Reservas obtenidas:', this.reservas);
+                    } else {
+                      console.error('La respuesta del servicio de reservas no es válida:', reservasResponse);
+                    }
+                  },
+                  (errorReservas) => {
+                    console.error('Error al obtener las reservas:', errorReservas);
+                  }
+                );
+              } else {
+                console.error('ID de empresa no es un número válido:', idEmpresaAsNumber);
+              }
+            } else {
+              console.error('No se pudo obtener el id_empresa del usuario:', response);
+            }
+          },
+          (error) => {
+            console.error('Error al obtener el id_empresa del usuario:', error);
+          }
+        );
+      } else {
+        console.error('El email del usuario es nulo.');
       }
-    );
+    } else {
+      console.error('No tiene permiso para acceder a esta opción.');
+    }
   }
-
-
+  
+  
+  
+  // Funciones relacionadas con la autenticación del usuario
   getUserRole() {
+    // Obtener el rol del usuario del servicio de autenticación
     this.rol = this.authService.getUserRole();
-
-    if (!(this.rol === 'administrador' || this.rol === 'encargado')) {
+    // Verificar si el rol es válido, de lo contrario, cerrar sesión
+    if (!(this.rol === 'administrador' || this.rol === 'encargado' || this.rol === 'camarero')) {
       this.authService.logout().subscribe(
         () => {
-
           localStorage.removeItem('role');
           localStorage.removeItem('usuario');
-
           this.router.navigate(['/inicio']);
         },
         (error) => {
-          console.error('Error al cerrar sesion:', error);
+          console.error('Error al cerrar sesión:', error);
         }
-      )
+      );
     }
   }
 
+  // Funciones relacionadas con el cambio de tema
   toggleDarkMode() {
+    // Alternar el modo oscuro y claro
     this.isDarkMode = !this.isDarkMode;
     this.themeService.setDarkTheme(this.isDarkMode);
   }
 
+  // Funciones relacionadas con el cierre de sesión
   cerrarSesion(): void {
+    // Cerrar sesión a través del servicio de autenticación
     this.authService.logout().subscribe();
   }
-
 }

@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { Observable } from 'rxjs';
+import { Observable, catchError, map, of } from 'rxjs';
 import { Componente } from 'src/app/interfaces/interfaces';
 import { AuthService } from 'src/app/services/auth.service';
 import { ContactoService } from 'src/app/services/contacto.service';
 import { MenuService } from 'src/app/services/menu.service';
 import { ThemeService } from 'src/app/services/theme.service';
+import { UsuariosService } from 'src/app/services/usuarios.service';
 
 @Component({
   selector: 'app-contacto',
@@ -17,6 +18,10 @@ import { ThemeService } from 'src/app/services/theme.service';
 export class ContactoPage implements OnInit {
 
   ionicForm!: FormGroup;
+
+  id_empresa: number | null = null;
+  id_user: number | null = null;
+
   rol!: any;
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
@@ -28,6 +33,7 @@ export class ContactoPage implements OnInit {
     private alertController: AlertController,
     public authService: AuthService,
     public contactService: ContactoService,
+    public usuariosService: UsuariosService,
     public menuService: MenuService,
     public themeService: ThemeService,
   ) {
@@ -39,13 +45,61 @@ export class ContactoPage implements OnInit {
       direccion: [''],
       telf1: [''],
       telf2: [''],
+      id_empresa: [''],
+      id_user: [''],
     });
   }
 
   ngOnInit() {
     this.componentes = this.menuService.getMenuOpts();
-    this.getStoredData(); // Cargar datos almacenados al inicializar
+    // Llama al nuevo método para obtener datos del usuario y la empresa
+    this.obtenerIdUsuario().subscribe(
+      ({ idUsuario, idEmpresa }) => {
+        console.log('Id de Usuario:', idUsuario);
+        console.log('Id de Empresa:', idEmpresa);
+
+        this.id_user = idUsuario;
+        this.id_empresa = idEmpresa;
+      },
+      (error) => {
+        console.error('Error al obtener el id del usuario y la empresa:', error);
+      }
+    );
   }
+
+  obtenerIdUsuario(): Observable<{ idUsuario: number | null, idEmpresa: number | null }> {
+    const usuarioString = localStorage.getItem('usuario');
+
+    if (usuarioString) {
+      const usuario = JSON.parse(usuarioString);
+      const email = usuario.email;
+
+      return this.usuariosService.getUserAndEmpresaByEmail(email).pipe(
+        map(response => {
+          console.log('Respuesta del servidor en obtenerIdUsuario:', response);
+
+          if (response && response.code === 200 && response.data) {
+            // Puedes acceder a las propiedades id_user e id_empresa según la estructura real de tu respuesta
+            const idUsuario = response.data.id_user ? response.data.id_user : null;
+            const idEmpresa = response.data.id_empresa ? response.data.id_empresa : null;
+
+            return { idUsuario, idEmpresa };
+          } else {
+            console.error('No se pudieron obtener los datos del usuario:', response.texto);
+            return { idUsuario: null, idEmpresa: null };
+          }
+        }),
+        catchError(error => {
+          console.error('Error al obtener datos del usuario:', error);
+          return of({ idUsuario: null, idEmpresa: null });
+        })
+      );
+    } else {
+      console.error('Usuario no encontrado en el almacenamiento local');
+      return of({ idUsuario: null, idEmpresa: null });
+    }
+  }
+
 
   getUserRole() {
     this.rol = this.authService.getUserRole();
@@ -66,47 +120,30 @@ export class ContactoPage implements OnInit {
   }
 
   enviarDatos() {
-    console.log('Datos a enviar:', this.ionicForm.value);
-
     if (this.ionicForm.valid) {
-      this.contactService.subirDatos(this.ionicForm.value).subscribe(
-        (ans) => {
-          console.log('Respuesta del servidor:', ans);
+      // Continuar con el código solo si ambos valores no son nulos
+      if (this.id_empresa !== null && this.id_user !== null) {
+        // Crear un objeto que contenga todas las propiedades necesarias, incluyendo idEmpresa e idUsuario
+        const datos = { ...this.ionicForm.value, id_empresa: this.id_empresa, id_user: this.id_user };
 
-          if (ans && ans.code === 200) {
-            console.log('Datos subidos con éxito.');
+        // Enviar el texto con los datos correctos
+        this.contactService.subirDatos(datos, this.id_empresa, this.id_user).subscribe(
+          (ans) => {
+            console.log('Respuesta del servidor:', ans);
+            // Limpiar el formulario después de enviarlo
             this.ionicForm.reset();
-            this.getStoredData(); // Actualizar datos locales
-
-            // Agregar la lógica para guardar en localStorage
-            const storedData = JSON.parse(localStorage.getItem('datos') || '[]');
-            storedData.push(ans.data); // asumiendo que ans.data contiene los nuevos datos
-            localStorage.setItem('datos', JSON.stringify(storedData));
-
-            window.location.reload();
-          } else {
-            console.error('Error en la respuesta del servidor:', ans);
+          },
+          (error) => {
+            console.error('Error en la solicitud:', error);
           }
-        },
-        (error) => {
-          console.error('Error en la solicitud:', error);
-        }
-      );
-    } else {
-      console.error('El formulario no es válido.');
-    }
-  }
-
-  private getStoredData() {
-    this.contactService.obtenerDatos().subscribe(
-      (nuevosDatos) => {
-        console.log('Datos locales actualizados:', nuevosDatos);
-        this.datos = nuevosDatos;
-      },
-      (error) => {
-        console.error('Error al obtener datos locales:', error);
+        );
+      } else {
+        console.error('No se pudo obtener el id de la empresa o el id del usuario.');
       }
-    );
+    }
+  
+
+   
   }
 
   async eliminarDato(id_datos: number) {

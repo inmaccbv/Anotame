@@ -12,6 +12,10 @@ const routes: Routes = [
     loadChildren: () => import('./pages/inicio/inicio.module').then( m => m.InicioPageModule)
   },
   {
+    path: 'detallescliente',
+    loadChildren: () => import('./pages/detallescliente/detallescliente.module').then( m => m.DetallesclientePageModule)
+  },
+  {
     path: 'reservas',
     loadChildren: () => import('./pages/reservas/reservas.module').then( m => m.ReservasPageModule)
   },
@@ -26,6 +30,10 @@ const routes: Routes = [
   {
     path: 'reviewscli',
     loadChildren: () => import('./pages/reviewscli/reviewscli.module').then( m => m.ReviewscliPageModule)
+  },
+  {
+    path: 'seleccion-empresa',
+    loadChildren: () => import('./pages/seleccion-empresa/seleccion-empresa.module').then( m => m.SeleccionEmpresaPageModule)
   },
   {
     path: 'logincli',
@@ -183,7 +191,9 @@ const routes: Routes = [
   {
     path: '**',
     redirectTo: 'inicio'
-  },  
+  },   
+ 
+ 
    
  
 ];

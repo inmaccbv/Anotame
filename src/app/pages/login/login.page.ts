@@ -82,6 +82,7 @@ export class LoginPage implements OnInit {
       (rol: any) => {
         // Utiliza el método storeUserRole para almacenar el rol en localStorage
         this.authService.storeUserRole(rol);
+  
 
         if (this.recordarDatos) {
           localStorage.setItem('usuario', JSON.stringify(this.loginForm.value));
