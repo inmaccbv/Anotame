@@ -1,7 +1,6 @@
 <ion-header [class]="isDarkMode ? 'dark-theme' : ''"
-  *ngIf="rol === 'administrador' || rol === 'encargado' || rol === 'camarero'">
+  *ngIf="rol === 'administrador' || rol === 'encargado'">
   <ion-toolbar>
-
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home" style="--color: #ff830f;"></ion-back-button>
     </ion-buttons>
@@ -18,30 +17,35 @@
         <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
       </ion-button>
     </ion-buttons>
-
   </ion-toolbar>
 </ion-header>
 
 <ion-content [ngClass]="{'dark-theme': isDarkMode}" class="ion-padding"
-  *ngIf="rol === 'administrador' || rol === 'encargado' || rol === 'camarero'">
+  *ngIf="rol === 'administrador' || rol === 'encargado'">
 
-  <ion-card *ngIf="resenasFiltrados && resenasFiltrados.length > 0">
-    <ng-container *ngFor="let getResenas of resenasFiltrados; let i = index">
-      <ion-card-header>
-        <ion-card-title style="color: #ff830f;">{{ getResenas.nombreCliente }}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <p [ngClass]="{'dark-text': isDarkMode}">Calificación: {{ getResenas.calificacion }} estrellas</p>
-        <p [ngClass]="{'dark-text': isDarkMode}">{{ getResenas.comentario }}</p>
-        <p>{{ getResenas | json }}</p>
-      </ion-card-content>
-    </ng-container>
+  <ion-card *ngFor="let resena of resenasFiltrados; let i = index" [class.dark-theme]="isDarkMode">
+    <ion-card-header>
+      <ion-card-title [style.color]="isDarkMode ? '#ff830f' : '#ff830f'">{{ resena.nombre }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>{{ resena.calificacion }} <ion-icon name="star-half-outline" style="color: #ff830f;"></ion-icon></p>
+      <p>{{ resena.comentario }}</p>
+      <p style="display: none;">{{ resena.id_reviews }}</p>
+
+      <p>-------------------------------</p>
+      <!-- Mostrar respuesta si existe -->
+      <ng-container *ngIf="resena.respuesta">
+        <p>Respuesta del restaurante:</p>
+        <p class="respuesta">{{ resena.respuesta }}</p>
+      </ng-container>
+
+      <ion-button (click)="responderResena(resena)">Responder</ion-button>
+
+    </ion-card-content>
   </ion-card>
 
-
-
   <!-- Mostrar un mensaje si no hay reseñas -->
-  <div *ngIf="!resenas || resenas.length === 0">
+  <div *ngIf="!resenasFiltrados || resenasFiltrados.length === 0">
     No hay reseñas disponibles.
   </div>
 

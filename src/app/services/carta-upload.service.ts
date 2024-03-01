@@ -34,7 +34,7 @@ export class CartaUploadService {
 
   getCartasByEmpresa(idEmpresa: number): Observable<any> {
     const params = new HttpParams().set('id_empresa', idEmpresa.toString());
-    return this.http.get(`${this.BASE_RUTA}${this.RUTA_IMG}/getTextosByEmpresa`, { params });
+    return this.http.get(`${this.BASE_RUTA}${this.RUTA_IMG}/getCartasByEmpresa`, { params });
   }
 
   getImg(): Observable<any[]> {

@@ -23,7 +23,7 @@
 
 <ion-content [class]="{'dark-theme': isDarkMode}" *ngIf="rol === 'cliente'">
 
-  <input type="number" #idEmpresaInput [value]="idEmpresa">
+  <input type="hidden" #idEmpresaInput [value]="idEmpresa">
 
   <ion-content [class]="{'dark-theme': isDarkMode}" *ngIf="rol === 'cliente'">
     <div *ngFor="let texto of textosFiltrados" class="texto-container">

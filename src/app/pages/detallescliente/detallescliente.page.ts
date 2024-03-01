@@ -9,8 +9,8 @@ import { ThemeService } from 'src/app/services/theme.service';
 <ion-content class="ion-padding" *ngIf="cliente && cliente.cliente">
   <h2>{{ cliente.cliente.nombre }}</h2>
   <div class="detalle-info">
-    <div><p class="pe">Email:</p> <p>{{ cliente.cliente.email }}</p></div>
-    <div><p class="pe">DIRECCIÓN:</p> <p>{{ cliente.cliente.direccion }}</p></div>
+    <!-- <div><p class="pe">Email:</p> <p>{{ cliente.cliente.email }}</p></div>
+    <div><p class="pe">DIRECCIÓN:</p> <p>{{ cliente.cliente.direccion }}</p></div> -->
     <div><p class="pe">Teléfono:</p> <p>{{ cliente.cliente.telf }}</p></div>
   </div>
 </ion-content>

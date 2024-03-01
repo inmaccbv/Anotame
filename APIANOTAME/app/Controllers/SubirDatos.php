@@ -27,7 +27,7 @@ class SubirDatos extends ResourceController
     {
         // Obtener los datos del cuerpo de la solicitud en lugar de $_POST
         $data = $this->request->getJSON(true);
-
+    
         // Validar que se proporcionaron los datos necesarios
         if (empty($data['nomLocal']) || empty($data['direccion']) || empty($data['telf1']) || empty($data['telf2']) || empty($data['id_user']) || empty($data['id_empresa'])) {
             return $this->respond([
@@ -37,30 +37,46 @@ class SubirDatos extends ResourceController
                 'texto'      => 'Error: Se requieren datos válidos.',
             ]);
         }
-
-        // Agregar otros campos necesarios aquí
-
+    
         try {
-            // Intentar realizar la inserción
-            if ($this->model->insert($data)) {
-                // Obtener el ID de inserción
-                $id_datos = $this->model->insertID();
-
+            // Verificar si ya existe un registro con el mismo id_empresa
+            $existingData = $this->model
+                ->where('id_empresa', $data['id_empresa'])
+                ->first();
+    
+            if ($existingData) {
+                // Si existe, actualiza los datos existentes en lugar de insertar nuevos
+                $this->model->update($existingData['id_datos'], $data);
+    
                 return $this->respond([
                     'code'       => 200,
                     'data'       => $data,
-                    'idUsuario'  => $id_datos,
+                    'idUsuario'  => $existingData['id_datos'],
                     'authorized' => 'SI',
-                    'texto'      => 'Datos subidos con éxito',
+                    'texto'      => 'Datos actualizados con éxito',
                 ]);
             } else {
-                // La inserción falló, devuelve un error
-                return $this->respond([
-                    'code'       => 500,
-                    'data'       => $data,
-                    'authorized' => 'NO',
-                    'texto'      => 'Error al enviar, los datos ya existen.',
-                ]);
+                // Si no existe, intenta realizar la inserción
+                if ($this->model->insert($data)) {
+                    // Obtener el ID de inserción
+                    $id_datos = $this->model->insertID();
+    
+                    return $this->respond([
+                        'code'       => 200,
+                        'data'       => $data,
+                        'idUsuario'  => $id_datos,
+                        'authorized' => 'SI',
+                        'texto'      => 'Datos subidos con éxito',
+                    ]);
+                } else {
+                    // La inserción falló, devuelve un error
+                    return $this->respond([
+                        'code'       => 500,
+                        'data'       => $data,
+                        'authorized' => 'NO',
+                        'texto'      => 'Error al enviar, los datos ya existen.',
+                    ]);
+                }
             }
         } catch (\Exception $e) {
             log_message('error', 'Error en index: ' . $e->getMessage());
@@ -72,6 +88,7 @@ class SubirDatos extends ResourceController
             ]);
         }
     }
+    
 
     public function borrarDatos()
     {

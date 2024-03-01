@@ -1,14 +1,14 @@
 <ion-app>
     <!-- MENU HAMBURGUESA -->
-    <ion-menu side="start" menuId="first" contentId="main" >
+    <ion-menu side="start" menuId="first" contentId="main" style="color: #ff830f;">
         <ion-header>
             <ion-toolbar>
                 <ion-buttons slot="end">
-                    <ion-button (click)="mostrarMenu()" color="primary">
-                        <ion-icon slot="icon-only" style="color: #ff830f;" name="menu_outline"></ion-icon>
+                    <ion-button (click)="mostrarMenu()">
+                        <ion-icon slot="icon-only" class="icono-menu" name="menu_outline"></ion-icon>
                     </ion-button>
                     <!-- <app-dark-mode-toggle></app-dark-mode-toggle> -->
-                    <ion-menu-button menu="first"></ion-menu-button>
+                    <ion-menu-button menu="first" style="color: #ff830f;"></ion-menu-button>
                 </ion-buttons>
                 <ion-title>Anótame</ion-title>
 

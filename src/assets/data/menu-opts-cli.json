@@ -26,7 +26,7 @@
     {
         "icon": "log-in-outline",
         "name": "Logout",
-        "redirectTo": "/logincli",
+        "redirectTo": "/logoutcli",
         "roles": ["cliente"]
     }
 

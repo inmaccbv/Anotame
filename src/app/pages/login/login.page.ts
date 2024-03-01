@@ -90,7 +90,7 @@ export class LoginPage implements OnInit {
           localStorage.setItem('usuario', JSON.stringify(this.loginForm.value));
         }
   
-        console.log('Rol almacenado en el localStorage:', localStorage.getItem('role'));
+        // console.log('Rol almacenado en el localStorage:', localStorage.getItem('role'));
         this.router.navigate(['/home']);
       },
       (error: any) => {

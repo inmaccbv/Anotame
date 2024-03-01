@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgxPrintModule } from 'ngx-print';
 import { Observable } from 'rxjs';
-import { NavController } from '@ionic/angular';
+
+import { NgxPrintModule } from 'ngx-print';
 
 import { Componente } from 'src/app/interfaces/interfaces';
 
@@ -15,6 +15,7 @@ import { ThemeService } from 'src/app/services/theme.service';
   templateUrl: './codigo-qr.page.html',
   styleUrls: ['./codigo-qr.page.scss'],
 })
+
 export class CodigoQrPage implements OnInit {
 
   textoQR: string = '';
@@ -25,13 +26,13 @@ export class CodigoQrPage implements OnInit {
 
   constructor(
     public ngxPrintService: NgxPrintModule,
-    public authService: AuthService,
     private router: Router,
+    public authService: AuthService,
     public menuService: MenuService,
     private themeService: ThemeService
   ) {
-    this.getUserRole(); 
-    console.log('Rol obtenido:', this.rol);
+    this.getUserRole();
+    // console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
   }
 
@@ -40,31 +41,28 @@ export class CodigoQrPage implements OnInit {
     this.textoQR = '';
   }
 
-  // Método para obtener el rol del usuario
+  // Función para imprimir la página
+  imprimir() {
+    window.print();
+  }
+
+  // Método para obtener el rol del usuario y gestionar el acceso a la página
   getUserRole() {
     this.rol = this.authService.getUserRole();
-    console.log(this.rol);
 
-    if (!(this.rol === 'administrador')) {
+    if (!(this.rol === 'administrador' || this.rol === 'encargado')) {
       console.error('Usuario con rol', this.rol, 'no tiene permiso para acceder a esta opción.');
-
       this.authService.logout().subscribe(
         () => {
-          localStorage.removeItem('role'); 
+          localStorage.removeItem('role');
           localStorage.removeItem('usuario');
-
-          this.router.navigate(['/inicio']); 
+          this.router.navigate(['/inicio']);
         },
         (error) => {
           console.error('Error al cerrar sesión:', error);
         }
       );
     }
-  }
-
-  // Función para imprimir la página
-  imprimir() {
-    window.print();
   }
 
   toggleDarkMode() {

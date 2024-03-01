@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { AlertController } from '@ionic/angular';
-import { RefreshService } from 'src/app/services/refresh.service';
 
+import { AlertController } from '@ionic/angular';
+
+import { RefreshService } from 'src/app/services/refresh.service';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 
 @Component({
@@ -15,8 +16,8 @@ export class RegistroPage implements OnInit {
   ionicForm!: FormGroup;
   submitted = false;
   registros: any;
-  rol!: any;
   empresas: any;
+  rol!: any;
 
   constructor(
     public formBuilder: FormBuilder,
@@ -32,12 +33,12 @@ export class RegistroPage implements OnInit {
       confirmPassword: new FormControl("", Validators.compose([Validators.required, Validators.minLength(6)])),
       rol: new FormControl("administrador", Validators.compose([Validators.required])),
       id_empresa: new FormControl("", Validators.compose([Validators.required])),
-
     }, {
       validators: this.MustMatch('password', 'confirmPassword') // Validador personalizado para comparar contraseñas
     });
   }
 
+  // Método que se ejecuta al iniciar la página
   ngOnInit() {
     // Llama al método getEmpresas al iniciar el componente para cargar las opciones del ion-select
     this.userRegis.getEmpresas().subscribe(
@@ -59,10 +60,12 @@ export class RegistroPage implements OnInit {
     this.refreshService.startRefresh();
   }
 
+  // Getter para acceder fácilmente a los controles del formulario
   get f() {
     return this.ionicForm.controls;
   }
 
+  // Validador personalizado para coincidencia de contraseñas
   MustMatch(password: any, confirmPassword: any) {
     return (formGroup: FormGroup) => {
       const passwordcontrol = formGroup.controls[password];
@@ -80,10 +83,12 @@ export class RegistroPage implements OnInit {
     };
   }
 
+  // Getter para acceder fácilmente a los errores del formulario
   get errorControl() {
     return this.ionicForm.controls;
   }
 
+  // Método para manejar el evento de alerta
   alert(event: any) {
     console.log(event.target);
 
@@ -107,8 +112,9 @@ export class RegistroPage implements OnInit {
     // alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.ionicForm.value, null, 4));
   }
 
+  // Método para enviar los datos del formulario al servidor
   enviarDatos() {
-    console.log('Enviando datos:', this.ionicForm.value);
+    // console.log('Enviando datos:', this.ionicForm.value);
 
     this.submitted = true;
 
@@ -119,20 +125,20 @@ export class RegistroPage implements OnInit {
 
     this.userRegis.registroUsuario(this.ionicForm.value).subscribe(
       (ans) => {
-        console.log('Respuesta del servidor:', ans);
+        // console.log('Respuesta del servidor:', ans);
 
         this.registros = ans;
 
-        console.log('Datos de registros:', this.registros['data']);
-        console.log('Texto de registros:', this.registros['texto']);
-        console.log('Authorized de registros:', this.registros['authorized']);
+        // console.log('Datos de registros:', this.registros['data']);
+        // console.log('Texto de registros:', this.registros['texto']);
+        // console.log('Authorized de registros:', this.registros['authorized']);
 
         if (this.registros['authorized'] === 'NO') {
           console.log('Mostrando alerta de error...');
           // Llama al método mostrarAlertaNO con el mensaje específico
           this.mostrarAlertaNO('Error', 'Email ya registrado');
         } else {
-          console.log('Mostrando alerta de éxito...');
+          // console.log('Mostrando alerta de éxito...');
           // Llama al método mostrarAlertaOK con el mensaje específico
           this.mostrarAlertaOK('Enhorabuena', 'Usuario creado correctamente');
         }
@@ -146,6 +152,7 @@ export class RegistroPage implements OnInit {
     );
   }
 
+  // Método para mostrar alerta de éxito
   async mostrarAlertaOK(titulo: string, mensaje: string) {
     const alert = await this.alertController.create({
       header: titulo,
@@ -153,7 +160,7 @@ export class RegistroPage implements OnInit {
       buttons: [{
         text: 'OK',
         handler: () => {
-          window.location.href = '/registro-empresa';
+          window.location.href = '/login';
         }
       }],
       cssClass: 'custom-alert-header'
@@ -162,6 +169,7 @@ export class RegistroPage implements OnInit {
     await alert.present();
   }
 
+  // Método para mostrar alerta de error
   async mostrarAlertaNO(titulo: string, mensaje: string) {
     const alert = await this.alertController.create({
       header: titulo,

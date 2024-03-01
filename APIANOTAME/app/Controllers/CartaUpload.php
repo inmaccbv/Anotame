@@ -45,7 +45,8 @@ class CartaUpload extends ResourceController
         $file = $this->request->getFile('carta_img');
     
         if ($file->isValid() && !$file->hasMoved()) {
-            $file->move(WRITEPATH . 'uploads');
+            error_log('Ruta de destino: ' . FCPATH  . 'uploads'); 
+            $file->move(FCPATH  . 'uploads');
 
             $data = [
                 'carta_img'  => $file->getName(),
@@ -73,7 +74,6 @@ class CartaUpload extends ResourceController
             ]);
         }
     }
-    
 
     public function getCartasByEmpresa()
     {
@@ -87,7 +87,7 @@ class CartaUpload extends ResourceController
                 'data'       => null,
                 'authorized' => 'NO',
                 'texto'      => 'Error: Se requiere el ID de la empresa.',
-            ]);
+            ], 400, 'application/json');
         }
     
         // Puedes realizar la consulta en la base de datos para obtener los textos relacionados con la empresa
@@ -100,7 +100,7 @@ class CartaUpload extends ResourceController
             'data'       => $query->getResult(),
             'authorized' => 'SI',
             'texto'      => 'Textos obtenidos con éxito.',
-        ]);
+        ], 200, 'application/json');
     }
 
     public function getImg()

@@ -1,0 +1,104 @@
+/* Estilos para el contenedor principal de botones de filtro */
+.filter-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+}
+
+/* Estilos para los grupos de elementos de filtro */
+.filter-group {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: 100%;
+}
+
+/* Añade margen entre el segundo grupo de filtros y el anterior */
+.filter-group:nth-child(2) {
+    margin-top: 10px;
+}
+
+/* Estilos para elementos de filtro individuales */
+.filter-item {
+    flex: 1;
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+
+    /* Estilos comunes para etiquetas de filtro */
+    ion-label {
+        margin-bottom: 5px;
+    }
+
+    /* Estilos para selects e inputs de filtro */
+    ion-select,
+    ion-input {
+        width: 55px;
+        height: 20px;
+        border-radius: 20px;
+        margin-bottom: 20px;
+        padding: 15px;
+        position: relative;
+    }
+
+    /* Estilos para iconos en elementos de filtro */
+    ion-icon {
+        margin-right: 5px;
+        font-size: 20px;
+        color: #ff830f;
+    }
+}
+
+/* Estilos para todos los iconos */
+ion-icon {
+    font-size: 20px;
+    color: #ff830f;
+}
+
+/* Estilos para inputs de filtro */
+.filter-input {
+    flex: 1; /* Ocupa todo el ancho disponible */
+    max-width: 300px; /* Máximo ancho para evitar ocupar toda la pantalla */
+    margin-top: 20px;
+}
+
+/* Estilos para selects de filtro */
+.filter-select {
+    width: 100px !important;
+}
+
+/* Estilos para el grupo de empresas seleccionadas */
+.company-select {
+    flex: 1;
+    max-width: 300px;
+    margin-left: 10%; /* Ajusta según sea necesario */
+    padding: 15px;
+    overflow-y: auto;
+
+    /* Estilos para iconos en el grupo de empresas */
+    ion-icon {
+        margin-right: 5px;
+        font-size: 20px;
+        color: #ff830f;
+    }
+}
+
+/* Estilos para el botón de redireccionamiento */
+.redirect-button {
+    margin-top: 10px;
+    margin-left: 32%; /* Ajusta según sea necesario */
+    border-radius: 20px;
+    color: white;
+    padding: 15px 20px;
+    cursor: pointer;
+}
+
+/* Estilos para etiquetas de filtro */
+label {
+    text-align: center;
+    font-size: 35px;
+    color: #ff830f;
+    margin-bottom: 0; /* Ajusta según sea necesario */
+}

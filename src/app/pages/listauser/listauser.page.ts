@@ -57,6 +57,33 @@ export class ListauserPage implements OnInit {
     this.getEmpresas();
     this.getEmpleados();
     this.getProvincias();
+    this.getUserInfo();
+  }
+
+  getUserInfo() {
+    // Llama al servicio para obtener la información del usuario
+    this.userLogin.getUserInfo().subscribe(
+      (response: any) => {
+        // Verifica si la respuesta contiene un ID de usuario y empresa
+        const idUser = response.id_user;
+        const idEmpresa = response.id_empresa;
+
+        // Almacena el ID de usuario y empresa en el localStorage si están presentes
+        if (idUser) {
+          localStorage.setItem('userId', idUser);
+        }
+        if (idEmpresa) {
+          localStorage.setItem('companyId', idEmpresa);
+        }
+
+        // Continúa con el resto de la lógica de tu componente
+        this.getEmpleados();
+      },
+      (error: any) => {
+        console.error('Error al obtener información del usuario:', error);
+        //this.presentAlert('Error', 'Error al obtener información del usuario');
+      }
+    );
   }
 
   getUserRole() {

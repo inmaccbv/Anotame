@@ -1,22 +1,20 @@
 <ion-header [class]="isDarkMode ? 'dark-theme' : ''" >
   <ion-toolbar>
 
-   <ion-buttons slot="start">
-    <ion-menu-button menu="first"></ion-menu-button>
-   </ion-buttons>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="first" style="color: #ff830f;"></ion-menu-button>
+    </ion-buttons>
 
     <ion-title color="primary">Anótame</ion-title>
 
     <ion-buttons slot="end">
-     
       <ion-button (click)="toggleDarkMode()">
         <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'" style="color: #ff830f; font-size: 24px;"></ion-icon>
       </ion-button>
 
       <a (click)="mostrarPopover($event)">
-        <ion-icon style="font-size: 24px;margin-top: 4px;margin-right: 3px;color: #ff830f;" name="happy-outline"></ion-icon>
+        <ion-icon style="font-size: 24px; margin-top: 4px; margin-right: 3px; color: #ff830f;" name="happy-outline"></ion-icon>
       </a>    
-      
     </ion-buttons>
 
   </ion-toolbar>
@@ -26,28 +24,41 @@
 
   <ion-grid>
     <ng-container *ngFor="let card of cards; let i = index">
+      <!-- Filas de tarjetas, mostrando tarjetas en posiciones pares -->
       <ion-row *ngIf="i % 2 === 0">
+        <!-- Columna para tarjeta actual en posición par -->
         <ion-col size="6" size-md="4" size-lg="2" *ngIf="showCard(cards[i])">
+          <!-- Tarjeta con tema oscuro condicional -->
           <ion-card [class]="isDarkMode ? 'dark-theme' : ''">
+            <!-- Encabezado de la tarjeta -->
             <ion-card-header></ion-card-header>
+            <!-- Contenido de la tarjeta, incluyendo un botón transparente -->
             <ion-card-content>
-              <!-- Cambia aquí para usar [attr.href] -->
-              <a [attr.href]="card.href" (click)="navigateToPage(card)">
+              <!-- Botón que llama a la función navigateToPage al hacer clic -->
+              <button (click)="navigateToPage(card)" class="transparent-button">
+                <!-- Imagen de la tarjeta con tema oscuro condicional -->
                 <img src="{{ card.image }}" alt="{{ card.alt }}" class="card-image" [class.image-dark]="isDarkMode">
-                <p color="primary" style="font-size: 18px !important;">{{ card.title }}</p>
-              </a>
+                <!-- Título de la tarjeta con color primario -->
+                <p color="primary" class="card-title" style="font-size: 18px !important;">{{ card.title }}</p>
+              </button>
             </ion-card-content>
           </ion-card>
         </ion-col>
+        <!-- Columna para tarjeta siguiente en posición impar -->
         <ion-col size="6" size-md="4" size-lg="2" *ngIf="i + 1 < cards.length && showCard(cards[i + 1])">
+          <!-- Tarjeta con tema oscuro condicional -->
           <ion-card [class]="isDarkMode ? 'dark-theme' : ''">
+            <!-- Encabezado de la tarjeta -->
             <ion-card-header></ion-card-header>
+            <!-- Contenido de la tarjeta, incluyendo un botón transparente -->
             <ion-card-content>
-              <!-- Cambia aquí para usar [attr.href] -->
-              <a [attr.href]="cards[i + 1].href" (click)="navigateToPage(cards[i + 1])">
+              <!-- Botón que llama a la función navigateToPage al hacer clic -->
+              <button (click)="navigateToPage(cards[i + 1])" class="transparent-button">
+                <!-- Imagen de la tarjeta con tema oscuro condicional -->
                 <img src="{{ cards[i + 1].image }}" alt="{{ cards[i + 1].alt }}" class="card-image" [class.image-dark]="isDarkMode">
-                <p color="primary" style="font-size: 18px !important;">{{ cards[i + 1].title }}</p>
-              </a>
+                <!-- Título de la tarjeta con color primario -->
+                <p color="primary" class="card-title" style="font-size: 18px !important;">{{ cards[i + 1].title }}</p>
+              </button>
             </ion-card-content>
           </ion-card>
         </ion-col>

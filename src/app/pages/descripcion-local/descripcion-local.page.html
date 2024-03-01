@@ -25,12 +25,12 @@
 
   <form [formGroup]="ionicForm" (ngSubmit)="enviarTexto()">
     <ion-item>
-      <ion-label style="font-weight: bold; font-size: 25px; color: #ff830f;">Nombre Local</ion-label>
+
       <ion-input formControlName="nomLocal" placeholder="Introduce nombre local" maxlength="2000"></ion-input>
     </ion-item>
 
     <ion-item>
-      <ion-label style="font-weight: bold; font-size: 20px; color: #ff830f;">Texto</ion-label>
+
       <ion-input formControlName="texto" placeholder="Introduce texto" maxlength="2000"></ion-input>
     </ion-item>
 
@@ -44,15 +44,17 @@
   <div *ngIf="ionicForm.get('nomLocal')?.invalid && ionicForm.get('nomLocal')?.touched" class="error-message">
     Nombre Local es obligatorio.
   </div>
-  
+
   <div *ngIf="ionicForm.get('texto')?.invalid && ionicForm.get('texto')?.touched" class="error-message">
     Texto no válido.
   </div>
-  
+
+  <!-- Mostrar el nombre local -->
   <div style="overflow-wrap: break-word; max-width: 350px; color: #ff830f;">
     <p style="font-size: 25px;">{{ ionicForm.get('nomLocal')?.value }}</p>
   </div>
-  
+
+  <!-- Mostrar el texto -->
   <div style="overflow-wrap: break-word; max-width: 350px;">
     <p class="white-text" style="font-size: 20px;">{{ ionicForm.get('texto')?.value }}</p>
   </div>

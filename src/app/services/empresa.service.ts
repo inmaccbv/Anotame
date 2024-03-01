@@ -1,28 +1,22 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse, HttpRequest, HttpParams } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
-import { map, catchError, retry, tap } from 'rxjs/operators';
+import { HttpClient, HttpHeaders, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { map, catchError, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmpresaService {
 
-  BASE_RUTA ="http://localhost/anotame/APIANOTAME/public/";
+  BASE_RUTA = "http://localhost/anotame/APIANOTAME/public/";
+  RUTA_EMPRESA = "Empresas";
 
-  RUTA_EMPRESA= "Empresas";
+  public empresaSeleccionada: any;
 
-  public empresaSeleccionada: any; 
-
-  constructor(
-
-    private http: HttpClient
-
-  ) { }
+  constructor(private http: HttpClient) {}
 
   httpOptions = {
     headers: new HttpHeaders({
-      // 'Content-Type': 'application/json',
       'Content-Type': 'application/x-www-form-urlencoded',
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST',
@@ -32,42 +26,30 @@ export class EmpresaService {
     })
   };
 
+  // Manejar errores HTTP
   handleError(error: HttpErrorResponse) {
     if (error.error instanceof ErrorEvent) {
-      // A client-side or network error occurred. Handle it accordingly.
-      console.error('An error occurred:', error.error.message);
+      console.error('Ocurrió un error:', error.error.message);
     } else {
-      // The backend returned an unsuccessful response code.
-      // The response body may contain clues as to what went wrong,
-      console.error(
-        `Backend returned code ${error.status}, ` +
-        `body was: ${error.error}`);
+      console.error(`El servidor devolvió un código ${error.status}, body: ${error.error}`);
     }
-    // return an observable with a user-facing error message
-    return throwError(
-      'Something bad happened; please try again later.');
+    return throwError('Algo salió mal; por favor, inténtalo de nuevo más tarde.');
   }
 
-  registroEmpresa( datos : any) {
-    console.log(datos)
-    var headers = new Headers();
-    headers.append("Accept", 'application/json');
-    headers.append('Content-Type', 'application/json');
-
+  // Método para realizar el registro de una empresa
+  registroEmpresa(datos: any): Observable<any> {
     const payload = new HttpParams()
       .set('cif', datos.cif)
       .set('empresa', datos.empresa)
       .set('direccion', datos.direccion)
       .set('provincia', datos.provincia)
       .set('ciudad', datos.ciudad)
-      .set('cPostal', datos.cPostal);
-
-    // console.log(payload);
+      .set('cPostal', datos.cPostal)
+      .set('tipoLocal', datos.tipoLocal);
 
     return this.http.post(this.BASE_RUTA + this.RUTA_EMPRESA, payload)
       .pipe(map(
         dat => {
-          console.log('res ' + JSON.stringify(dat));
           return dat;
         },
         (err: any) =>
@@ -75,8 +57,8 @@ export class EmpresaService {
       ));
   }
 
-
-  getEmpresas() {
+  // Método para obtener la lista de empresas
+  getEmpresas(): Observable<any> {
     return this.http.get(this.BASE_RUTA + this.RUTA_EMPRESA + '/getEmpresas')
       .pipe(
         tap((ans) => {
@@ -90,62 +72,71 @@ export class EmpresaService {
       );
   }
 
-  borrarEmpresa(id_empresa: any) {
-    var headers = new Headers();
-    headers.append("Accept", "application/json");
-    headers.append("Content-Type", "application/json");
-
-    const payload = new HttpParams()
-      .set('id_empresa', id_empresa);
+  // Método para borrar una empresa
+  borrarEmpresa(id_empresa: any): Observable<any> {
+    const payload = new HttpParams().set('id_empresa', id_empresa);
 
     return this.http.post(this.BASE_RUTA + this.RUTA_EMPRESA + '/borrarEmpresa', payload)
       .pipe(
         dat => {
           console.log('res ' + JSON.stringify(dat));
-
           return dat;
         }
       );
   }
 
-  getProvincias() {
-    var headers = new Headers();
-    headers.append("Accept", "application/json");
-    headers.append("Content-Type", "application/json");
-
+  // Método para obtener la lista de provincias
+  getProvincias(): Observable<any> {
     return this.http.post(this.BASE_RUTA + this.RUTA_EMPRESA + '/getProvincias', '')
-    .pipe(
-      dat => {
-        console.log('res ' + JSON.stringify(dat));
-        return dat;
-      }
-    );
+      .pipe(
+        dat => {
+          console.log('res ' + JSON.stringify(dat));
+          return dat;
+        }
+      );
   }
+
+  // Método para establecer la empresa seleccionada
   setEmpresaSeleccionada(id_empresa: string): Observable<any> {
     const payload = new HttpParams().set('id_empresa', id_empresa);
     return this.http.post(this.BASE_RUTA + this.RUTA_EMPRESA + '/setEmpresaSeleccionada', payload)
-    .pipe(
+      .pipe(
         map(dat => {
-            console.log('Response: ' + JSON.stringify(dat));
-            return dat;
+          console.log('Respuesta: ' + JSON.stringify(dat));
+          return dat;
         }),
         catchError(error => {
-            console.error('Error:', error);
-            let errorMessage = 'Something bad happened; please try again later.';
-            
-            // Puedes personalizar el mensaje de error según la respuesta del servidor
-            if (error && error.error && error.error.text) {
-                errorMessage = error.error.text;
-            }
+          console.error('Error:', error);
+          let errorMessage = 'Algo salió mal; por favor, inténtalo de nuevo más tarde.';
 
-            return throwError(errorMessage);
+          // Puedes personalizar el mensaje de error según la respuesta del servidor
+          if (error && error.error && error.error.text) {
+            errorMessage = error.error.text;
+          }
+
+          return throwError(errorMessage);
         })
-    );
-      }
-  
-  
+      );
+  }
 
+  getEmpresaById(idEmpresa: number): Observable<any> {
+    return this.http.get(`${this.BASE_RUTA}${this.RUTA_EMPRESA}?id_empresa=${idEmpresa}`)
+      .pipe(
+        tap((ans) => console.log('Empresas obtenidas por ID:', ans)),
+        catchError(error => {
+          console.error('Error al obtener las empresas por ID:', error);
+          return throwError(error);
+        })
+      );
+  }
+  
+  // Método para obtener la empresa seleccionada
   getEmpresaSeleccionada(): any {
     return this.empresaSeleccionada;
   }
+  getEmpleadosPorEmpresa(idUsuario: any): Observable<any[]> {
+    return this.http.get<any[]>(`${this.BASE_RUTA}${this.RUTA_EMPRESA}/getEmpleadosPorEmpresa/${idUsuario}`);
+  }
+  
+  
 }

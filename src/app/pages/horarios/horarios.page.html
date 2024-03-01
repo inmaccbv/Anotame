@@ -22,6 +22,14 @@
 </ion-header>
 
 <ion-content *ngIf="rol === 'administrador' || rol === 'encargado'">
+
+  <form [formGroup]="ionicForm">
+    <!-- Campos ocultos para id_user e id_empresa -->
+    <input type="hidden" formControlName="id_empresa" [value]="id_empresa">
+    <input type="hidden" formControlName="id_user" [value]="id_user">
+
+  </form>
+
   <!-- Tabla para agregar horarios -->
   <ion-grid [class.dark-text]="isDarkMode">
     <ion-row class="encabezado" style="font-weight: bold;">

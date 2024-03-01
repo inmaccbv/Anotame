@@ -1,36 +1,34 @@
-/* reservas.page.scss */
-
+/* Estilos generales */
 ion-toolbar,
 ion-title,
 ion-col {
-    font-size: 2.0vw;
+    font-size: 2.0vw; /* Establezco el tamaño de fuente en unidades de ventana (vw) para adaptarse a diferentes tamaños de pantalla */
 }
 
 ion-title {
-    text-align: center;
+    text-align: center; 
 }
 
 .color-salir {
-    color: #ff830f;
+    color: #ff830f; 
 }
 
 .color-naranja {
-    color: #FFA500; // Color naranja
+    color: #FFA500; 
 }
 
 .color-verde {
-    color: #008000; // Color verde
+    color: #008000;
 }
 
 .color-rojo {
-    color: #FF0000; // Color rojo
+    color: #FF0000; 
 }
 
-
 .iconos ion-icon {
-    font-size: 1.5vw;
-    color: #ff830f;
-    overflow: visible;
+    font-size: 1.5vw; 
+    color: #ff830f; 
+    overflow: visible; 
 }
 
 /* Configuración y estilo para la tabla centrada */
@@ -38,79 +36,119 @@ ion-title {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
-    /* Ajusta el ancho para ocupar el 100% del contenedor */
+    width: 100%; /* Ajusto el ancho para ocupar el 100% del contenedor */
 }
 
 /* Estilo para las filas de la tabla */
 .fila-bordes {
-    background-color: #FFFFFF;
-    border: 1px solid #E0E0E0;
-    border-radius: 10px;
+    background-color: #FFFFFF; /* Establezco el color de fondo para las filas de la tabla */
+    border: 1px solid #E0E0E0; /* Establezco un borde sólido */
+    border-radius: 10px; 
     overflow: hidden;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 90vw;
-    /* Reduzco el ancho para dejar espacio para el borde */
-    color: black !important;
-    margin-bottom: 8px;
+    width: 90vw; /* Reduzco el ancho para dejar espacio para el borde */
+    color: black !important; /* Establezco el color de texto para las filas, !important para anular reglas anteriores */
+    margin-bottom: 8px; 
 }
 
 .encabezado-naranja {
-    color: #ff830f !important;
+    color: #ff830f !important; 
 }
 
 /* Configuración para todas las columnas (títulos y datos) */
 .columna {
-    flex: 1;
-    text-align: center;
-    padding: 10px;
+    flex: 1; /* Hago que todas las columnas tengan la misma flexibilidad */
+    text-align: center; /* Centro el texto dentro de las columnas */
+    padding: 10px; /* Agrego relleno a las columnas */
 }
 
 /* Configuración para las columnas de íconos */
 .iconos {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-end; /* Alineo los íconos a la derecha dentro de las columnas de íconos */
     align-items: center;
-    flex: 1;
+    flex: 1; /* Hago que las columnas de íconos tengan la misma flexibilidad */
 }
 
 /* Estilo para los íconos en la tabla */
 .iconos ion-icon {
-    font-size: 1.5vw;
+    font-size: 1.5vw; /* Establezco el tamaño de fuente para los íconos dentro de ion-icon */
 }
 
 /* Estilo específico para el modo oscuro */
 .dark-theme {
-    filter: none;
+    filter: none; /* Elimino cualquier filtro aplicado al modo oscuro */
 }
 
 /* Estilos específicos para pantallas pequeñas */
 @media screen and (max-width: 768px) {
     ion-title.tabla-centrada {
-        font-size: 3vw;
+        font-size: 3vw; /* Ajusto el tamaño de fuente para ion-title en pantallas pequeñas */
     }
 
     /* Cambia el diseño a una columna en pantallas pequeñas */
     .columna,
     .iconos {
-        flex: 1;
-        font-size: 2.5vw;
+        flex: 1; /* Hago que las columnas y los íconos ocupen toda la anchura */
+        font-size: 2.5vw; /* Ajusto el tamaño de fuente para las columnas y los íconos en pantallas pequeñas */
     }
 
     /* Ajusta el tamaño de fuente para íconos en pantallas pequeñas */
     ion-icon {
-        font-size: 4vw;
+        font-size: 4vw; /* Ajusto el tamaño de fuente para ion-icon en pantallas pequeñas */
     }
 }
 
 .estado-reserva-dot {
-    width: 20px;
-    /* Ajusta según sea necesario */
-    height: 20px;
-    /* Ajusta según sea necesario */
-    background-size: cover;
-    border-radius: 50%;
-    /* Esto hace que el elemento sea un círculo */
+    width: 20px; /* Ajusto el ancho del elemento de estado de reserva */
+    height: 20px; /* Ajusto la altura del elemento de estado de reserva */
+    background-size: cover; /* Hago que el fondo cubra completamente el elemento */
+    border-radius: 50%; /* Hago que el elemento sea un círculo */
+}
+
+/* Estilo para centrar y columnar los elementos */
+.ion-text-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%; /* Aseguro que ocupe toda la altura de la tarjeta */
+}
+
+/* Ajuste de espacio entre los elementos */
+ion-row.ion-text-center ion-icon {
+    margin-top: 20px; /* Ajusto el margen superior para ion-icon en elementos centrados */
+}
+
+ion-title {
+    font-size: 20px; /* Establezco el tamaño de fuente para ion-title */
+}
+
+.title {
+    font-size: 20px; /* Establezco el tamaño de fuente y la negrita para la clase title */
+    font-weight: bold;
+    margin-top: 20px; /* Ajusto el margen superior para title */
+    margin-bottom: 20px; /* Ajusto el margen inferior para title */
+}
+
+label {
+    font-size: 18px; /* Establezco el tamaño de fuente para las etiquetas */
+    font-weight: bold; /* Establezco la negrita para las etiquetas */
+    color: #ff830f; /* Establezco el color de texto naranja para las etiquetas */
+}
+
+p {
+    font-size: 15px; /* Establezco el tamaño de fuente para los párrafos */
+    font-weight: bold; /* Establezco la negrita para los párrafos */
+    text-align: center; /* Centro el texto dentro de los párrafos */
+}
+
+/* Estilo para el botón de filtro */
+.btnFiltro {
+    margin-left: 98px; 
+    border-radius: 15px; 
+    font-size: 12px; 
+    padding: 5px 10px; 
 }

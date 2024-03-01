@@ -24,7 +24,7 @@
 
 <ion-content [class]="{'dark-theme': isDarkMode}" *ngIf="rol === 'cliente'">
 
-  <input type="number" #idEmpresaInput [value]="idEmpresa">
+  <input type="hidden" #idEmpresaInput [value]="idEmpresa">
 
   <div class="text-container" *ngFor="let dato of datosFiltrados">
 

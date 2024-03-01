@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, PopoverController } from '@ionic/angular';
 import { Observable, interval } from 'rxjs';
@@ -21,11 +21,18 @@ import { UsuariosService } from 'src/app/services/usuarios.service';
 })
 export class GestionReservasPage implements OnInit {
 
+  @Input() cliente: any;
+
   reservasFiltradas: any;
   reservas: any;
-  cliente: any;
+
+  filtroMes: string | null = null;
+  filtroAnio: string | null = null;
+
   idEmpresa!: number | null;
+
   coloresFilas = ['#FFECBA', '#FFFFFF'];
+
   rol!: any;
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
@@ -35,6 +42,7 @@ export class GestionReservasPage implements OnInit {
   constructor(
     public alertController: AlertController,
     private popoverController: PopoverController,
+    private cdRef: ChangeDetectorRef,
     private router: Router,
     public authService: AuthService,
     public usuariosService: UsuariosService,
@@ -44,16 +52,21 @@ export class GestionReservasPage implements OnInit {
     public themeService: ThemeService
   ) {
     this.getUserRole();
-    console.log('Rol obtenido:', this.rol);
+    // console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
 
     // Programar la ejecución periódica para verificar y eliminar reservas expiradas
-    const intervaloEjecucion = 60 * 60 * 1000; // Cada hora en milisegundos
+    // const intervaloEjecucion = 60 * 60 * 1000; // Cada hora en milisegundos
+    // interval(intervaloEjecucion).subscribe(() => {
+    //   this.verificarYEliminarReservasExpiradas();
+    // });
+
+    const intervaloEjecucion = 5 * 60 * 1000; // Cada 5 minutos en milisegundos
     interval(intervaloEjecucion).subscribe(() => {
       this.verificarYEliminarReservasExpiradas();
     });
 
-    this.getReservas(); 
+    this.getReservas();
   }
 
   ngOnInit() {
@@ -63,6 +76,93 @@ export class GestionReservasPage implements OnInit {
     setInterval(() => {
       this.verificarYEliminarReservasExpiradas();
     }, 60000);
+  }
+
+  // Funciones relacionadas con la obtención y gestión de reservas
+  getReservas() {
+    // Verificar si el rol del usuario es 'administrador', 'encargado' o 'camarero'
+    if (this.rol === 'administrador' || this.rol === 'encargado' || this.rol === 'camarero') {
+      // Obtener el email del usuario
+      const email = this.authService.getUserEmail();
+
+      // Verificar si el email no es nulo antes de llamar a la función
+      if (email !== null) {
+        this.usuariosService.getIdEmpresaPorEmail(email).subscribe(
+          (response) => {
+            if (response.code === 200 && response.data && response.data.id_empresa) {
+              this.idEmpresa = response.data.id_empresa;
+              // console.log('ID Empresa del usuario:', this.idEmpresa);
+
+              // Ahora que tenemos el idEmpresa, podemos obtener las reservas
+              const idEmpresaAsNumber = this.idEmpresa as number; // Convertir a número
+              if (!isNaN(idEmpresaAsNumber)) {
+                this.reservasService.getReservasPorEmpresa(idEmpresaAsNumber).subscribe(
+                  (reservasResponse) => {
+                    if (reservasResponse.code === 200 && Array.isArray(reservasResponse.data)) {
+                      // Verificar si la respuesta tiene el código 200 y data es un array
+                      this.reservas = reservasResponse.data;
+                      this.reservasFiltradas = reservasResponse.data; // Inicializar reservasFiltradas
+                      console.log('Reservas obtenidas:', this.reservas);
+                    } else {
+                      console.error('La respuesta del servicio de reservas no es válida:', reservasResponse);
+                    }
+                  },
+                  (errorReservas) => {
+                    console.error('Error al obtener las reservas:', errorReservas);
+                  }
+                );
+              } else {
+                console.error('ID de empresa no es un número válido:', idEmpresaAsNumber);
+              }
+            } else {
+              console.error('No se pudo obtener el id_empresa del usuario:', response);
+            }
+          },
+          (error) => {
+            console.error('Error al obtener el id_empresa del usuario:', error);
+          }
+        );
+      } else {
+        console.error('El email del usuario es nulo.');
+      }
+    } else {
+      console.error('No tiene permiso para acceder a esta opción.');
+    }
+  }
+
+  aplicarFiltros() {
+    // console.log('Filtros aplicados:', this.filtroMes, this.filtroAnio);
+
+    this.reservasFiltradas = this.reservas.filter((reserva: any) => {
+      const fechaReserva = new Date(reserva.fechaHoraReserva);
+      const mesReserva = (fechaReserva.getMonth() + 1).toString().padStart(2, '0');
+      const anioReserva = fechaReserva.getFullYear().toString();
+
+      // Formatear el filtroMes y filtroAnio al formato de fecha de las reservas
+      const filtroMesFormato = this.filtroMes ? this.filtroMes.padStart(2, '0') : null;
+      const filtroAnioFormato = this.filtroAnio ? this.filtroAnio : null;
+
+      // console.log('Fecha de la reserva:', fechaReserva);
+      // console.log('Mes y año de la reserva:', mesReserva, anioReserva);
+      // console.log('Filtros formateados:', filtroMesFormato, filtroAnioFormato);
+
+      // Verificar si los filtros están definidos y coinciden con el mes y año de la reserva
+      const resultadoFiltro = (!filtroMesFormato || mesReserva === filtroMesFormato) &&
+        (!filtroAnioFormato || anioReserva === filtroAnioFormato);
+
+      // console.log('Resultado del filtro:', resultadoFiltro);
+
+      return resultadoFiltro;
+    });
+
+    console.log('Reservas filtradas:', this.reservasFiltradas);
+  }
+
+  borrarFiltro() {
+    this.filtroAnio = '';
+    this.filtroMes = '';
+    // Restablecer otros filtros si es necesario
+    this.aplicarFiltros(); // Aplicar los filtros después de restablecer
   }
 
   // Función para dar formato a fechas y horas
@@ -148,21 +248,6 @@ export class GestionReservasPage implements OnInit {
     }
   }
 
-  // Función para verificar y eliminar reservas expiradas
-  verificarYEliminarReservasExpiradas(): void {
-    const tiempoExpiracion = 60000; // 1 minuto en milisegundos
-    this.reservas.forEach(async (reserva: any) => {
-      const fechaHoraReserva = new Date(reserva.fechaHoraReserva).getTime();
-      const tiempoActual = new Date().getTime();
-      if (tiempoActual - fechaHoraReserva > tiempoExpiracion) {
-        // Borrar reserva expirada de la base de datos
-        await this.reservasService.borrarReserva(reserva.id_reserva);
-        console.log(`Eliminando reserva expirada de la base de datos: ${reserva.id_reserva}`);
-        window.location.reload();
-      }
-    });
-  }
-
   // Funciones auxiliares relacionadas con la gestión de reservas
   private obtenerEstadoColor(reserva: any, opcionesEstado: any[]): any {
     const estadoReserva = reserva.estadoReserva.toLowerCase();
@@ -197,65 +282,24 @@ export class GestionReservasPage implements OnInit {
     }
   }
 
-  // Funciones relacionadas con la obtención y gestión de reservas
-  getReservas() {
-    // Verificar si el rol del usuario es 'administrador', 'encargado' o 'camarero'
-    if (this.rol === 'administrador' || this.rol === 'encargado' || this.rol === 'camarero') {
-      // Obtener el email del usuario
-      const email = this.authService.getUserEmail();
-  
-      // Verificar si el email no es nulo antes de llamar a la función
-      if (email !== null) {
-        this.usuariosService.getIdEmpresaPorEmail(email).subscribe(
-          (response) => {
-            if (response.code === 200 && response.data && response.data.id_empresa) {
-              this.idEmpresa = response.data.id_empresa;
-              console.log('ID Empresa del usuario:', this.idEmpresa);
-  
-              // Ahora que tenemos el idEmpresa, podemos obtener las reservas
-              const idEmpresaAsNumber = this.idEmpresa as number; // Convertir a número
-              if (!isNaN(idEmpresaAsNumber)) {
-                this.reservasService.getReservasPorEmpresa(idEmpresaAsNumber).subscribe(
-                  (reservasResponse) => {
-                    if (reservasResponse.code === 200 && Array.isArray(reservasResponse.data)) {
-                      // Verificar si la respuesta tiene el código 200 y data es un array
-                      this.reservas = reservasResponse.data;
-                      this.reservasFiltradas = reservasResponse.data; // Inicializar reservasFiltradas
-                      console.log('Reservas obtenidas:', this.reservas);
-                    } else {
-                      console.error('La respuesta del servicio de reservas no es válida:', reservasResponse);
-                    }
-                  },
-                  (errorReservas) => {
-                    console.error('Error al obtener las reservas:', errorReservas);
-                  }
-                );
-              } else {
-                console.error('ID de empresa no es un número válido:', idEmpresaAsNumber);
-              }
-            } else {
-              console.error('No se pudo obtener el id_empresa del usuario:', response);
-            }
-          },
-          (error) => {
-            console.error('Error al obtener el id_empresa del usuario:', error);
-          }
-        );
-      } else {
-        console.error('El email del usuario es nulo.');
+  // Función para verificar y eliminar reservas expiradas
+  verificarYEliminarReservasExpiradas(): void {
+    const tiempoExpiracion = 60000; // 1 minuto en milisegundos
+    this.reservas.forEach(async (reserva: any) => {
+      const fechaHoraReserva = new Date(reserva.fechaHoraReserva).getTime();
+      const tiempoActual = new Date().getTime();
+      if (tiempoActual - fechaHoraReserva > tiempoExpiracion) {
+        // Borrar reserva expirada de la base de datos
+        await this.reservasService.borrarReserva(reserva.id_reserva);
+        console.log(`Eliminando reserva expirada de la base de datos: ${reserva.id_reserva}`);
+        window.location.reload();
       }
-    } else {
-      console.error('No tiene permiso para acceder a esta opción.');
-    }
+    });
   }
-  
-  
-  
+
   // Funciones relacionadas con la autenticación del usuario
   getUserRole() {
-    // Obtener el rol del usuario del servicio de autenticación
     this.rol = this.authService.getUserRole();
-    // Verificar si el rol es válido, de lo contrario, cerrar sesión
     if (!(this.rol === 'administrador' || this.rol === 'encargado' || this.rol === 'camarero')) {
       this.authService.logout().subscribe(
         () => {
@@ -270,16 +314,12 @@ export class GestionReservasPage implements OnInit {
     }
   }
 
-  // Funciones relacionadas con el cambio de tema
   toggleDarkMode() {
-    // Alternar el modo oscuro y claro
     this.isDarkMode = !this.isDarkMode;
     this.themeService.setDarkTheme(this.isDarkMode);
   }
 
-  // Funciones relacionadas con el cierre de sesión
   cerrarSesion(): void {
-    // Cerrar sesión a través del servicio de autenticación
     this.authService.logout().subscribe();
   }
 }

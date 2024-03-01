@@ -25,7 +25,7 @@
 
 <ion-content *ngIf="rol === 'cliente'" class="center-content">
 
-  <input type="number" #idEmpresaInput [value]="idEmpresa">
+  <input type="hidden" #idEmpresaInput [value]="idEmpresa">
 
   <div class="gallery-container" style="margin-left: 10px;margin-right: 25px;">
     <ion-card *ngFor="let carta of cartas" class="card-container">

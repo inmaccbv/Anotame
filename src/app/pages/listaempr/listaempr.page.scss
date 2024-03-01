@@ -1,24 +1,45 @@
 /* Estilos generales */
+@font-face {
+    font-family: 'restaurant';
+    src: url('../../../assets/fonts/restaurant.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* Estilos para ion-toolbar */
 ion-toolbar {
     font-size: 20px;
 }
 
+/* Estilos para el color de salida */
 .color-salir {
     color: #ff830f;
 }
 
+/* Estilos para ion-title */
 ion-title {
     text-align: center;
 }
 
-.iconos ion-icon {
-    font-size: 1.5vw;
-    color: #ff830f; 
-    overflow: visible;
+/* Estilos para ion-label y párrafos */
+ion-label,
+p {
+    margin-left: 20px;
+    margin-right: 40px;
+    font-family: 'cakecafe', sans-serif;
+    color: black;
 }
 
+p {
+    font-size: 17px;
+}
+
+/* Estilos para iconos en .iconos y .eye-button */
+.iconos ion-icon,
 .eye-button ion-icon {
-    color: #ff830f; 
+    font-size: 1.5vw;
+    color: #ff830f;
+    overflow: visible;
 }
 
 /* Estilos para la tabla */
@@ -42,6 +63,7 @@ ion-title {
     font-weight: bold;
 }
 
+/* Estilos para el encabezado naranja */
 .encabezado-naranja {
     flex: 1;
     text-align: center;
@@ -50,7 +72,9 @@ ion-title {
     white-space: nowrap;
 }
 
-.columna {
+/* Estilos para columnas */
+.columna,
+.columna-cif {
     flex: 1;
     max-width: 100%;
     overflow: hidden;
@@ -60,19 +84,15 @@ ion-title {
 
 .columna-cif {
     flex: 2;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
-/* Ajustes para mostrar texto completo */
+/* Ajustes para mostrar texto completo en filas-bordes */
 .fila-bordes {
     white-space: nowrap;
     overflow: hidden;
 }
 
-/* Ajustes para los íconos en la tabla */
+/* Estilos específicos para íconos en la tabla */
 .iconos ion-icon {
     font-size: 1.5vw;
     overflow: visible;
@@ -98,4 +118,4 @@ ion-title {
     ion-icon {
         font-size: 4vw;
     }
-}  
+}

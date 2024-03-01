@@ -10,11 +10,6 @@
     <ion-title [style.color]="isDarkMode ? '#ff830f' : ''" style="margin-left: 28px;">Anótame</ion-title>
 
     <ion-buttons slot="end">
-      <ion-button (click)="toggleDarkMode()">
-        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"
-          style="color: #ff830f; font-size: 24px;"></ion-icon>
-      </ion-button>
-
       <ion-button (click)="cerrarSesion()">
         <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
       </ion-button>
@@ -23,18 +18,73 @@
   </ion-toolbar>
 </ion-header>
 
-
 <ion-content [fullscreen]="true">
 
+  <ion-toolbar class="filters-toolbar" style="margin-top: 40px;">
+    <ion-buttons class="filter-buttons">
 
-  <ion-select placeholder="Selecciona una empresa" [(ngModel)]="idEmpresa" (ionChange)="seleccionarEmpresa($event)">
-    <!-- Itera sobre las empresas y crea las opciones del desplegable -->
-    <ion-select-option *ngFor="let empresa of empresas" [value]="empresa.id_empresa">
-      {{ empresa.id_empresa }}{{ empresa.empresa }}
+      <label>Filtrar por..</label>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+
+        <!-- Filtro por tipo de local -->
+        <ion-item class="filter-item">
+          <ion-icon name="restaurant-outline" slot="start" style="margin-right: 8px;"></ion-icon>
+          <ion-select class="filter-select" [(ngModel)]="filtroTipoLocal" (ionChange)="aplicarFiltros()">
+            <ion-select-option value="Italiano">Italiano</ion-select-option>
+            <ion-select-option value="Mexicano">Mexicano</ion-select-option>
+            <ion-select-option value="Asiático">Asiático</ion-select-option>
+            <ion-select-option value="Mediterráneo">Mediterráneo</ion-select-option>
+            <ion-select-option value="Indio">Indio</ion-select-option>
+          </ion-select>
+          <ion-button *ngIf="filtroTipoLocal" (click)="borrarFiltro()" fill="clear">
+            <ion-icon name="close-circle-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+
+        <!-- Filtro por provincia -->
+        <ion-item class="filter-item">
+          <ion-icon name="location-outline" slot="start" style="margin-right: 8px;"></ion-icon>
+          <ion-select class="filter-select" [(ngModel)]="filtroProvincia" (ionChange)="aplicarFiltros()">
+            <ion-select-option *ngFor="let provincia of provincias" [value]="provincia.provincia">
+              {{ provincia.provincia }}
+            </ion-select-option>
+          </ion-select>
+          <ion-button *ngIf="filtroProvincia" (click)="borrarFiltro()" fill="clear">
+            <ion-icon name="close-circle-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+
+      </div>
+
+      <!-- Contenedor de iconos y entradas de filtro -->
+      <div style="display: flex; flex-direction: row; gap: 5px; align-items: center;">
+
+        <!-- Icono y entrada de filtro por nombre de restaurante -->
+        <ion-icon name="business-outline" style="color: #ff830f; margin-left: 48px;"></ion-icon>
+        <ion-item class="filter-item">
+          <ion-input placeholder="Restaurante" style="width: 150px;" class="filter-input" [(ngModel)]="filtroNombreRestaurante" (ionChange)="aplicarFiltros()"></ion-input>
+        </ion-item>
+
+        <!-- Icono y entrada de filtro por código postal -->
+        <ion-icon name="map-outline" style="color: #ff830f; margin-right: 2px;"></ion-icon>
+        <ion-item class="filter-item">
+          <ion-input placeholder="C.P" class="filter-input" [(ngModel)]="filtroCodigoPostal" (ionChange)="aplicarFiltros()"></ion-input>
+        </ion-item>
+
+      </div>
+
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Selector para elegir un restaurante -->
+  <ion-select placeholder="Selecciona un restaurante" class="company-select" [(ngModel)]="idEmpresa" (ionChange)="seleccionarEmpresa($event)">
+    <ion-select-option *ngFor="let empresa of empresasFiltradas" [value]="empresa.id_empresa">
+      {{ empresa.empresa }}
     </ion-select-option>
   </ion-select>
 
-  <!-- Agrega un botón para redirigir y almacenar manualmente -->
-  <ion-button (click)="redirigirYAlmacenar()">Ir a HomeCLI</ion-button>
+  <!-- Botón de redirección -->
+  <ion-button class="redirect-button" (click)="redirigirYAlmacenar()">Enviar</ion-button>
 
 </ion-content>

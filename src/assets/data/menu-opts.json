@@ -15,8 +15,7 @@
         "redirectTo": "/reviews",
         "roles": [
             "administrador",
-            "encargado",
-            "camarero"
+            "encargado"
         ]
     },
     {

@@ -1,13 +1,16 @@
+/* Establece el ancho personalizado del menú */
 .my-custom-menu {
   --width: 500px;
 }
 
+/* Configuración de diseño para el contenido del ion */
 ion-content {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+/* Estilos para las tarjetas ion */
 ion-card {
   width: 150px;
   height: 195px;
@@ -16,16 +19,19 @@ ion-card {
   margin-bottom: 1px;
 }
 
+/* Estilos para las imágenes de las tarjetas */
 .card-image {
   width: 50%;
   height: 50%;
   object-fit: cover;
 }
 
+/* Tema oscuro: invertir colores de la imagen */
 .dark-theme .image-dark {
   filter: invert(100%);
 }
 
+/* Estilos para el contenido de las tarjetas ion */
 ion-card-content {
   display: flex;
   flex-direction: column;
@@ -34,10 +40,13 @@ ion-card-content {
   padding: 10px;
 }
 
+/* Estilos para el título de la tarjeta en el contenido */
 ion-card-content p.card-title {
   font-size: 18px !important;
+  margin-bottom: 5px;
 }
 
+/* Estilos generales para párrafos en el contenido de la tarjeta */
 ion-card-content p {
   font-size: 14px !important;
   margin: 25px !important;
@@ -45,10 +54,20 @@ ion-card-content p {
   color: #ff830f !important;
 }
 
+/* Establece el color de salida */
 .color-salir {
   color: #ff830f;
 }
 
+/* Alinea el título en el centro */
 ion-title {
   text-align: center;
+}
+
+/* Estilos para botones transparentes */
+.transparent-button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }

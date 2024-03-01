@@ -34,7 +34,8 @@ class Empresas extends ResourceController
             'direccion'  => $this->request->getPost('direccion'),
             'provincia'  => $this->request->getPost('provincia'),
             'ciudad'     => $this->request->getPost('ciudad'),
-            'cPostal'    => $this->request->getPost('cPostal')
+            'cPostal'    => $this->request->getPost('cPostal'),
+            'tipoLocal'  => $this->request->getPost('tipoLocal'),
         ];
 
         $builder->select('cif');
@@ -91,19 +92,23 @@ class Empresas extends ResourceController
 
     public function borrarEmpresa()
     {
-
-        $db5 = \Config\Database::connect();
-
-        $builder = $db5->table('empresas');
-
+        $db = \Config\Database::connect();
+    
         $id_empresa = $this->request->getPost('id_empresa');
-
-        // Actualizar los datos en la base de datos
-        $builder->where('id_empresa', $id_empresa);
-        $builder->delete();
-
-        // Metodo affectedRows() es para comprobar si se elimino al menos una fila y devuelve una respuesta
-        if ($db5->affectedRows() > 0) {
+    
+        // Verificar si hay reviews asociadas a la empresa
+        $reviews = $db->table('reviews')->where('id_empresa', $id_empresa)->get()->getResult();
+    
+        // Si hay reviews asociadas, eliminarlas primero
+        if (!empty($reviews)) {
+            $db->table('reviews')->where('id_empresa', $id_empresa)->delete();
+        }
+    
+        // Eliminar la empresa
+        $db->table('empresas')->where('id_empresa', $id_empresa)->delete();
+    
+        // Verificar si se eliminaron filas en ambas tablas
+        if ($db->affectedRows() > 0) {
             return $this->respond([
                 'code'       => 200,
                 'data'       => $id_empresa,
@@ -119,6 +124,23 @@ class Empresas extends ResourceController
             ]);
         }
     }
+    
+    public function getEmpleadosPorEmpresa($idUsuario)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('usuarios u');
+        $builder->select('u.*, e.*');
+        $builder->join('empresas e', 'e.id_empresa = u.id_empresa');
+        $builder->where('u.id_user', $idUsuario); // Cambiado de 'ID_USUARIO' a 'id_user' según la consulta SQL
+    
+        $query = $builder->get();
+    
+        return $this->respond($query->getResult());
+    }
+    
+    
+
+    
 
     public function setEmpresaSeleccionada()
     {

@@ -26,6 +26,8 @@ export class AuthService {
     this.idEmpresa = null;
     this.idUsuario = null;
 
+    window.location.href = '/login';
+
     // Retorna un observable con el valor booleano true
     return of(true);
   }

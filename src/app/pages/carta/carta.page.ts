@@ -14,15 +14,14 @@ import { UsuariosService } from 'src/app/services/usuarios.service';
   styleUrls: ['./carta.page.scss'],
 })
 export class CartaPage implements OnInit {
-  [x: string]: any;
+  BASE_RUTA: string = "http://localhost/anotame/APIANOTAME/public/uploads";
 
-  BASE_RUTA: string = "http://localhost/anotame/APIANOTAME/public/";
-
-  formCarta: FormGroup; 
-
+  formCarta: FormGroup;
   selectedFile: File | null = null;
   uploadedFiles: any[] = [];
+
   cartas: any;
+  cartasFiltradas: any;
 
   id_empresa: number | null = null;
   id_user: number | null = null;
@@ -54,19 +53,26 @@ export class CartaPage implements OnInit {
 
     // Llama a getImg para actualizar la lista de imágenes
     this.getImg();
-
     this.obtenerIdUsuario().subscribe(
       ({ idUsuario, idEmpresa }) => {
         console.log('Id de Usuario:', idUsuario);
         console.log('Id de Empresa:', idEmpresa);
-
+    
         this.id_user = idUsuario;
         this.id_empresa = idEmpresa;
+    
+        // Asegúrate de que id_empresa se haya establecido antes de llamar a getImg()
+        if (this.id_empresa !== null) {
+          this.getImg();
+        } else {
+          console.error('ID de empresa no válido.'); // Esta es la línea 214
+        }
       },
       (error) => {
         console.error('Error al obtener el id del usuario y la empresa:', error);
       }
     );
+    
   }
 
   obtenerIdUsuario(): Observable<{ idUsuario: number | null, idEmpresa: number | null }> {
@@ -131,26 +137,26 @@ export class CartaPage implements OnInit {
         ({ idUsuario, idEmpresa }) => {
           console.log('Id de Usuario:', idUsuario);
           console.log('Id de Empresa:', idEmpresa);
-  
+
           this.id_user = idUsuario;
           this.id_empresa = idEmpresa;
-  
+
           const formData: FormData = new FormData();
-  
+
           if (this.selectedFile && this.id_empresa !== null && this.id_user !== null) {
             formData.append('carta_img', this.selectedFile, this.selectedFile.name);
-  
+
             this.cartaUploadService.uploadFile(formData, this.id_empresa, this.id_user).subscribe(
               (response: any) => {
                 console.log('Respuesta del servidor:', response);
-  
+
                 if (response && response.authorized === 'SI' && response.url) {
                   const fileName = response.data.carta_img;
                   const imageUrl = this.BASE_RUTA + response.data.carta_img;
-  
+
                   this.uploadedFiles.push({ name: fileName, url: imageUrl });
                   console.log('Lista de cartas después de subir:', this.uploadedFiles);
-                  this.getImg();
+                  // this.getImg();
                 } else {
                   console.error('Error al subir la imagen:', response);
                 }
@@ -171,19 +177,48 @@ export class CartaPage implements OnInit {
       console.error('No se ha seleccionado ningún archivo.');
     }
   }
-  
-  
-  
+
+  // getImg() {
+  //   this.cartaUploadService.getImg().subscribe(
+  //     (ans: any[]) => {
+  //       this.cartas = ans;
+  //       console.log('Imágenes del usuario actual:', this.cartas);
+  //     },
+  //     (error) => {
+  //       console.error('Error al obtener imágenes:', error);
+  //     }
+  //   );
+  // }
+
   getImg() {
-    this.cartaUploadService.getImg().subscribe(
-      (ans: any[]) => {
-        this.cartas = ans;
-        // console.log(this.cartas);
-      },
-      (error) => {
-        console.error('Error al obtener imágenes:', error);
-      }
-    );
+    if (this.id_empresa !== null) {
+      this.cartaUploadService.getCartasByEmpresa(this.id_empresa).subscribe(
+        (ans: any) => {
+          // Comprueba si 'ans' tiene la propiedad 'code'
+          if ('code' in ans) {
+            if (ans.code === 200) {
+              // La solicitud fue exitosa, asigna los textos
+              // Comprueba si 'ans' tiene la propiedad 'data'
+              if ('data' in ans) {
+                this.cartas = ans.data;
+                this.cartasFiltradas = ans.data;
+                console.log('Cartas obtenidas:', this.cartas);
+              } else {
+                console.error('Error en la respuesta: Propiedad "data" no encontrada.');
+              }
+            } else {
+              console.error('Error en la respuesta:', ans.reviews);
+            }
+          } else {
+            console.error('Error en la respuesta: Propiedad "code" no encontrada.');
+          }
+        },
+        (error) => {
+          console.error('Error al obtener los textos:', error);
+        }
+      
+      );
+    }
   }
 
   borrarImg(id_carta: any) {

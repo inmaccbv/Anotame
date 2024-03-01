@@ -11,5 +11,7 @@ class HorarioModel extends Model {
         'dia',
         'hora_apertura',
         'hora_cierre',
+        'id_user',
+        'id_empresa'
     ];
 }

@@ -6,10 +6,11 @@ export interface Componente {
 }
 
 export interface Horario {
-    id: string;
     dia: string;
     horaApertura: string;
     horaCierre: string;
+    id_user: number;
+    id_empresa: number;
 }
 
 export interface Local {
@@ -52,6 +53,26 @@ export interface CartaData {
     id_carta: string;
     carta_img: string;
     base64Data?: string;
+}
+
+export interface Empresa {
+    id_empresa: number;
+    cif: string;
+    empresa: string;
+    direccion: string;
+    provincia: string;
+    ciudad: string,
+    cPostal: string,
+    tipoLocal: string;
+}
+
+export interface Usuario {
+    id_user: number;
+    nombre: string;
+    apellido: string;
+    email: string;
+    rol: string;
+    id_empresa: number,
 }
 
 

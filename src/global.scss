@@ -72,6 +72,15 @@ body.dark-theme ng-container ion-list {
     color: #ffffff;
 }
 
+.dark-theme ion-card {
+    --background: #343541 !important; 
+
+}
+
+.dark-theme ion-list {
+    background-color: #444852;
+}
+
 body.dark-theme ion-menu ion-content {
     --background: #444852 !important;
     color: #ffffff;

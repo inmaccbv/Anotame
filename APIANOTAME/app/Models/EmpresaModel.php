@@ -11,6 +11,7 @@ class EmpresaModel extends Model {
         'direccion',
         'provincia',
         'ciudad',
-        'cPostal'
+        'cPostal',
+        'tipoLocal'
     ];
 }

@@ -40,7 +40,7 @@
       <ion-label position="floating">Password</ion-label>
       <ion-input type="password" formControlName="password"></ion-input>
     </ion-item>
-    <ion-label *ngIf="f['password'].getError('required')!=null" class="errormessage" position="floating">Password requerido</ion-label>
+    <ion-label *ngIf="f['password'].getError('required')!=null" class="errormessage" position="floating">Longitud mínima de 6 caracteres alfanumérico</ion-label>
     <ion-label *ngIf="f['password'].getError('minLength')!=null" class="errormessage" position="floating">Longitud minima de 6 caracteres</ion-label>
   
     <ion-item lines="full">
@@ -55,9 +55,8 @@
     </ion-item>
 
     <ion-item lines="full">
-      <ion-label position="floating">Empresa</ion-label>
+      <ion-label position="floating">Restaurante</ion-label>
       <ion-select formControlName="id_empresa">
-        <ion-select-option [value]="null">Selecciona una empresa</ion-select-option>
         <ion-select-option *ngFor="let empresa of empresas" [value]="empresa.id_empresa">{{ empresa.empresa }}</ion-select-option>
       </ion-select>
     </ion-item>

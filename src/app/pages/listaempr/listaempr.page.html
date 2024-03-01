@@ -4,11 +4,11 @@
       <ion-back-button defaultHref="/config-empleados" style="--color: #ff830f;"></ion-back-button>
     </ion-buttons>
 
-    <ion-title color="primary" style="font-size: 20px;">Lista Empresas</ion-title>
+    <ion-title color="primary" style="font-size: 20px;">Lista Empleados</ion-title>
 
     <ion-buttons slot="end">
       <ion-button (click)="toggleDarkMode()">
-        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'" style="color: #ff830f; font-size: 24px;"></ion-icon>
+        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'" style="color: #ff830f; font-size: 22px;"></ion-icon>
       </ion-button>
 
       <ion-button (click)="cerrarSesion()">
@@ -18,61 +18,68 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-toolbar>
+<ion-content style="margin-left: 5px;">
 
-    <ion-searchbar placeholder="Buscar por CIF" (ionInput)="filtrarEmpresa('cif', $event)"></ion-searchbar>
-    <ion-searchbar placeholder="Buscar por direccion" (ionInput)="filtrarEmpresa('direccion', $event)"></ion-searchbar>
-    <ion-searchbar placeholder="Buscar por ciudad" (ionInput)="filtrarEmpresa('ciudad', $event)"></ion-searchbar>
-    <ion-searchbar placeholder="Buscar por cPostal" (ionInput)="filtrarEmpresa('cPostal', $event)"></ion-searchbar>    
+  <ion-searchbar placeholder="Buscar por restaurante" (ionInput)="filtrarEmpresa('empresa', $event)"></ion-searchbar>
+  <ion-searchbar placeholder="Buscar por ciudad" (ionInput)="filtrarEmpresa('ciudad', $event)"></ion-searchbar>
 
-    <ion-label position="floating">Empresas</ion-label>
-    <ion-select (ionChange)="onEmpresaChange($event)">
-      <ion-select-option value="">Mostrar Todos</ion-select-option>
-      <ion-select-option *ngFor="let empresa of empresas" [value]="empresa.id_empresa">{{ empresa.empresa }}</ion-select-option>
-    </ion-select>
+  <ion-row style="text-align: center; margin-left: 45px;">
+    <!-- Desplegable para filtrar por restaurantes -->
+    <ion-col size="6">
+      <ion-select (ionChange)="onEmpresaChange($event)" placeholder="Restaurantes">
+        <ion-select-option *ngFor="let empresa of empresas" [value]="empresa.id_empresa">{{ empresa.empresa }}</ion-select-option>
+      </ion-select>
+    </ion-col>
+  
+    <!-- Desplegable para filtrar por provincias -->
+    <ion-col size="6">
+      <ion-select (ionChange)="onProvinciaChange($event)" placeholder="Provincias">
+        <ion-select-option *ngFor="let provincia of provincias" [value]="provincia.provincia">{{ provincia.provincia }}</ion-select-option>
+      </ion-select>
+    </ion-col>
 
-    <ion-label position="floating">Provincias</ion-label>
-    <ion-select (ionChange)="onProvinciaChange($event)">
-      <ion-select-option value="">Mostrar Todos</ion-select-option>
-      <ion-select-option *ngFor="let provincia of provincias" [value]="provincia.provincia">{{ provincia.provincia }}</ion-select-option>
-    </ion-select>
-  </ion-toolbar>
+    <!-- Desplegable para filtrar por tipo de local -->
+    <ion-col size="6">
+      <ion-select (ionChange)="onTipoLocalChange($event)" placeholder="Tipo de Local">
+        <ion-select-option value="">Mostrar Todos</ion-select-option>
+        <ion-select-option value="Italiano">Italiano</ion-select-option>
+        <ion-select-option value="Mexicano">Mexicano</ion-select-option>
+        <ion-select-option value="Asiático">Asiático</ion-select-option>
+        <ion-select-option value="Mediterráneo">Mediterráneo</ion-select-option>
+        <ion-select-option value="Indio">Indio</ion-select-option>
+      </ion-select>
+    </ion-col>
+  </ion-row>
+  
+  <!-- Lista de tarjetas con información de las empresas filtradas -->
+<!-- Lista de tarjetas con información de las empresas filtradas -->
+<!-- Lista de tarjetas con información de los empleados -->
+<ion-list *ngIf="rol === 'administrador'">
+  <ion-card *ngFor="let empleado of empleados; let i = index" [ngStyle]="{ 'background-color': coloresFilas[i % coloresFilas.length] }">
+    <ion-card-content>
+      <!-- Información del empleado -->
+      <ion-row>
+        <ion-label style="font-weight: bold;">NOMBRE</ion-label>
+        <p>{{ empleado.nombre }}</p>
+      </ion-row>
 
-  <ion-grid class="tabla-ancha tabla-centrada" *ngIf="rol === 'administrador'">
-    <ion-row class="fila-bordes" style="text-align: center;font-weight: bold;">
-      <ion-col class="columna encabezado-naranja">ID</ion-col>
-      <ion-col class="columna columna-cif encabezado-naranja">CIF</ion-col>
-      <ion-col class="columna encabezado-naranja">EMPRESA</ion-col>
-      <ion-col class="columna encabezado-naranja">DIRECCIÓN</ion-col>
-      <ion-col class="columna encabezado-naranja">PROVINCIA</ion-col>
-      <ion-col class="columna encabezado-naranja">CIUDAD</ion-col>
-      <ion-col class="columna encabezado-naranja">C.POSTAL</ion-col>
-      <ion-col class="columna iconos"></ion-col>
-      <ion-col class="columna iconos"></ion-col>
-    </ion-row>
+      <ion-row>
+        <ion-label style="font-weight: bold;">APELLIDO</ion-label>
+        <p>{{ empleado.apellido }}</p>
+      </ion-row>
 
-    <ion-row class="fila-bordes" *ngFor="let empresa of empresasFiltrados; let i = index"
-      [ngStyle]="{ 'background-color': coloresFilas[i % coloresFilas.length] }" style="text-align: center;">
-      <ion-col class="columna">{{ empresa.id_empresa }}</ion-col>
-      <ion-col class="columna columna-cif">{{ empresa.cif }}</ion-col>
-      <ion-col class="columna">{{ empresa.empresa }}</ion-col>
-      <ion-col class="columna">{{ empresa.direccion }}</ion-col>
-      <ion-col class="columna">{{ empresa.provincia }}</ion-col>
-      <ion-col class="columna">{{ empresa.ciudad }}</ion-col>
-      <ion-col class="columna">{{ empresa.cPostal }}</ion-col>
+      <ion-row>
+        <ion-label style="font-weight: bold;">CORREO ELECTRÓNICO</ion-label>
+        <p>{{ empleado.email }}</p>
+      </ion-row>
 
-      <ion-col class="columna iconos">
-        <a (click)="borrarEmpresa(empresa.id_empresa)">
-          <ion-icon name="trash-outline" size="small"></ion-icon>
-        </a>
-      </ion-col>
-      <ion-col class="columna iconos">
-        <a (click)="mostrarDetallesPopover($event, empresa)" id="trigger-button" class="eye-button">
-          <ion-icon style="font-size: 20px;" name="eye-outline"></ion-icon>
-        </a>
-      </ion-col>
-      
-    </ion-row>
-  </ion-grid>
+      <!-- Agrega el id_user como un atributo de datos en la tarjeta -->
+      <ion-row>
+        <input type="number">{{ empleado.id_user }}
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+</ion-list>
+
+
 </ion-content>

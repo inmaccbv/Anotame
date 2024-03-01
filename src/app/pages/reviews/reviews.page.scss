@@ -1,34 +1,84 @@
+body {
+    font-size: 18px;
+}
+
+.custom-trash-icon {
+    float: right;
+    background-color: red; /* o cualquier color llamativo */
+    color: white; /* asegúrate de que el color del ícono sea visible en el fondo */
+  }
+  
+
 .star-icon {
     font-size: 24px;
-    color: #ffd700;
-    /* color amarillo para estrellas llenas */
+    color: #ffd700; /* color amarillo para estrellas llenas */
 }
 
-label {
-    color: #ff830f;
+label, ion-label, p, ion-card-title {
+    color: black;
 }
 
-.btnResena {
-    border-radius: 10px !important;
-}
-ion-input {
-    color: black !important;
+ion-card-title {
+    font-size: 2.2em;
 }
 
-.dark-theme .image-dark {
-    filter: invert(100%);
+ion-card-content p {
+    font-size: 1.5em;
 }
 
-.color-salir {
-    color: #ff830f;
+ion-icon,
+ion-text {
+    color: #ff830f !important; /* Color en ambos modos */
+}
+
+/* Estilos para el modo oscuro */
+.dark-theme {
+    --background: #444852;
+    --color: #ffffff;
+    --dark-background-color: #333;
+    --dark-text-color: #fff;
+    --dark-border-color: #555;
+}
+
+.dark-theme ion-content {
+    --background: #444852;
+    color: #ffffff;
+}
+
+.dark-theme ion-item,
+.dark-theme ion-card {
+    --background: #343541;
+}
+
+.dark-theme ion-list.md.list-md.hydrated ion-item,
+.dark-theme .list-md ion-item {
+    --background: #343541;
+    color: #ffffff;
+    border: none;
+}
+
+.dark-theme ion-item,
+.dark-theme ion-buttonitem,
+.dark-theme ion-card {
+    --background: #444852;
+    color: #ffffff;
+}
+
+.dark-theme ion-select {
+    --background: var(--dark-background-color);
+    --color: var(--dark-text-color);
+}
+
+.dark-theme label,
+.dark-theme ion-label,
+.dark-theme p {
+    color: #ffffff !important;
+}
+
+.dark-theme ion-card-title {
+    font-size: 2.2em;
 }
 
 ion-title {
     text-align: center;
 }
-
-.dark-theme p {
-    color: #fff; /* Color blanco para los párrafos en modo oscuro */
-}
-
-

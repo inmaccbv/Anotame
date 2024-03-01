@@ -1,39 +1,46 @@
-<ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'administrador'">
+<ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'administrador' || rol === 'encargado'">
   <ion-toolbar>
 
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/ajustes" style="--color: #ff830f;"></ion-back-button>
+      <ion-back-button defaultHref="/home" style="--color: #ff830f;"></ion-back-button>
     </ion-buttons>
 
     <ion-title style="text-align: center;" color="primary">Código QR</ion-title>
 
     <ion-buttons slot="end">
+
       <ion-button (click)="toggleDarkMode()">
         <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"
           style="color: #ff830f; font-size: 24px;"></ion-icon>
       </ion-button>
 
       <ion-button (click)="cerrarSesion()">
-        <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
+        <ion-icon style="color: #ff830f;" name="log-out-outline" class="color-salir" size="large"></ion-icon>
       </ion-button>
+
     </ion-buttons>
 
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="custom-page-margin" *ngIf="rol === 'administrador'">
+<ion-content *ngIf="rol === 'administrador' || rol === 'encargado'" class="custom-content">
 
-  <label>URL para generar QR</label>
+  <div class="custom-content-wrapper">
+    <label style="margin-top: 15px;text-align: center;margin-bottom: 15px;">URL para generar QR</label>
 
-  <div id="print-qr" *ngIf="textoQR" id="print-qr">
-    <qrcode class="codigoQR" [qrdata]="textoQR"></qrcode>
+    <div id="print-qr" style="margin-left: 93px;" *ngIf="textoQR" id="print-qr">
+      <!-- Componente de código QR con clase personalizada -->
+      <qrcode class="codigoQR" [qrdata]="textoQR"></qrcode>
+    </div>
+
+    <!-- Entrada de texto con clase personalizada -->
+    <input class="input-qr" [(ngModel)]="textoQR" placeholder="Introduce URL.." />
+
+    <!-- Botón para imprimir el código QR con clase de exclusión en impresión -->
+    <ion-button (click)="imprimir()" class="no-print">
+      <ion-icon name="print-outline" class="print"></ion-icon>
+    </ion-button>
+
   </div>
-
-  <input [(ngModel)]="textoQR" placeholder="Introduce URL.." />
-
-  <!-- BOTON PARA IMPRIMIR CODIGO QR -->
-  <ion-button (click)="imprimir()" class="no-print">
-    <ion-icon name="print-outline" class="print"></ion-icon>
-  </ion-button>
-
+  
 </ion-content>

@@ -44,7 +44,7 @@ export class UsuariosService {
 
   // SACA TODOS LOS USUARIOS PASANDO LA API PARA HACER EL LOGIN
   loginUser(datos: any) {
-    console.log(datos);
+    // console.log(datos);
     var headers = new Headers();
     headers.append("Accept", 'application/json');
     headers.append('Content-Type', 'application/json');
@@ -56,7 +56,7 @@ export class UsuariosService {
 
     return this.http.post(this.BASE_RUTA + this.RUTA_LOGIN, payload).pipe(
       map((response: any) => {
-        console.log('Respuesta del servidor:', response);
+        // console.log('Respuesta del servidor:', response);
 
         if (response && response.rol && response.id_user) {
           // Almacena todos los datos del usuario en localStorage
@@ -75,6 +75,20 @@ export class UsuariosService {
         return of('');
       })
     );
+  }
+
+  getUserInfo(): Observable<any> {
+    // Obtener el email del usuario del localStorage
+    const usuarioLocalStorage = localStorage.getItem('usuario');
+    if (!usuarioLocalStorage) {
+      return throwError('Usuario no encontrado en el localStorage');
+    }
+
+    const usuario = JSON.parse(usuarioLocalStorage);
+    const email = usuario.email;
+
+    // Hacer la solicitud al backend para obtener la información del usuario
+    return this.getUserAndEmpresaByEmail(email);
   }
 
   getIdEmpresaPorEmail(email: string): Observable<any> {
@@ -153,7 +167,7 @@ export class UsuariosService {
     return this.http.post(this.BASE_RUTA + this.RUTA_LOGIN + '/getUserAndEmpresaByEmail', payload)
       .pipe(
         dat => {
-          console.log('res ' + JSON.stringify(dat));
+          // console.log('res ' + JSON.stringify(dat));
 
           return dat;
         }

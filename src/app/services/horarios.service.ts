@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, catchError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
 import { Horario } from '../interfaces/interfaces';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
@@ -23,33 +23,55 @@ export class HorariosService {
     this.actualizarHorarios(horariosGuardados);
   }
 
-  agregarHorario(horario: Horario): Observable<any> {
+  // Método para subir un nuevo horario al servidor
+  subirHorario(horario: Horario, idEmpresa: number, idUsuario: number): Observable<any> {
+    // Configuración de cabeceras HTTP
     const headers = new HttpHeaders({
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     });
-  
-    const payload = new HttpParams()
-      .set('dia', horario.dia)
-      .set('horaApertura', horario.horaApertura)
-      .set('horaCierre', horario.horaCierre);
-  
-      return this.http.post(this.BASE_RUTA + this.RUTA_HORARIO, payload.toString(), { headers })
+
+    // Agregar idEmpresa e idUsuario al objeto de datos
+    const dataToSend = { ...horario, id_empresa: idEmpresa, id_user: idUsuario };
+
+    // Realizar la solicitud POST al servidor y manejar errores con RxJS catchError
+    return this.http.post(this.BASE_RUTA + this.RUTA_HORARIO, dataToSend, { headers }).pipe(
+      catchError((error: any) => {
+        console.error('Error en la solicitud:', error);
+        return throwError(error);
+      })
+    );
+  }
+
+  getHorarios() {
+    return this.http.get(this.BASE_RUTA + this.RUTA_HORARIO + '/getHorarios')
       .pipe(
+        tap((ans) => {
+          console.log('Horarios obtenidos:', ans);
+          return ans;
+        }),
         catchError(error => {
-          console.error('Error en la solicitud:', error);
-          throw error; // Propagar el error para que se maneje en el componente
+          console.error('Error al obtener los horarios:', error);
+          throw error;
         })
       );
   }
 
-  borrarHorario(horario: Horario): void {
-    const index = this.horarios.findIndex(h => h.dia === horario.dia);
-    if (index !== -1) {
-      this.horarios.splice(index, 1);
-      this.horariosSubject.next(this.horarios);
-      console.log('Horarios actualizados:', this.horarios);
-    }
+  borrarHorario(id_horario: any) {
+    var headers = new Headers();
+    headers.append("Accept", "application/json");
+    headers.append("Content-Type", "application/json");
+
+    const payload = new HttpParams()
+      .set('id_horario', id_horario);
+
+    return this.http.post(this.BASE_RUTA + this.RUTA_HORARIO + '/borrarHorario', payload)
+      .pipe(
+        dat => {
+          console.log('res ' + JSON.stringify(dat));
+
+          return dat;
+        }
+      );
   }
 
   limpiarHorarios(): void {

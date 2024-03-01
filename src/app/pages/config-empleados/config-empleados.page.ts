@@ -25,7 +25,7 @@ export class ConfigEmpleadosPage implements OnInit {
     public themeService: ThemeService
   ) {
     this.getUserRole();
-    console.log('Rol obtenido:', this.rol);
+    // console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
   }
 
@@ -36,7 +36,7 @@ export class ConfigEmpleadosPage implements OnInit {
   // Método para obtener el rol del usuario
   getUserRole() {
     this.rol = this.authService.getUserRole();
-    console.log(this.rol);
+    // console.log(this.rol);
 
     if (!(this.rol === 'administrador')) {
       console.error('Usuario con rol', this.rol, 'no tiene permiso para acceder a esta opción.');
