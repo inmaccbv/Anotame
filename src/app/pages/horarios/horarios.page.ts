@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, catchError, map, of } from 'rxjs';
+import { Observable, Subject, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 import { Componente, Horario } from 'src/app/interfaces/interfaces';
-
 import { HorariosService } from '../../services/horarios.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { MenuService } from 'src/app/services/menu.service';
@@ -28,18 +28,16 @@ export class HorariosPage implements OnInit {
   diasSemana: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
   horariosSeleccionados: Horario[] = [];
 
-  // Variable para almacenar horarios de apertura y cierre por día
   horarioApertura: { [key: string]: string } = {};
   horarioCierre: { [key: string]: string } = {};
-  horario: any;
-
-  // Conjunto para rastrear los días seleccionados
   diasSeleccionados: Set<string> = new Set<string>();
   dias: any;
-
   rol!: any;
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
+
+  private actualizarDatosSubject = new Subject<void>();
+  actualizarDatos$ = this.actualizarDatosSubject.asObservable();
 
   constructor(
     private formBuilder: FormBuilder,
@@ -53,84 +51,35 @@ export class HorariosPage implements OnInit {
     private router: Router
   ) {
     this.getUserRole();
-    // console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
-
     this.ionicForm = this.formBuilder.group({
       id_empresa: [''],
       id_user: [''],
-    });
-
-    this.horariosService.obtenerHorarios().subscribe((nuevosHorarios) => {
-      // console.log('Nuevos horarios recibidos en HorariosPage:', nuevosHorarios);
-      this.horariosSeleccionados = nuevosHorarios || [];
-      // console.log('this.horariosSeleccionados:', this.horariosSeleccionados);
     });
   }
 
   ngOnInit() {
     this.componentes = this.menuService.getMenuOpts();
 
-    // Llamar al nuevo método para obtener datos del usuario y la empresa
     this.obtenerIdUsuario().subscribe(
       ({ idUsuario, idEmpresa }) => {
-        // console.log('Id de Usuario:', idUsuario);
-        // console.log('Id de Empresa:', idEmpresa);
-
-        // Asignar los valores obtenidos a las variables del componente
         this.id_user = idUsuario;
         this.id_empresa = idEmpresa;
+
+        if (this.id_empresa !== null) {
+          this.getHorarios(); // Obtener los horarios al cargar la página
+        } else {
+          console.error('ID de empresa no válido.');
+        }
       },
       (error) => {
         console.error('Error al obtener el id del usuario y la empresa:', error);
       }
     );
 
-    this.horariosService.horarios$.subscribe((nuevosHorarios) => {
-      // console.log('Nuevos horarios recibidos en HorariosPage:', nuevosHorarios);
-      this.horariosSeleccionados = nuevosHorarios || [];
+    this.actualizarDatosSubject.subscribe(() => {
+      this.getHorarios(); // Actualizar los horarios al recibir un evento
     });
-  }
-
-  // Método para obtener el id del usuario y la empresa
-  obtenerIdUsuario(): Observable<{ idUsuario: number | null, idEmpresa: number | null }> {
-    // Obtener el usuario del localStorage
-    const usuarioString = localStorage.getItem('usuario');
-
-    // Verificar si el usuario existe en el localStorage
-    if (usuarioString) {
-      // Parsear el usuario
-      const usuario = JSON.parse(usuarioString);
-      const email = usuario.email;
-
-      // Llamar al servicio para obtener el usuario y la empresa por el correo electrónico
-      return this.usuariosService.getUserAndEmpresaByEmail(email).pipe(
-        map(response => {
-          // console.log('Respuesta del servidor en obtenerIdUsuario:', response);
-
-          // Verificar si la respuesta es válida y tiene datos
-          if (response && response.code === 200 && response.data) {
-            // Acceder a las propiedades id_user e id_empresa según la estructura real de la respuesta
-            const idUsuario = response.data.id_user ? response.data.id_user : null;
-            const idEmpresa = response.data.id_empresa ? response.data.id_empresa : null;
-
-            // Devolver los valores obtenidos
-            return { idUsuario, idEmpresa };
-          } else {
-            console.error('No se pudieron obtener los datos del usuario:', response.texto);
-            return { idUsuario: null, idEmpresa: null };
-          }
-        }),
-        catchError(error => {
-          console.error('Error al obtener datos del usuario:', error);
-          return of({ idUsuario: null, idEmpresa: null });
-        })
-      );
-    } else {
-      // Mostrar un error si el usuario no se encuentra en el localStorage
-      console.error('Usuario no encontrado en el almacenamiento local');
-      return of({ idUsuario: null, idEmpresa: null });
-    }
   }
 
   getUserRole() {
@@ -155,84 +104,163 @@ export class HorariosPage implements OnInit {
     }
   }
 
-  getDias() {
-    this.diasService.getDias().subscribe(async (ans) => {
-      this.dias = ans;
-      console.log('Clientes datos:', this.dias);
-    });
+  getHorarios() {
+    // Verificar si el rol del usuario es 'administrador' o 'encargado'
+    if (this.rol === 'administrador' || this.rol === 'encargado') {
+      // Obtener el email del usuario
+      const email = this.authService.getUserEmail();
+  
+      // Verificar si el email no es nulo antes de llamar a la función
+      if (email !== null) {
+        this.usuariosService.getIdEmpresaPorEmail(email).subscribe(
+          (response) => {
+            if (response.code === 200 && response.data && response.data.id_empresa) {
+              this.id_empresa = response.data.id_empresa;
+  
+              // Ahora que tenemos el id_empresa, podemos obtener los horarios
+              const idEmpresaAsNumber = this.id_empresa as number; // Convertir a número
+              if (!isNaN(idEmpresaAsNumber)) {
+                this.horariosService.obtenerHorasByEmpresa(idEmpresaAsNumber).subscribe(
+                  (horariosResponse) => {
+                    if (horariosResponse.code === 200 && Array.isArray(horariosResponse.data)) {
+                      this.horariosSeleccionados = horariosResponse.data.map((horario: Horario) => {
+                        const { hora_apertura, hora_cierre, ...resto } = horario;
+                        return { hora_apertura: hora_apertura, hora_cierre: hora_cierre, ...resto };
+                    });
+                    
+                      console.log('Horarios obtenidos:', this.horariosSeleccionados);
+                      
+                      
+                    } else {
+                      console.error('La respuesta del servicio de horarios no es válida:', horariosResponse);
+                    }
+                  },
+                  (errorHorarios) => {
+                    console.error('Error al obtener los horarios:', errorHorarios);
+                  }
+                );
+              } else {
+                console.error('ID de empresa no es un número válido:', idEmpresaAsNumber);
+              }
+            } else {
+              console.error('No se pudo obtener el id_empresa del usuario:', response);
+            }
+          },
+          (error) => {
+            console.error('Error al obtener el id_empresa del usuario:', error);
+          }
+        );
+      } else {
+        console.error('El email del usuario es nulo.');
+      }
+    } else {
+      console.error('No tiene permiso para acceder a esta opción.');
+    }
+  }
+  
+  formatHora(hora: string | undefined): string {
+    // Verificar si la hora es nula o indefinida antes de manipular la cadena
+    if (hora) {
+      // Convertir a un objeto Date para asegurar la correcta manipulación de la hora
+      const timeDate = new Date(`1970-01-01T${hora}`);
+      // Formatear la hora como HH:mm
+      const formattedTime = timeDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      return formattedTime;
+    } else {
+      return ''; // Otra alternativa si la hora es nula o indefinida
+    }
+  }
+  
+  
+  private formatearHora(hora: string | undefined): string {
+    if (hora) {
+      const timeDate = new Date(`1970-01-01T${hora}`);
+      const formattedTime = timeDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      return formattedTime || 'No disponible';
+    } else {
+      return 'No disponible';
+    }
+  }
+  
+  
+  
+
+  obtenerIdUsuario(): Observable<{ idUsuario: number | null, idEmpresa: number | null }> {
+    const usuarioString = localStorage.getItem('usuario');
+
+    if (usuarioString) {
+      const usuario = JSON.parse(usuarioString);
+      const email = usuario.email;
+
+      return this.usuariosService.getUserAndEmpresaByEmail(email).pipe(
+        map(response => {
+          if (response && response.code === 200 && response.data) {
+            const idUsuario = response.data.id_user ? response.data.id_user : null;
+            const idEmpresa = response.data.id_empresa ? response.data.id_empresa : null;
+            return { idUsuario, idEmpresa };
+          } else {
+            console.error('No se pudieron obtener los datos del usuario:', response.texto);
+            return { idUsuario: null, idEmpresa: null };
+          }
+        }),
+        catchError(error => {
+          console.error('Error al obtener datos del usuario:', error);
+          return of({ idUsuario: null, idEmpresa: null });
+        })
+      );
+    } else {
+      console.error('Usuario no encontrado en el almacenamiento local');
+      return of({ idUsuario: null, idEmpresa: null });
+    }
   }
 
   agregarHorario(dia: string): void {
-    // Verificar si dia no es nulo o indefinido
     if (!dia) {
       console.error('El valor del día es nulo o indefinido.');
-      return; // Salir de la función si dia es nulo o indefinido
+      return;
     }
-  
-    const horaApertura = this.horarioApertura[dia];
-    const horaCierre = this.horarioCierre[dia];
-  
-    console.log('Dia:', dia);
-    console.log('Hora de Apertura:', horaApertura);
-    console.log('Hora de Cierre:', horaCierre);
-  
-    // Obtener id_user e id_empresa
+
+    const hora_apertura = this.horarioApertura[dia];
+    const hora_cierre = this.horarioCierre[dia];
+
     this.obtenerIdUsuario().subscribe(({ idUsuario, idEmpresa }) => {
       if (idUsuario !== null && idEmpresa !== null) {
         this.id_user = idUsuario;
         this.id_empresa = idEmpresa;
-  
+
         const nuevoHorario: Horario = {
           dia: dia,
-          horaApertura: horaApertura,
-          horaCierre: horaCierre,
+          hora_apertura: hora_apertura,
+          hora_cierre: hora_cierre,
           id_user: this.id_user,
           id_empresa: this.id_empresa
         };
-  
-        // Verificar si el día ya fue seleccionado
-        if (!this.diasSeleccionados.has(dia)) {
-          // Verificar si ya hay un horario para este día
-          const indiceExistente = this.horariosSeleccionados.findIndex(horario => horario.dia === dia);
-  
-          if (indiceExistente !== -1) {
-            // Si ya existe, eliminar el horario existente
-            this.horariosSeleccionados.splice(indiceExistente, 1);
-          }
-  
-          // Llamar a la función para subir el horario al servidor
-          this.horariosService.subirHorario(nuevoHorario, this.id_empresa, this.id_user).subscribe(
-            (ans) => {
-              console.log('Respuesta del servidor al subir horario:', ans);
-  
-              // Agregar el nuevo horario y actualizar el conjunto de días seleccionados
-              this.horariosSeleccionados.push(nuevoHorario);
-              this.diasSeleccionados.add(dia);
-  
-              // Limpiar los campos de entrada
-              this.horarioApertura[dia] = '';
-              this.horarioCierre[dia] = '';
-  
-              // Guardar los horarios en el servicio y en localStorage
-              this.horariosService.actualizarHorarios(this.horariosSeleccionados);
-              localStorage.setItem('horarios', JSON.stringify(this.horariosSeleccionados));
-  
-              // Recargar la página
-              // window.location.reload();
-            },
-            (error) => {
-              console.error('Error al subir el horario:', error);
-            }
-          );
-        } else {
-          console.log('El día ya está seleccionado.');
+
+        const indiceExistente = this.horariosSeleccionados.findIndex(horario => horario.dia === dia);
+
+        if (indiceExistente !== -1) {
+          this.horariosSeleccionados.splice(indiceExistente, 1);
         }
+
+        this.horariosService.subirHorario(nuevoHorario, this.id_empresa, this.id_user).subscribe(
+          (ans) => {
+            console.log('Respuesta del servidor al subir horario:', ans);
+            this.horariosSeleccionados.push(nuevoHorario);
+            this.diasSeleccionados.add(dia);
+            this.horarioApertura[dia] = '';
+            this.horarioCierre[dia] = '';
+            this.actualizarDatosSubject.next(); // Emitir evento para actualizar datos
+          },
+          (error) => {
+            console.error('Error al subir el horario:', error);
+          }
+        );
       } else {
         console.error('No se pudo obtener el id de la empresa o el id del usuario.');
       }
     });
   }
-  
+
   async borrarHorario(id_horario: any) {
     const alert = await this.alertController.create({
       header: 'Confirmar',
@@ -249,24 +277,9 @@ export class HorariosPage implements OnInit {
           text: 'Borrar',
           handler: async () => {
             try {
-              // Llamada al servicio para borrar el horario
               await this.horariosService.borrarHorario(id_horario);
-    
               console.log('Horario borrado correctamente');
-    
-              this.getHorarios();
-              window.location.reload();
-    
-              // Eliminar el horario del localStorage
-              const horariosLocalStorage = JSON.parse(localStorage.getItem('horarios') || '[]');
-              const horariosActualizados = horariosLocalStorage.filter((horario: any) => horario.id_horario !== id_horario);
-              localStorage.setItem('horarios', JSON.stringify(horariosActualizados));
-    
-              // Verificar si solo queda un horario en el localStorage y borrarlo también
-              if (horariosActualizados.length === 1) {
-                localStorage.removeItem('horarios');
-              }
-    
+              this.actualizarDatosSubject.next(); // Emitir evento para actualizar datos
             } catch (error) {
               console.error('Error al borrar el horario:', error);
             }
@@ -274,15 +287,8 @@ export class HorariosPage implements OnInit {
         }
       ]
     });
-    
+
     await alert.present();
-  }
-  
-  getHorarios() {
-    this.horariosService.getHorarios().subscribe(async (ans) => {
-      this.horario = ans;
-      console.log('Clientes datos:', this.horario);
-    });
   }
 
   toggleDarkMode() {

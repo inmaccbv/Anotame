@@ -1,3 +1,14 @@
+/* Estilos para las letras grandes */
+.large-text {
+    font-size: 1.8em;
+}
+
+/* Estilos para el encabezado de las columnas */
+.header-text {
+    font-weight: bold;
+    color: #ff830f;
+}
+
 .my-custom-menu {
     --width: 500px;
 }
@@ -12,8 +23,8 @@
 
 .text-container {
     text-align: center;
+    margin-top: 25px;
 }
-
 
 ion-grid {
     margin-top: 20px;
@@ -33,7 +44,6 @@ ion-row {
     width: 50%;
     height: 50%;
     object-fit: cover;
-    /* Ajusta la imagen para llenar el contenedor manteniendo la relación de aspecto */
 }
 
 .dark-theme .image-dark {
@@ -66,4 +76,10 @@ ion-card-content p {
 
 .color-salir {
     color: #ff830f;
+}
+
+/* Iconos de color naranja */
+.orange-icons {
+    color: #ff830f;
+    font-size: 1.8em;
 }

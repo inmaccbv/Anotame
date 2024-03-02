@@ -7,8 +7,8 @@ export interface Componente {
 
 export interface Horario {
     dia: string;
-    horaApertura: string;
-    horaCierre: string;
+    hora_apertura: string;
+    hora_cierre: string;
     id_user: number;
     id_empresa: number;
 }

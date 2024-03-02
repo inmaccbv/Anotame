@@ -17,11 +17,7 @@ export class HorariosService {
 
   RUTA_HORARIO = "Horarios";
 
-  constructor(private http: HttpClient) {
-    // Recuperar horarios almacenados en localStorage al inicializar el servicio
-    const horariosGuardados = JSON.parse(localStorage.getItem('horarios') || '[]') as Horario[];
-    this.actualizarHorarios(horariosGuardados);
-  }
+  constructor(private http: HttpClient) { }
 
   // Método para subir un nuevo horario al servidor
   subirHorario(horario: Horario, idEmpresa: number, idUsuario: number): Observable<any> {
@@ -40,6 +36,15 @@ export class HorariosService {
         return throwError(error);
       })
     );
+  }
+
+  // Método para obtener datos por empresa desde el servidor
+  obtenerHorasByEmpresa(idEmpresa: number): Observable<any> {
+    // Configurar parámetros de la solicitud HTTP
+    const params = new HttpParams().set('id_empresa', idEmpresa.toString());
+
+    // Realizar una solicitud GET al servidor
+    return this.http.get(`${this.BASE_RUTA}${this.RUTA_HORARIO}/obtenerHorasByEmpresa`, { params });
   }
 
   getHorarios() {
@@ -73,18 +78,4 @@ export class HorariosService {
         }
       );
   }
-
-  limpiarHorarios(): void {
-    this.horarios = [];
-    this.horariosSubject.next([...this.horarios]);
-  }
-
-  actualizarHorarios(nuevosHorarios: Horario[]): void {
-    this.horariosSubject.next(nuevosHorarios);
-  }
-
-  obtenerHorarios(): Observable<Horario[]> {
-    return this.horariosSubject.asObservable();
-  }
-
 }

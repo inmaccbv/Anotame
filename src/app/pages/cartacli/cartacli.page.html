@@ -29,7 +29,7 @@
 
   <div class="gallery-container" style="margin-left: 10px;margin-right: 25px;">
     <ion-card *ngFor="let carta of cartas" class="card-container">
-      <img [src]="carta.imageUrl" [alt]="carta.carta_img" class="card-image">
+      <img [src]="obtenerUrlImg(carta)" alt="{{ carta.carta_img }}" style="width: 100%;" />
       <ion-card-header>
         <ion-card-title class="card-title" [ngStyle]="{'color': isDarkMode ? 'white' : 'inherit'}">
           <!-- {{ carta.carta_img }} -->

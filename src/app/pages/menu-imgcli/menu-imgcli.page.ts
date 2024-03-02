@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, of, tap } from 'rxjs';
@@ -15,12 +14,18 @@ import { ThemeService } from 'src/app/services/theme.service';
 })
 export class MenuImgcliPage implements OnInit {
 
-  BASE_RUTA: string = "http://localhost/anotame/APIANOTAME/public/";
+  BASE_RUTA: string = "http://localhost/anotame/APIANOTAME/public/uploads";
+
   selectedFile: File | null = null;
-  uploadedFiles: any[] = [];
+
   availableDays: string[] = [];
-  menusArr: any[] = [];
   dias: any;
+
+  menus: any;
+  menusFiltrados: any;
+
+  idEmpresa: any;
+
   rol!: any;
   isDarkMode: boolean = false;
 
@@ -35,24 +40,10 @@ export class MenuImgcliPage implements OnInit {
   }
 
   ngOnInit() {
-    // Obtiene el rol del usuario y configura el modo oscuro
     this.getUserRole();
     this.isDarkMode = this.themeService.isDarkTheme();
 
-    // Llama a getImg para actualizar la lista de imágenes
-    this.getImg();
-
-    // Obtiene información del localStorage
-    const storedMenus = localStorage.getItem('menusArr');
-    const storedDias = localStorage.getItem('dias');
-
-    // Si hay información en el localStorage, la asigna a las variables correspondientes
-    if (storedMenus && storedDias) {
-      this.menusArr = JSON.parse(storedMenus);
-      this.dias = JSON.parse(storedDias);
-    }
-
-    // Llama a getDias para obtener los días de la semana
+    // Llamo a getDias para obtener los días de la semana
     this.getDias().subscribe(
       (dias) => {
         if (dias) {
@@ -60,26 +51,35 @@ export class MenuImgcliPage implements OnInit {
         }
       }
     );
+
+    // Asigno el valor de id_empresa desde localStorage
+    const idEmpresaString = localStorage.getItem('id_empresa');
+    this.idEmpresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;
+
+    // Llamo a getImg solo si el idEmpresa está presente
+    if (this.idEmpresa) {
+      this.getImg();
+    }
   }
 
-  // Obtiene los días de la semana
+  // Obtengo los días de la semana
   getDias() {
     return this.diasService.getDias().pipe(
       tap((ans) => {
         this.dias = ans;
-        this.availableDays = this.dias.map((dia: any) => dia.dia); // Inicializa los días disponibles
-        console.log('Días de la semana: ', this.dias);
+        this.availableDays = this.dias.map((dia: any) => dia.dia); // Inicializo los días disponibles
+        // console.log('Días de la semana: ', this.dias);
       }),
       catchError((error) => {
         console.error('Error al obtener los días:', error);
-        return of(null); // Devuelve un observable de null en caso de error
+        return of(null); // Devuelvo un observable de null en caso de error
       })
     );
   }
 
   getUserRole() {
     this.rol = this.authServiceCliente.getUserRole();
-    console.log(this.rol);
+    // console.log(this.rol);
 
     if (!(this.rol === 'cliente')) {
       console.error('Cliente con rol', this.rol, 'no tiene permiso para acceder a esta opción.');
@@ -97,57 +97,52 @@ export class MenuImgcliPage implements OnInit {
     }
   }
 
-  // Maneja la selección de archivos
+  // Manejo la selección de archivos
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0] as File;
   }
 
-  uploadImage() {
-    // Verifica si hay un archivo seleccionado
-    if (this.selectedFile) {
-      // Crea un formulario de datos (FormData) y añade la imagen
-      const formData: FormData = new FormData();
-      formData.append('menu_img', this.selectedFile, this.selectedFile.name);
-  
-      // Utiliza el servicio para subir la imagen al servidor
-      this.menuUploadService.uploadFile(formData).subscribe(
-        // Maneja la respuesta del servidor
-        (response: any) => {
-          console.log('Respuesta del servidor:', response);
-  
-          // Verifica si la respuesta es válida y autorizada
-          if (response && response.authorized === 'SI' && response.url) {
-            // Obtiene el nombre del archivo y construye la URL de la imagen correctamente
-            const fileName = response.data.carta_img;
-            const imageUrl = this.BASE_RUTA + response.data.carta_img;
-  
-            // Añade la información de la imagen a la lista uploadedFiles
-            this.uploadedFiles.push({ name: fileName, url: imageUrl });
-            console.log('Lista de cartas después de subir:', this.uploadedFiles);
+  // Obtengo las imágenes del servidor
+  getImg() {
+    if (this.idEmpresa !== null) {
+      this.menuUploadService.getMenusByEmpresa(this.idEmpresa).subscribe(
+        (ans: any) => {
+          // Compruebo si 'ans' tiene la propiedad 'code'
+          if ('code' in ans) {
+            if (ans.code === 200) {
+              // La solicitud fue exitosa, asigno los menús
+              // Compruebo si 'ans' tiene la propiedad 'data'
+              if ('data' in ans) {
+                this.menus = ans.data;
+                this.menusFiltrados = ans.data;
+
+                console.log('Menús obtenidos:', this.menus);
+              } else {
+                console.error('Error en la respuesta: Propiedad "data" no encontrada.');
+              }
+            } else {
+              console.error('Error en la respuesta:', ans.menus);
+            }
           } else {
-            // Muestra un mensaje de error en caso de respuesta no válida
-            console.error('Error al subir la imagen:', response);
+            console.error('Error en la respuesta: Propiedad "code" no encontrada.');
           }
         },
-        // Maneja errores de la solicitud y muestra mensajes detallados en la consola
-        (error: any) => {
-          console.error('Error en la solicitud:', error);
+        (error) => {
+          console.error('Error al obtener los menús:', error);
         }
       );
     }
   }
 
-  // Obtiene las imágenes del servidor
-  getImg() {
-    this.menuUploadService.getImg().subscribe(
-      (ans: any[]) => {
-        console.log('Datos obtenidos:', ans);
-        this.menusArr = ans;
-      },
-      (error) => {
-        console.error('Error al obtener imágenes:', error);
-      }
-    );
+  // Método para obtener la URL de la imagen
+  obtenerUrlImg(menu: any): string {
+    if (menu && menu.menu_img) {
+      return `${this.BASE_RUTA}/${menu.menu_img}`;
+    } else {
+      // Manejo el caso en que menu o menu.menu_img sea undefined
+      console.error('La propiedad menu_img es undefined en el menú:', menu);
+      return ''; // O proporciono una URL predeterminada o manejo según sea necesario
+    }
   }
 
   toggleDarkMode() {

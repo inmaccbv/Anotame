@@ -16,7 +16,7 @@ export class DiasService {
     return this.http.get(this.BASE_RUTA + this.RUTA_DIAS + '/getDias')
       .pipe(
         tap((ans) => {
-          console.log('Dias obtenidos:', ans);
+          // console.log('Dias obtenidos:', ans);
           return ans;
         }),
         catchError(error => {

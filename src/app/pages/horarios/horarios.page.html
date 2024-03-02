@@ -64,8 +64,11 @@
     </ion-row>
     <ion-row *ngFor="let horario of horariosSeleccionados">
       <ion-col>{{ horario.dia }}</ion-col>
-      <ion-col>{{ horario.horaApertura }}</ion-col>
-      <ion-col>{{ horario.horaCierre }}</ion-col>
+      <ion-col>{{ horario.hora_apertura }}</ion-col>
+      <ion-col>{{ horario.hora_cierre }}</ion-col>
+  
+    
+      
       <ion-col>
         <ion-button (click)="borrarHorario(horario)">Borrar</ion-button>
       </ion-col>

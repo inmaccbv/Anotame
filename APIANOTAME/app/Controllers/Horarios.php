@@ -58,8 +58,11 @@ class Horarios extends ResourceController
 
             // Verificar si el día proporcionado no es nulo
             if ($dia !== null) {
-                // Verifica si el día ya tiene horario registrado
-                $existingHorario = $this->model->where('id_empresa', $id_empresa)->first();
+                // Verificar si ya existe un horario para este día y empresa
+                $existingHorario = $this->model
+                    ->where('dia', $dia)
+                    ->where('id_empresa', $id_empresa)
+                    ->first();
 
                 if (!empty($existingHorario)) {
                     // Si existe, actualiza el horario existente en lugar de insertar uno nuevo
@@ -105,6 +108,45 @@ class Horarios extends ResourceController
             ]);
         }
     }
+
+    public function obtenerHorasByEmpresa()
+    {
+        try {
+            $request_data = $this->request->getGet();
+            log_message('info', 'Request Data: ' . json_encode($request_data));
+    
+            $id_empresa = $request_data['id_empresa'];
+    
+            // Validar datos
+            if (!is_numeric($id_empresa)) {
+                return $this->respond([
+                    'code' => 422,
+                    'authorized' => 'NO',
+                    'texto' => 'Error de validación: Verifique los tipos de datos proporcionados.',
+                    'request_data' => $request_data,
+                ]);
+            }
+    
+            // Obtener horarios asociados a la empresa
+            $horarios = $this->model->where('id_empresa', $id_empresa)->findAll();
+    
+            return $this->respond([
+                'code' => 200,
+                'authorized' => 'SI',
+                'data' => $horarios,
+                'mensaje' => 'Horarios obtenidos con éxito',
+            ]);
+        } catch (\Exception $e) {
+            // Manejo de errores
+            return $this->respond([
+                'code' => 500,
+                'authorized' => 'NO',
+                'texto' => 'Error al obtener horarios: ' . $e->getMessage(),
+                'request_data' => $request_data,
+            ]);
+        }
+    }
+    
 
     public function getHorarios()
     {

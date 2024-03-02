@@ -25,7 +25,7 @@ export class GestionMenuCartaPage implements OnInit {
     public themeService: ThemeService
   ) {
     this.getUserRole();
-    console.log('Rol obtenido:', this.rol);
+    // console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
   }
 
@@ -35,7 +35,7 @@ export class GestionMenuCartaPage implements OnInit {
 
   getUserRole() {
     this.rol = this.authService.getUserRole();
-    console.log(this.rol);
+    // console.log(this.rol);
 
     if (!(this.rol === 'administrador' || this.rol === 'encargado')) {
       console.error('Usuario con rol', this.rol, 'no tiene permiso para acceder a esta opción.');

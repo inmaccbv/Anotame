@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { Componente, DatosContacto, Horario } from 'src/app/interfaces/interfaces';
 
 import { AuthService } from 'src/app/services/auth.service';
-
 import { ContactoService } from 'src/app/services/contacto.service';
 import { HorariosService } from 'src/app/services/horarios.service';
 import { AuthClienteService } from 'src/app/services/auth-cliente.service';
@@ -21,40 +20,32 @@ import { ClientesService } from 'src/app/services/clientes.service';
 export class ContactocliPage implements OnInit {
 
   horariosSeleccionados: Horario[] = [];
-  datosServer: any;
+
+  horas: any;
+  horasFiltradas: any;
 
   datos: any;
   datosFiltrados: any;
 
-  
   idEmpresa!: number | null;
   clienteData: any;
 
   rol!: any;
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
-
-  @ViewChild('idEmpresaInput') idEmpresaInput!: ElementRef;
   
   constructor(
-    public authService: AuthService,
+    private router: Router,
     public authServiceCliente: AuthClienteService,
     private contactService: ContactoService,
     private horariosService: HorariosService,
     public themeService: ThemeService,
     public clienteService: ClientesService,
     private menuCli: MenuCliService,
-    private router: Router,
   ) {
     this.getUserRole();
     console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
-
-    // Suscribirse a futuros cambios en los horarios
-    this.horariosService.obtenerHorarios().subscribe((nuevosHorarios) => {
-      console.log('Nuevos horarios recibidos en ContactocliPage:', nuevosHorarios);
-      this.horariosSeleccionados = nuevosHorarios;
-    });
 
   }
 
@@ -62,32 +53,14 @@ export class ContactocliPage implements OnInit {
     this.componentes = this.menuCli.getMenuOptsCli();
     this.obtenerDatosUsuario();
 
-    // Obtener datos de localStorage al inicializar
-    const datosGuardados = JSON.parse(localStorage.getItem('datos') || '[]') as DatosContacto[];
-    const horarioGuardados = JSON.parse(localStorage.getItem('horarios') || '[]') as Horario[];
+    // Recuperar el valor de id_empresa del localStorage
+    const idEmpresaString = localStorage.getItem('id_empresa');
+    this.idEmpresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;
 
-    // Después de recuperar datos de localStorage
-    console.log('Datos recuperados del localStorage:', datosGuardados);
-    console.log('Horarios recuperados del localStorage:', horarioGuardados);
+    console.log('ID Empresa:', this.idEmpresa);
 
-    this.datos = datosGuardados;
-
-    // Actualizar los horarios en el servicio con los recuperados del localStorage
-    this.horariosService.actualizarHorarios(horarioGuardados);
-
-    this.horariosService.horarios$.subscribe((nuevosHorarios) => {
-      console.log('Nuevos horarios recibidos:', nuevosHorarios);
-      this.horariosSeleccionados = nuevosHorarios;
-    });
-
-     // Recuperar el valor de id_empresa del localStorage
-     const idEmpresaString = localStorage.getItem('id_empresa');
-     this.idEmpresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;
- 
-     console.log('ID Empresa:', this.idEmpresa);
- 
-     this.getDatos();
-   
+    this.getDatos();
+    this.getHorarios();
   }
 
   getDatos() {
@@ -100,7 +73,29 @@ export class ContactocliPage implements OnInit {
             this.datosFiltrados = ans.data;
             console.log('Textos obtenidos:', this.datos);
           } else {
-            console.error('Error en la respuesta:', ans.texto);
+            console.error('Error en la respuesta:', ans.datos);
+          }
+        },
+        (error) => {
+          console.error('Error al obtener los textos:', error);
+        }
+      );
+    } else {
+      console.error('ID de empresa no válido.');
+    }
+  }
+
+  getHorarios() {
+    if (this.idEmpresa !== null) {
+      this.horariosService.obtenerHorasByEmpresa(this.idEmpresa).subscribe(
+        (ans) => {
+          if (ans.code === 200) {
+            // La solicitud fue exitosa, asigna los textos
+            this.horas = ans.data;
+            this.horasFiltradas = ans.data;
+            console.log('Textos obtenidos:', this.horas);
+          } else {
+            console.error('Error en la respuesta:', ans.horas);
           }
         },
         (error) => {
@@ -143,12 +138,12 @@ export class ContactocliPage implements OnInit {
   }  
 
   getUserRole() {
-    this.rol = this.authService.getUserRole();
+    this.rol = this.authServiceCliente.getUserRole();
     console.log(this.rol);
     
     if (!(this.rol === 'cliente')) {
       console.error('Cliente con rol', this.rol, 'no tiene permiso para acceder a esta opción.');
-      this.authService.logout().subscribe(
+      this.authServiceCliente.logout().subscribe(
         () => {
           // Elimina cualquier informacion de session almacenada localmente
           localStorage.removeItem('role');
@@ -163,24 +158,6 @@ export class ContactocliPage implements OnInit {
     }
   }
 
-  // getDatos(clienteId: string) {
-  //   this.contactService.obtenerDatos().subscribe(
-  //     (ans) => {
-  //       // Asegúrate de que ans sea un array antes de filtrar
-  //       if (Array.isArray(ans)) {
-  //         this.datosServer = ans.filter((dato: any) => dato.id_cliente === clienteId.toString());
-  //         this.datosFiltrados = [...this.datosServer]; // Hacer una copia de las reservas para evitar mutar el array original
-  //         console.log('Datos obtenidos:', this.datosFiltrados);
-  //       } else {
-  //         console.error('La respuesta del servidor no es un array:', ans);
-  //       }
-  //     },
-  //     (error) => {
-  //       console.error('Error al obtener datos:', error);
-  //     }
-  //   );
-  // }
-  
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;
     this.themeService.setDarkTheme(this.isDarkMode);

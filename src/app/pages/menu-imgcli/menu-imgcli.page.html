@@ -20,11 +20,11 @@
 
   <div class="gallery-container" style="margin-left: 10px; margin-right: 25px;">
 
-    <ion-card *ngFor="let menu of menusArr" class="card-container">
-      <img [src]="menu.imageUrl" [alt]="menu.menu_img" class="card-image">
+    <ion-card *ngFor="let menu of menus" class="card-container">
+      <img [src]="obtenerUrlImg(menu)" alt="{{ menu.menu_img }}" style="width: 100%;" />
       <ion-card-header>
         <ion-card-title class="card-title" [ngStyle]="{'color': isDarkMode ? 'white' : 'inherit'}">
-          {{ menu.dia ? 'Día: ' + menu.dia : 'Día no disponible' }}
+          {{ menu.dia ? '' + menu.dia : 'Día no disponible' }}
         </ion-card-title>
       </ion-card-header>
     </ion-card>

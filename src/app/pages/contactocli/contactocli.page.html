@@ -28,22 +28,27 @@
 
   <div class="text-container" *ngFor="let dato of datosFiltrados">
 
-    <ion-icon name="restaurant-outline" style="font-size: 1.5em;"></ion-icon>
-    <p style="font-weight: bold; font-size: 30px;">{{ dato.nomLocal }}</p>
-    <ion-icon name="call-outline" style="font-size: 1.5em;"></ion-icon>
-    <p>{{ dato.telf1 }}</p>
-    <p>{{ dato.telf2 }}</p>
-    <ion-icon name="location-outline" style="font-size: 1.5em;"></ion-icon>
-    <p>{{ dato.direccion }}</p>
+    <ion-icon name="restaurant-outline" class="orange-icons"></ion-icon>
+    <p class="large-text">{{ dato.nomLocal }}</p>
+    <ion-icon name="call-outline" class="orange-icons"></ion-icon>
+    <p class="large-text">{{ dato.telf1 }}</p>
+    <p class="large-text">{{ dato.telf2 }}</p>
+    <ion-icon name="location-outline" class="orange-icons"></ion-icon>
+    <p class="large-text">{{ dato.direccion }}</p>
 
     <ion-grid>
-      <ion-icon name="time-outline" style="font-size: 1.5em;"></ion-icon>
+      <ion-row>
+        <ion-col class="header-text"></ion-col>
+        <ion-col class="header-text">H. Apertura</ion-col>
+        <ion-col class="header-text">H. Cierre</ion-col>
+      </ion-row>
       <ion-row *ngFor="let horario of horariosSeleccionados">
-        <ion-col>{{ horario.dia }}</ion-col>
-        <ion-col>{{ horario.horaApertura }}</ion-col>
-        <ion-col>{{ horario.horaCierre }}</ion-col>
+        <ion-col class="large-text">{{ horario.dia }}</ion-col>
+        <!-- <ion-col class="large-text">{{ horario.horaApertura }}</ion-col>
+        <ion-col class="large-text">{{ horario.horaCierre }}</ion-col> -->
       </ion-row>
     </ion-grid>
+    
     
   </div>
 
