@@ -49,7 +49,7 @@ export class SeleccionEmpresaPage implements OnInit {
   ngOnInit() {
     this.componentes = this.menuCli.getMenuOptsCli();
     this.getEmpresas();
-    this.getProvincias();
+    //this.getProvincias();
     this.aplicarFiltros(); 
     this.idEmpresa = this.authService.getIdEmpresa();
   }
@@ -107,16 +107,16 @@ export class SeleccionEmpresaPage implements OnInit {
   }
   
   // Método para obtener la lista de provincias
-  getProvincias() {
-    this.provinciasService.getProvincias().subscribe(
-      (ans: any) => {
-        this.provincias = Object.values(ans); // Convertir a un array
-      },
-      (error) => {
-        console.error('Error al obtener provincias:', error);
-      }
-    );
-  }
+  // getProvincias() {
+  //   this.provinciasService.getProvincias().subscribe(
+  //     (ans: any) => {
+  //       this.provincias = Object.values(ans); // Convertir a un array
+  //     },
+  //     (error) => {
+  //       console.error('Error al obtener provincias:', error);
+  //     }
+  //   );
+  // }
 
   // Método para aplicar los filtros de búsqueda
   aplicarFiltros() {

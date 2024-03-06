@@ -18,7 +18,7 @@ export class RegistroempresaPage implements OnInit {
   empresaForm!: FormGroup;
   submitted = false;
   empresas: any;
-  provincias: any;
+  provincias: string[] = [];
 
   constructor(
     public formBuilder: FormBuilder,
@@ -40,7 +40,7 @@ export class RegistroempresaPage implements OnInit {
   }
 
   ngOnInit() {
-    this.getProvincias();
+    this.provincias = this.provinciasService.getProvincias();
   }
 
   // Getter para acceder fácilmente a los controles del formulario
@@ -48,12 +48,12 @@ export class RegistroempresaPage implements OnInit {
     return this.empresaForm.controls;
   }
 
-  // Obtener la lista de provincias al iniciar la página
-  getProvincias() {
-    this.provinciasService.getProvincias().subscribe(async (ans) => {
-      this.provincias = ans;
-    });
-  }
+  // // Obtener la lista de provincias al iniciar la página
+  // getProvincias() {
+  //   this.provinciasService.getProvincias().subscribe(async (ans) => {
+  //     this.provincias = ans;
+  //   });
+  // }
 
   // Método para enviar los datos del formulario al servidor
   async enviarDatos() {

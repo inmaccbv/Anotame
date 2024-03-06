@@ -14,7 +14,7 @@ import { ThemeService } from 'src/app/services/theme.service';
   templateUrl: './addempresa.page.html',
   styleUrls: ['./addempresa.page.scss'],
 })
-export class AddempresaPage implements OnInit {
+export class AddempresaPage  {
 
   empresas: any;
   empresaForm!: FormGroup;
@@ -48,9 +48,9 @@ export class AddempresaPage implements OnInit {
     this.isDarkMode = this.themeService.isDarkTheme();
   }
 
-  ngOnInit() {
-    this.getProvincias();
-  }
+  // ngOnInit() {
+  //   this.getProvincias();
+  // }
 
   // Obtener el rol del usuario
   getUserRole() {
@@ -82,11 +82,11 @@ export class AddempresaPage implements OnInit {
   }
 
   // Obtener la lista de provincias al iniciar la página
-  getProvincias() {
-    this.provinciasService.getProvincias().subscribe(async (ans) => {
-      this.provincias = ans;
-    });
-  }
+  // getProvincias() {
+  //   this.provinciasService.getProvincias().subscribe(async (ans) => {
+  //     this.provincias = ans;
+  //   });
+  // }
 
   // Método para enviar los datos del formulario al servidor
   async enviarDatos() {
