@@ -1,6 +1,19 @@
+:root {
+    --color-fila-1: #FFECBA;
+    --color-fila-2: #FFFFFF;
+}
+
+
 .dark-list {
-    background-color: #444852; 
+    background-color: #444852;
     color: #fff;
+}
+
+ion-list {
+    margin-top: 15px !important;
+    margin-bottom: 20px !important;
+    margin-left: 10px !important;
+    margin-right: 10px !important;
 }
 
 /* Estilos generales para ion-toolbar, ion-title y ion-col */
@@ -22,15 +35,15 @@ ion-title {
 
 /* Estilos para diferentes colores de texto */
 .color-naranja {
-    color: #FFA500; 
+    color: #FFA500;
 }
 
 .color-verde {
-    color: #008000; 
+    color: #008000;
 }
 
 .color-rojo {
-    color: #FF0000; 
+    color: #FF0000;
 }
 
 /* Estilos para íconos generales */
@@ -57,7 +70,8 @@ ion-title {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 90vw; /* Reduzco el ancho para dejar espacio para el borde */
+    width: 90vw;
+    /* Reduzco el ancho para dejar espacio para el borde */
     color: black !important;
     margin-bottom: 8px;
 }
@@ -113,10 +127,13 @@ ion-title {
 
 /* Estilos para el punto de estado de reserva */
 .estado-reserva-dot {
-    width: 20px; /* Ajusta según sea necesario */
-    height: 20px; /* Ajusta según sea necesario */
+    width: 20px;
+    /* Ajusta según sea necesario */
+    height: 20px;
+    /* Ajusta según sea necesario */
     background-size: cover;
-    border-radius: 50%; /* Esto hace que el elemento sea un círculo */
+    border-radius: 50%;
+    /* Esto hace que el elemento sea un círculo */
 }
 
 /* Estilos para filas de encabezado y datos en la tabla */
@@ -125,5 +142,14 @@ ion-title {
 }
 
 .data-row {
-    font-size: 2.0rem; /* Ajusta el tamaño de fuente según tus preferencias */
+    font-size: 2.0rem;
+    background-color: var(--color-fila-1);
+    /* Cambia el color de la primera fila */
+    /* Ajusta otros estilos según sea necesario */
+}
+
+.dark-theme .data-row {
+    background-color: var(--color-fila-2);
+    /* Cambia el color de la segunda fila en modo oscuro */
+    /* Ajusta otros estilos para el modo oscuro según sea necesario */
 }

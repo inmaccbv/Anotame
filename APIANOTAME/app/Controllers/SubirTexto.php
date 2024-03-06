@@ -49,7 +49,7 @@ class SubirTexto extends ResourceController
             return $this->respond([
                 'code'       => 200,
                 'data'       => $data,
-                'idUsuario'  => $existingText['id_texto'],
+                'id_texto'  => $existingText['id_texto'],
                 'authorized' => 'SI',
                 'texto'      => 'Texto actualizado con éxito',
             ]);
@@ -62,7 +62,7 @@ class SubirTexto extends ResourceController
                 return $this->respond([
                     'code'       => 200,
                     'data'       => $data,
-                    'idUsuario'  => $id_texto,
+                    'id_texto'  => $id_texto,
                     'authorized' => 'SI',
                     'texto'      => 'Texto subido con éxito',
                 ]);
@@ -76,16 +76,6 @@ class SubirTexto extends ResourceController
                 ]);
             }
         }
-    }
-
-    // Método para obtener todos los textos
-    public function getTexto()
-    {
-        $db4 = \Config\Database::connect();
-
-        $query = $db4->query("SELECT * FROM texto");
-
-        return $this->respond($query->getResult());
     }
 
     // Método para obtener textos por empresa

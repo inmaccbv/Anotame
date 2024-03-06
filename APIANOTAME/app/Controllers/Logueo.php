@@ -60,6 +60,63 @@ class Logueo extends ResourceController
         }
     }
 
+    public function getUsuariosPorIdEmpresa()
+    {
+        // Obtener el id_empresa del cuerpo de la solicitud
+        $id_empresa = $this->request->getGet('id_empresa'); // Cambiar a getGet
+
+        // Validar que se proporcionó el id_empresa
+        if (empty($id_empresa)) {
+            return $this->respond([
+                'code'       => 400,
+                'data'       => null,
+                'authorized' => 'NO',
+                'texto'      => 'Error: Se requiere el ID de la empresa.',
+            ]);
+        }
+
+        // Puedes realizar la consulta en la base de datos para obtener los textos relacionados con la empresa
+        $db = \Config\Database::connect();
+        $query = $db->query("SELECT * FROM usuarios WHERE id_empresa = ?", [$id_empresa]);
+
+        // Devolver la respuesta en formato JSON
+        return $this->respond([
+            'code'       => 200,
+            'data'       => $query->getResult(),
+            'authorized' => 'SI',
+            'texto'      => 'Textos obtenidos con éxito.',
+        ]);
+    }
+
+
+    public function getEmpleadosPorEmpresa()
+    {
+        // Obtener el id_empresa del cuerpo de la solicitud
+        $id_empresa = $this->request->getGet('id_empresa'); // Cambiar a getGet
+
+        // Validar que se proporcionó el id_empresa
+        if (empty($id_empresa)) {
+            return $this->respond([
+                'code'       => 400,
+                'data'       => null,
+                'authorized' => 'NO',
+                'texto'      => 'Error: Se requiere el ID de la empresa.',
+            ]);
+        }
+
+        // Puedes realizar la consulta en la base de datos para obtener los textos relacionados con la empresa
+        $db = \Config\Database::connect();
+        $query = $db->query("SELECT * FROM reservas WHERE id_empresa = ?", [$id_empresa]);
+
+        // Devolver la respuesta en formato JSON
+        return $this->respond([
+            'code'       => 200,
+            'data'       => $query->getResult(),
+            'authorized' => 'SI',
+            'texto'      => 'Textos obtenidos con éxito.',
+        ]);
+    }
+
     public function getUserByEmail()
     {
         $email = $this->request->getVar('email');  // Obtener el correo electrónico del cuerpo POST
@@ -118,7 +175,7 @@ class Logueo extends ResourceController
     {
         // Obtener el email del cuerpo de la solicitud
         $email = $this->request->getPost('email'); // Cambiar a getPost
-    
+
         // Validar que se proporcionó el email
         if (empty($email)) {
             return $this->respond([
@@ -128,14 +185,14 @@ class Logueo extends ResourceController
                 'texto'      => 'Error: Se requiere el email.',
             ]);
         }
-    
+
         // Puedes realizar la consulta en la base de datos para obtener el id_empresa relacionado con el email
         $db = \Config\Database::connect();
         $query = $db->query("SELECT id_empresa FROM usuarios WHERE email = ?", [$email]);
-    
+
         // Obtener el resultado de la consulta
         $result = $query->getRow();
-    
+
         // Verificar si se encontró un resultado
         if ($result) {
             return $this->respond([
@@ -199,21 +256,21 @@ class Logueo extends ResourceController
     {
         // Obtiene el id del usuario desde la solicitud POST
         $idUsuario = $this->request->getPost('id_user');
-    
+
         $db = \Config\Database::connect();
-    
+
         $builder = $db->table('usuarios');
         $builder->select('id_user, nombre, apellido, email, rol, id_empresa');  // Asegúrate de incluir id_empresa
         $builder->where('id_user', $idUsuario);
         $query = $builder->get()->getRow();
-    
+
         if ($query) {
             // Ahora, obtén información de la empresa utilizando id_empresa
             $builderEmpresa = $db->table('empresas');
             $builderEmpresa->select('id_empresa, empresa');
             $builderEmpresa->where('id_empresa', $query->id_empresa);
             $empresaData = $builderEmpresa->get()->getRow();
-    
+
             return $this->respond([
                 'code'       => 200,
                 'data'       => [
@@ -237,6 +294,4 @@ class Logueo extends ResourceController
             ]);
         }
     }
-    
-
 }

@@ -25,12 +25,6 @@
   <form [formGroup]="reviewForm" (ngSubmit)="enviarResena()">
 
     <ion-item [class.dark-theme]="isDarkMode">
-      <ion-label position="floating">Nombre (opcional)</ion-label>
-      <!-- Utiliza formControlName para enlazar el control en el FormGroup -->
-      <ion-input type="text"></ion-input>
-    </ion-item>
-
-    <ion-item [class.dark-theme]="isDarkMode">
       <ion-label>Calificación</ion-label>
       <!-- Asegúrate de que el control de calificación no tenga ngModel -->
       <ion-icon *ngFor="let star of stars; let i = index" [name]="star.icon" [style.color]="star.color"
@@ -38,10 +32,10 @@
         
     </ion-item>
 
-    <ion-item [class.dark-theme]="isDarkMode">
+    <ion-item [class.dark-theme]="isDarkMode" style="margin-top: 30px;">
       <ion-label position="floating">Comentario</ion-label>
       <!-- Utiliza formControlName para enlazar el control en el FormGroup -->
-      <ion-textarea formControlName="comentario"></ion-textarea>
+      <ion-textarea formControlName="comentario" style="height: 10em;"></ion-textarea>
     </ion-item>
 
     <input type="hidden" #idEmpresaInput [value]="idEmpresa">
@@ -51,19 +45,17 @@
 
   </form>
 
-  <ion-card *ngFor="let resena of reviewsFiltrados; let i = index" [class.dark-theme]="isDarkMode">
-    
-    <ion-card-header>
-      <ion-card-title [style.color]="isDarkMode ? '#ff830f' : '#ff830f'">{{ resena.nombre }}</ion-card-title>
-    </ion-card-header>
+  <ion-card *ngFor="let resena of reviewsFiltrados; let i = index" [class.dark-theme]="isDarkMode" style="margin-top: 30px;">
 
-    <ion-card-content>
-      <p>Calificación: {{ resena.calificacion }} estrellas</p>
-      <p>{{ resena.comentario }}</p>
-
-      <a>
-        <ion-icon class="custom-trash-icon" name="trash-outline" size="small" slot="end" (click)="eliminarResena(i)"></ion-icon>
-      </a>
+    <ion-card-content style="display: flex; flex-direction: column;">
+      <p>{{ resena.calificacion }} <ion-icon name="star" style="color: #ff830f;"></ion-icon></p>
+      <p class="comentario-preview" [class.expandido]="expandido">
+        {{ resena.comentario }}
+      </p>
+      <div style="margin-top: 5px; margin-left: auto; text-align: right;">
+        <a (click)="toggleExpansion()" *ngIf="!expandido && resena.comentario.length > 100">Ver más</a>
+        <a (click)="toggleExpansion()" *ngIf="expandido">Ver menos</a>
+      </div>
     </ion-card-content>
 
   </ion-card>

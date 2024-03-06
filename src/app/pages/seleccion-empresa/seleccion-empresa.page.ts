@@ -20,9 +20,9 @@ export class SeleccionEmpresaPage implements OnInit {
 
   idEmpresa!: number;
   empresas!: any;
+  empresasFiltradas: Empresa[] = [];
 
   provincias: any[] = [];
-  empresasFiltradas: Empresa[] = [];
 
   filtroTipoLocal: string = '';
   filtroProvincia: string = '';
@@ -87,9 +87,7 @@ export class SeleccionEmpresaPage implements OnInit {
     if (idEmpresa) {
       const idEmpresaString = idEmpresa.toString();
       this.redirigirYAlmacenarIdEmpresa(idEmpresaString);
-    } else {
-      console.error('ID de empresa no válido');
-    }
+    } 
   }
 
   // Método para obtener la lista de empresas
@@ -148,12 +146,6 @@ export class SeleccionEmpresaPage implements OnInit {
   pasaFiltroNombreRestaurante(empresa: Empresa): boolean {
     return empresa.empresa.includes(this.filtroNombreRestaurante);
   }
-
-  // Método para obtener empresas filtradas (por definir)
-  filtrarEmpresas() {
-    // Aplica lógica para filtrar empresas según los criterios definidos
-    return this.empresas;
-  }
   
   // Método para borrar los filtros de búsqueda
   borrarFiltro() {
@@ -183,13 +175,11 @@ export class SeleccionEmpresaPage implements OnInit {
     }
   }
 
-  // Método para alternar el modo oscuro
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;
     this.themeService.setDarkTheme(this.isDarkMode);
   }
 
-  // Método para cerrar sesión
   cerrarSesion(): void {
     this.authServiceCli.logout().subscribe();
   }

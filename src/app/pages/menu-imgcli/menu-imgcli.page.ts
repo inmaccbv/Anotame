@@ -102,19 +102,22 @@ export class MenuImgcliPage implements OnInit {
     this.selectedFile = event.target.files[0] as File;
   }
 
-  // Obtengo las imágenes del servidor
+  // Método para obtener las imágenes desde el servicio
   getImg() {
     if (this.idEmpresa !== null) {
       this.menuUploadService.getMenusByEmpresa(this.idEmpresa).subscribe(
         (ans: any) => {
-          // Compruebo si 'ans' tiene la propiedad 'code'
           if ('code' in ans) {
             if (ans.code === 200) {
-              // La solicitud fue exitosa, asigno los menús
-              // Compruebo si 'ans' tiene la propiedad 'data'
               if ('data' in ans) {
                 this.menus = ans.data;
-                this.menusFiltrados = ans.data;
+
+                // Ordena los menús por el día de la semana
+                this.menus.sort((a: any, b: any) => {
+                  const diaA = this.availableDays.indexOf(a.dia);
+                  const diaB = this.availableDays.indexOf(b.dia);
+                  return diaA - diaB;
+                });
 
                 console.log('Menús obtenidos:', this.menus);
               } else {
@@ -133,6 +136,7 @@ export class MenuImgcliPage implements OnInit {
       );
     }
   }
+
 
   // Método para obtener la URL de la imagen
   obtenerUrlImg(menu: any): string {

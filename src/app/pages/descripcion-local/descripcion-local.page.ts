@@ -18,11 +18,19 @@ import { UsuariosService } from '../../services/usuarios.service';
 })
 export class DescripcionLocalPage implements OnInit {
 
+  // Variables para almacenar datos del usuario y la empresa
   id_empresa: number | null = null;
   id_user: number | null = null;
+  idEmpresa!: number | null;
 
+  // Variables para almacenar los textos obtenidos
+  textos: any;
+  textosFiltrados: any;
+
+  // Formulario reactivo para la entrada de texto
   ionicForm!: FormGroup;
 
+  // Variables para el rol del usuario y el modo oscuro
   rol!: any;
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
@@ -36,10 +44,11 @@ export class DescripcionLocalPage implements OnInit {
     public menuService: MenuService,
     public themeService: ThemeService,
   ) {
+    // Obtener el rol del usuario y configurar el modo oscuro
     this.getUserRole();
-    // console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
 
+    // Configurar el formulario reactivo
     this.ionicForm = this.formBuilder.group({
       nomLocal: ['', [Validators.required]],
       texto: [''],
@@ -49,48 +58,42 @@ export class DescripcionLocalPage implements OnInit {
   }
 
   ngOnInit() {
+    // Obtener los componentes del menú
     this.componentes = this.menuService.getMenuOpts();
-    this.recuperarTextoLocalStorage();
 
     // Llamar al nuevo método para obtener datos del usuario y la empresa
     this.obtenerIdUsuario().subscribe(
       ({ idUsuario, idEmpresa }) => {
-        // console.log('Id de Usuario:', idUsuario);
-        // console.log('Id de Empresa:', idEmpresa);
-
-        // Asignar los valores obtenidos a las variables del componente
+        // Asignar los valores obtenidos
         this.id_user = idUsuario;
         this.id_empresa = idEmpresa;
+
+        // Obtener los textos después de obtener los datos del usuario
+        this.getTexto();
       },
       (error) => {
         console.error('Error al obtener el id del usuario y la empresa:', error);
       }
-    );
+    );    
   }
 
   // Método para obtener el id del usuario y la empresa
   obtenerIdUsuario(): Observable<{ idUsuario: number | null, idEmpresa: number | null }> {
-    // Obtener el usuario del localStorage
     const usuarioString = localStorage.getItem('usuario');
-
-    // Verificar si el usuario existe en el localStorage
+  
     if (usuarioString) {
-      // Parsear el usuario
       const usuario = JSON.parse(usuarioString);
       const email = usuario.email;
-
-      // Llamar al servicio para obtener el usuario y la empresa por el correo electrónico
+  
       return this.usuariosService.getUserAndEmpresaByEmail(email).pipe(
         map(response => {
-          // console.log('Respuesta del servidor en obtenerIdUsuario:', response);
-
-          // Verificar si la respuesta es válida y tiene datos
           if (response && response.code === 200 && response.data) {
-            // Acceder a las propiedades id_user e id_empresa según la estructura real de la respuesta
             const idUsuario = response.data.id_user ? response.data.id_user : null;
             const idEmpresa = response.data.id_empresa ? response.data.id_empresa : null;
-
-            // Devolver los valores obtenidos
+  
+            // Asegúrate de asignar idEmpresa
+            this.idEmpresa = idEmpresa;
+  
             return { idUsuario, idEmpresa };
           } else {
             console.error('No se pudieron obtener los datos del usuario:', response.texto);
@@ -103,7 +106,6 @@ export class DescripcionLocalPage implements OnInit {
         })
       );
     } else {
-      // Mostrar un error si el usuario no se encuentra en el localStorage
       console.error('Usuario no encontrado en el almacenamiento local');
       return of({ idUsuario: null, idEmpresa: null });
     }
@@ -111,15 +113,11 @@ export class DescripcionLocalPage implements OnInit {
 
   // Método para obtener el rol del usuario
   getUserRole() {
-    // Obtener el rol del usuario del servicio de autenticación
     this.rol = this.authService.getUserRole();
-    // console.log(this.rol);
 
-    // Verificar si el usuario no tiene el rol de administrador
     if (!(this.rol === 'administrador')) {
       console.error('Usuario con rol', this.rol, 'no tiene permiso para acceder a esta opción.');
       
-      // Cerrar sesión y redirigir al inicio de sesión
       this.authService.logout().subscribe(
         () => {
           localStorage.removeItem('role');
@@ -133,33 +131,18 @@ export class DescripcionLocalPage implements OnInit {
     }
   }
 
-  // Método para enviar el texto introducido
+  // Método para enviar un nuevo texto al servidor
   enviarTexto() {
-    // Verificar si el formulario es válido
     if (this.ionicForm.valid) {
-      // Continuar solo si los valores no son nulos
       if (this.id_empresa !== null && this.id_user !== null) {
-        // Crear un objeto que contenga todas las propiedades necesarias, incluyendo idEmpresa e idUsuario
         const datos = { ...this.ionicForm.value, id_empresa: this.id_empresa, id_user: this.id_user };
 
-        // Enviar el texto con los datos correctos
         this.textoService.subirTexto(datos, this.id_empresa, this.id_user).subscribe(
           (ans) => {
-            console.log('Respuesta del servidor:', ans);
-            // Limpiar el formulario después de enviarlo
+            // console.log('Respuesta del servidor:', ans);
             this.ionicForm.reset();
-
-            // Obtener los textos guardados del localStorage
-            const textosGuardadosString = localStorage.getItem('textos');
-            const textosGuardados = textosGuardadosString ? JSON.parse(textosGuardadosString) : [];
-
-            // Agregar el nuevo texto al array
-            textosGuardados.push(ans.data);
-
-            // Almacenar el texto actualizado en el localStorage
-            localStorage.setItem('textos', JSON.stringify(textosGuardados));
-
-            window.location.reload();
+            // Actualizar la lista de textos después de enviar uno nuevo
+            this.getTexto();
           },
           (error) => {
             console.error('Error en la solicitud:', error);
@@ -171,29 +154,37 @@ export class DescripcionLocalPage implements OnInit {
     }
   }
 
-  // Método para recuperar el texto del localStorage y mostrarlo en el formulario
-  recuperarTextoLocalStorage() {
-    // Obtener los textos guardados del localStorage
-    const textosGuardadosString = localStorage.getItem('textos');
-    const textosGuardados = textosGuardadosString ? JSON.parse(textosGuardadosString) : [];
-    
-    // Asumo que quieres mostrar el último texto guardado
-    const ultimoTextoGuardado = textosGuardados.length > 0 ? textosGuardados[textosGuardados.length - 1] : null;
+  // Método para obtener los textos del servidor
+  getTexto() {
+    if (this.idEmpresa !== null) {
+      this.textoService.getTextosByEmpresa(this.idEmpresa).subscribe(
+        (ans) => {
+          // console.log('Respuesta del servidor:', ans);
   
-    // Actualizar los valores en el formulario si hay un texto guardado
-    if (ultimoTextoGuardado) {
-      this.ionicForm.patchValue({
-        nomLocal: ultimoTextoGuardado.nomLocal,
-        texto: ultimoTextoGuardado.texto,
-      });
+          if (ans.code === 200) {
+            this.textos = ans.data;
+            this.textosFiltrados = ans.data;
+            console.log('Textos obtenidos:', this.textos);
+          } else {
+            console.error('Error en la respuesta:', ans.texto);
+          }
+        },
+        (error) => {
+          console.error('Error al obtener los textos:', error);
+        }
+      );
+    } else {
+      console.error('ID de empresa no válido.');
     }
   }
 
+  // Método para cambiar el modo oscuro
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;
     this.themeService.setDarkTheme(this.isDarkMode);
   }
 
+  // Método para cerrar sesión
   cerrarSesion(): void {
     this.authService.logout().subscribe();
   }

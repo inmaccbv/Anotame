@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subject, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { Componente, Horario } from 'src/app/interfaces/interfaces';
 import { HorariosService } from '../../services/horarios.service';
@@ -9,9 +10,6 @@ import { AuthService } from 'src/app/services/auth.service';
 import { MenuService } from 'src/app/services/menu.service';
 import { ThemeService } from 'src/app/services/theme.service';
 import { UsuariosService } from 'src/app/services/usuarios.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { DiasService } from 'src/app/services/dias.service';
-import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-horarios',
@@ -26,47 +24,50 @@ export class HorariosPage implements OnInit {
   id_user: number | null = null;
 
   diasSemana: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-  horariosSeleccionados: Horario[] = [];
-
-  horarioApertura: { [key: string]: string } = {};
-  horarioCierre: { [key: string]: string } = {};
   diasSeleccionados: Set<string> = new Set<string>();
-  dias: any;
+
+  cerradoMostrado: { [key: string]: boolean } = {};
+
+  horariosSeleccionados: Horario[] = [];
+  hora_apertura: { [key: string]: string } = {};
+  hora_cierre: { [key: string]: string } = {};
+
   rol!: any;
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
 
-  private actualizarDatosSubject = new Subject<void>();
-  actualizarDatos$ = this.actualizarDatosSubject.asObservable();
-
   constructor(
     private formBuilder: FormBuilder,
-    public alertController: AlertController,
+    private router: Router,
     public horariosService: HorariosService,
     public authService: AuthService,
     public themeService: ThemeService,
     public usuariosService: UsuariosService,
-    public diasService: DiasService,
     public menuService: MenuService,
-    private router: Router
   ) {
-    this.getUserRole();
-    this.isDarkMode = this.themeService.isDarkTheme();
+    // Inicialización del formulario y obtención del rol del usuario
     this.ionicForm = this.formBuilder.group({
       id_empresa: [''],
       id_user: [''],
     });
+    this.getUserRole();
+    this.isDarkMode = this.themeService.isDarkTheme();
   }
 
   ngOnInit() {
+    // Obtener la lista de componentes del menú
     this.componentes = this.menuService.getMenuOpts();
 
+    // Obtener el id del usuario y de la empresa al inicializar la página
     this.obtenerIdUsuario().subscribe(
       ({ idUsuario, idEmpresa }) => {
         this.id_user = idUsuario;
         this.id_empresa = idEmpresa;
 
+        // Verificar si el id de la empresa no es nulo antes de continuar
         if (this.id_empresa !== null) {
+
+          this.initHorariosPredeterminados();
           this.getHorarios(); // Obtener los horarios al cargar la página
         } else {
           console.error('ID de empresa no válido.');
@@ -76,115 +77,9 @@ export class HorariosPage implements OnInit {
         console.error('Error al obtener el id del usuario y la empresa:', error);
       }
     );
-
-    this.actualizarDatosSubject.subscribe(() => {
-      this.getHorarios(); // Actualizar los horarios al recibir un evento
-    });
   }
 
-  getUserRole() {
-    this.rol = this.authService.getUserRole();
-    // console.log(this.rol);
-
-    if (!(this.rol === 'administrador' || this.rol === 'encargado')) {
-      console.error('Usuario con rol', this.rol, 'no tiene permiso para acceder a esta opción.');
-      this.authService.logout().subscribe(
-        () => {
-
-          localStorage.removeItem('role');
-          localStorage.removeItem('usuario');
-
-          this.router.navigate(['/login']);
-        },
-        (error) => {
-          console.error('Error al cerrar sesion:', error);
-          // Manejo de errores
-        }
-      )
-    }
-  }
-
-  getHorarios() {
-    // Verificar si el rol del usuario es 'administrador' o 'encargado'
-    if (this.rol === 'administrador' || this.rol === 'encargado') {
-      // Obtener el email del usuario
-      const email = this.authService.getUserEmail();
-  
-      // Verificar si el email no es nulo antes de llamar a la función
-      if (email !== null) {
-        this.usuariosService.getIdEmpresaPorEmail(email).subscribe(
-          (response) => {
-            if (response.code === 200 && response.data && response.data.id_empresa) {
-              this.id_empresa = response.data.id_empresa;
-  
-              // Ahora que tenemos el id_empresa, podemos obtener los horarios
-              const idEmpresaAsNumber = this.id_empresa as number; // Convertir a número
-              if (!isNaN(idEmpresaAsNumber)) {
-                this.horariosService.obtenerHorasByEmpresa(idEmpresaAsNumber).subscribe(
-                  (horariosResponse) => {
-                    if (horariosResponse.code === 200 && Array.isArray(horariosResponse.data)) {
-                      this.horariosSeleccionados = horariosResponse.data.map((horario: Horario) => {
-                        const { hora_apertura, hora_cierre, ...resto } = horario;
-                        return { hora_apertura: hora_apertura, hora_cierre: hora_cierre, ...resto };
-                    });
-                    
-                      console.log('Horarios obtenidos:', this.horariosSeleccionados);
-                      
-                      
-                    } else {
-                      console.error('La respuesta del servicio de horarios no es válida:', horariosResponse);
-                    }
-                  },
-                  (errorHorarios) => {
-                    console.error('Error al obtener los horarios:', errorHorarios);
-                  }
-                );
-              } else {
-                console.error('ID de empresa no es un número válido:', idEmpresaAsNumber);
-              }
-            } else {
-              console.error('No se pudo obtener el id_empresa del usuario:', response);
-            }
-          },
-          (error) => {
-            console.error('Error al obtener el id_empresa del usuario:', error);
-          }
-        );
-      } else {
-        console.error('El email del usuario es nulo.');
-      }
-    } else {
-      console.error('No tiene permiso para acceder a esta opción.');
-    }
-  }
-  
-  formatHora(hora: string | undefined): string {
-    // Verificar si la hora es nula o indefinida antes de manipular la cadena
-    if (hora) {
-      // Convertir a un objeto Date para asegurar la correcta manipulación de la hora
-      const timeDate = new Date(`1970-01-01T${hora}`);
-      // Formatear la hora como HH:mm
-      const formattedTime = timeDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      return formattedTime;
-    } else {
-      return ''; // Otra alternativa si la hora es nula o indefinida
-    }
-  }
-  
-  
-  private formatearHora(hora: string | undefined): string {
-    if (hora) {
-      const timeDate = new Date(`1970-01-01T${hora}`);
-      const formattedTime = timeDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      return formattedTime || 'No disponible';
-    } else {
-      return 'No disponible';
-    }
-  }
-  
-  
-  
-
+  // Obtener el id del usuario y de la empresa
   obtenerIdUsuario(): Observable<{ idUsuario: number | null, idEmpresa: number | null }> {
     const usuarioString = localStorage.getItem('usuario');
 
@@ -214,14 +109,36 @@ export class HorariosPage implements OnInit {
     }
   }
 
+
+  // Obtener el rol del usuario y verificar permisos
+  getUserRole() {
+    this.rol = this.authService.getUserRole();
+
+    if (!(this.rol === 'administrador' || this.rol === 'encargado')) {
+      console.error('Usuario con rol', this.rol, 'no tiene permiso para acceder a esta opción.');
+      this.authService.logout().subscribe(
+        () => {
+          localStorage.removeItem('role');
+          localStorage.removeItem('usuario');
+          this.router.navigate(['/login']);
+        },
+        (error) => {
+          console.error('Error al cerrar sesión:', error);
+          // Manejo de errores
+        }
+      )
+    }
+  }
+
+  // Agregar un nuevo horario
   agregarHorario(dia: string): void {
     if (!dia) {
       console.error('El valor del día es nulo o indefinido.');
       return;
     }
 
-    const hora_apertura = this.horarioApertura[dia];
-    const hora_cierre = this.horarioCierre[dia];
+    const hora_apertura = this.hora_apertura[dia];
+    const hora_cierre = this.hora_cierre[dia];
 
     this.obtenerIdUsuario().subscribe(({ idUsuario, idEmpresa }) => {
       if (idUsuario !== null && idEmpresa !== null) {
@@ -247,12 +164,14 @@ export class HorariosPage implements OnInit {
             console.log('Respuesta del servidor al subir horario:', ans);
             this.horariosSeleccionados.push(nuevoHorario);
             this.diasSeleccionados.add(dia);
-            this.horarioApertura[dia] = '';
-            this.horarioCierre[dia] = '';
-            this.actualizarDatosSubject.next(); // Emitir evento para actualizar datos
+            this.hora_apertura[dia] = '';
+            this.hora_cierre[dia] = '';
+
+            this.getHorarios();
           },
           (error) => {
             console.error('Error al subir el horario:', error);
+            console.log('Respuesta completa del servidor:', error);
           }
         );
       } else {
@@ -261,34 +180,91 @@ export class HorariosPage implements OnInit {
     });
   }
 
-  async borrarHorario(id_horario: any) {
-    const alert = await this.alertController.create({
-      header: 'Confirmar',
-      message: '¿Estás seguro de que deseas borrar este horario?',
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          handler: () => {
-            console.log('Borrado de horario cancelado');
-          }
-        },
-        {
-          text: 'Borrar',
-          handler: async () => {
-            try {
-              await this.horariosService.borrarHorario(id_horario);
-              console.log('Horario borrado correctamente');
-              this.actualizarDatosSubject.next(); // Emitir evento para actualizar datos
-            } catch (error) {
-              console.error('Error al borrar el horario:', error);
-            }
-          }
-        }
-      ]
-    });
+  // Obtener los horarios del usuario actual
+  getHorarios() {
+    if (this.rol === 'administrador' || this.rol === 'encargado') {
+      const email = this.authService.getUserEmail();
 
-    await alert.present();
+      if (email !== null) {
+        this.usuariosService.getIdEmpresaPorEmail(email).subscribe(
+          (response) => {
+            if (response.code === 200 && response.data && response.data.id_empresa) {
+              this.id_empresa = response.data.id_empresa;
+
+              const idEmpresaAsNumber = this.id_empresa as number;
+              if (!isNaN(idEmpresaAsNumber)) {
+                this.horariosService.obtenerHorasByEmpresa(idEmpresaAsNumber).subscribe(
+                  (horariosResponse) => {
+                    if (horariosResponse.code === 200 && Array.isArray(horariosResponse.data)) {
+                      this.horariosSeleccionados = this.horariosSeleccionados.map((horario: Horario) => {
+                        const { dia, hora_apertura, hora_cierre } = horario;
+                        const indiceExistente = horariosResponse.data.findIndex((h: { dia: string; }) => h.dia === dia);
+
+                        if (indiceExistente !== -1) {
+                          return {
+                            dia,
+                            hora_apertura: horariosResponse.data[indiceExistente].hora_apertura,
+                            hora_cierre: horariosResponse.data[indiceExistente].hora_cierre,
+                            id_user: horariosResponse.data[indiceExistente].id_user,
+                            id_empresa: horariosResponse.data[indiceExistente].id_empresa
+                          };
+                        } else {
+                          return {
+                            dia,
+                            hora_apertura: 'cerrado',
+                            hora_cierre: 'cerrado',
+                            id_user: this.id_user as number,
+                            id_empresa: this.id_empresa as number
+                          };
+                        }
+                      });
+
+                      // Ordenar los horarios según los días de la semana
+                      this.horariosSeleccionados = this.horariosSeleccionados.sort((a, b) => {
+                        const indexA = this.diasSemana.indexOf(a.dia);
+                        const indexB = this.diasSemana.indexOf(b.dia);
+                        return indexA - indexB;
+                      });
+
+                      console.log('Horarios obtenidos:', this.horariosSeleccionados);
+                    } else {
+                      console.error('La respuesta del servicio de horarios no es válida:', horariosResponse);
+                    }
+                  },
+                  (errorHorarios) => {
+                    console.error('Error al obtener los horarios:', errorHorarios);
+                  }
+                );
+              } else {
+                console.error('ID de empresa no es un número válido:', idEmpresaAsNumber);
+              }
+            } else {
+              console.error('No se pudo obtener el id_empresa del usuario:', response);
+            }
+          },
+          (error) => {
+            console.error('Error al obtener el id_empresa del usuario:', error);
+          }
+        );
+      } else {
+        console.error('El email del usuario es nulo.');
+      }
+    } else {
+      console.error('No tiene permiso para acceder a esta opción.');
+    }
+  }
+
+  // Inicializar horarios predeterminados
+  initHorariosPredeterminados() {
+    this.horariosSeleccionados = this.diasSemana.map(dia => ({
+      dia: dia,
+      hora_apertura: '00:00',
+      hora_cierre: '00:00',
+      id_user: this.id_user !== null ? this.id_user : 0,
+      id_empresa: this.id_empresa !== null ? this.id_empresa : 0
+    }));
+
+    this.cerradoMostrado = {};
   }
 
   toggleDarkMode() {

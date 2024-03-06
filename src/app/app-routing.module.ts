@@ -161,6 +161,10 @@ const routes: Routes = [
     loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule)
   },
   {
+    path: 'addempresa',
+    loadChildren: () => import('./pages/addempresa/addempresa.module').then( m => m.AddempresaPageModule)
+  },
+  {
     path: 'addempleados',
     loadChildren: () => import('./pages/addempleados/addempleados.module').then( m => m.AddempleadosPageModule)
   },
@@ -191,7 +195,8 @@ const routes: Routes = [
   {
     path: '**',
     redirectTo: 'inicio'
-  },   
+  },  
+  
  
  
    

@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import { Componente } from 'src/app/interfaces/interfaces';
+
 import { AuthClienteService } from 'src/app/services/auth-cliente.service';
-import { AuthService } from 'src/app/services/auth.service';
 import { ClientesService } from 'src/app/services/clientes.service';
 import { MenuService } from 'src/app/services/menu.service';
 import { ReservasService } from 'src/app/services/reservas.service';

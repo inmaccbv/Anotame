@@ -57,12 +57,23 @@ export class EmpresaService {
       ));
   }
 
+  
+  getUltimaEmpresa(): Observable<any> {
+    return this.http.get(this.BASE_RUTA + this.RUTA_EMPRESA + '/obtenerUltimaEmpresa')
+      .pipe(
+        catchError(error => {
+          console.error('Error al obtener la última empresa:', error);
+          throw error;
+        })
+      );
+  }
+
   // Método para obtener la lista de empresas
   getEmpresas(): Observable<any> {
     return this.http.get(this.BASE_RUTA + this.RUTA_EMPRESA + '/getEmpresas')
       .pipe(
         tap((ans) => {
-          console.log('Empresas obtenidas:', ans);
+          // console.log('Empresas obtenidas:', ans);
           return ans;
         }),
         catchError(error => {
@@ -85,24 +96,13 @@ export class EmpresaService {
       );
   }
 
-  // Método para obtener la lista de provincias
-  getProvincias(): Observable<any> {
-    return this.http.post(this.BASE_RUTA + this.RUTA_EMPRESA + '/getProvincias', '')
-      .pipe(
-        dat => {
-          console.log('res ' + JSON.stringify(dat));
-          return dat;
-        }
-      );
-  }
-
   // Método para establecer la empresa seleccionada
   setEmpresaSeleccionada(id_empresa: string): Observable<any> {
     const payload = new HttpParams().set('id_empresa', id_empresa);
     return this.http.post(this.BASE_RUTA + this.RUTA_EMPRESA + '/setEmpresaSeleccionada', payload)
       .pipe(
         map(dat => {
-          console.log('Respuesta: ' + JSON.stringify(dat));
+          // console.log('Respuesta: ' + JSON.stringify(dat));
           return dat;
         }),
         catchError(error => {
@@ -118,25 +118,7 @@ export class EmpresaService {
         })
       );
   }
-
-  getEmpresaById(idEmpresa: number): Observable<any> {
-    return this.http.get(`${this.BASE_RUTA}${this.RUTA_EMPRESA}?id_empresa=${idEmpresa}`)
-      .pipe(
-        tap((ans) => console.log('Empresas obtenidas por ID:', ans)),
-        catchError(error => {
-          console.error('Error al obtener las empresas por ID:', error);
-          return throwError(error);
-        })
-      );
-  }
-  
-  // Método para obtener la empresa seleccionada
-  getEmpresaSeleccionada(): any {
-    return this.empresaSeleccionada;
-  }
   getEmpleadosPorEmpresa(idUsuario: any): Observable<any[]> {
     return this.http.get<any[]>(`${this.BASE_RUTA}${this.RUTA_EMPRESA}/getEmpleadosPorEmpresa/${idUsuario}`);
   }
-  
-  
 }

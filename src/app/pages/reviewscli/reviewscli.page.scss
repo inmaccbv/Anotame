@@ -1,6 +1,27 @@
 body {
-    font-size: 18px;
+    font-size: 16px;
 }
+
+.comentario-preview {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-height: 1.5em;  /* Ajusta según sea necesario para mostrar cierta cantidad de líneas */
+  }
+  
+  .expandido {
+    max-height: unset !important;  /* Ajusta según sea necesario */
+    overflow: unset !important;    /* Ajusta según sea necesario */
+    white-space: pre-wrap;
+  }
+  
+  a {
+    cursor: pointer;
+    color: #ff830f;  /* Color de enlace predeterminado, puedes ajustar según tu estilo */
+  }
+  
+  
+  
 
 .custom-trash-icon {
     float: right;

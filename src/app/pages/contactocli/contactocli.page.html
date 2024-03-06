@@ -17,6 +17,7 @@
       <ion-button (click)="cerrarSesion()">
         <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
       </ion-button>
+
     </ion-buttons>
 
   </ion-toolbar>
@@ -26,30 +27,36 @@
 
   <input type="hidden" #idEmpresaInput [value]="idEmpresa">
 
-  <div class="text-container" *ngFor="let dato of datosFiltrados">
-
-    <ion-icon name="restaurant-outline" class="orange-icons"></ion-icon>
-    <p class="large-text">{{ dato.nomLocal }}</p>
-    <ion-icon name="call-outline" class="orange-icons"></ion-icon>
-    <p class="large-text">{{ dato.telf1 }}</p>
-    <p class="large-text">{{ dato.telf2 }}</p>
-    <ion-icon name="location-outline" class="orange-icons"></ion-icon>
-    <p class="large-text">{{ dato.direccion }}</p>
-
-    <ion-grid>
-      <ion-row>
-        <ion-col class="header-text"></ion-col>
-        <ion-col class="header-text">H. Apertura</ion-col>
-        <ion-col class="header-text">H. Cierre</ion-col>
-      </ion-row>
-      <ion-row *ngFor="let horario of horariosSeleccionados">
-        <ion-col class="large-text">{{ horario.dia }}</ion-col>
-        <!-- <ion-col class="large-text">{{ horario.horaApertura }}</ion-col>
-        <ion-col class="large-text">{{ horario.horaCierre }}</ion-col> -->
-      </ion-row>
-    </ion-grid>
-    
-    
+  <div *ngFor="let dato of datosFiltrados; let i = index" class="text-container"
+    [ngClass]="isDarkMode ? 'dark-theme' : 'light-theme'">
+    <ion-icon name="restaurant-outline"></ion-icon>
+    <p>{{ dato.nomLocal }}</p>
+    <ion-icon name="location-outline"></ion-icon>
+    <p>{{ dato.direccion }}</p>
+    <ion-icon name="call-outline"></ion-icon>
+    <p>{{ dato.telf1 }}</p>
+    <p>{{ dato.telf2 }}</p>
   </div>
+
+
+
+  <ion-grid class="gridContent">
+
+    <ion-icon name="time-outline" class="timeIcon"></ion-icon>
+
+     <ion-row *ngFor="let horario of horariosSeleccionados">
+      <ion-col size="4" style="font-weight: bold;">{{ horario.dia }}</ion-col>
+      <ion-col size="8">
+        <!-- Mostrar rango horario si ambos, hora_apertura y hora_cierre, tienen datos -->
+        <ng-container *ngIf="horario.hora_apertura && horario.hora_cierre">
+          {{ horario.hora_apertura }} – {{ horario.hora_cierre }}
+        </ng-container>
+        <!-- Mostrar 'Cerrado' si alguno de los dos está vacío o es null -->
+        <ng-container *ngIf="!horario.hora_apertura || !horario.hora_cierre">
+          Cerrado
+        </ng-container>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
 </ion-content>

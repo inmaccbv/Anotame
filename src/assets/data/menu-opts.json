@@ -1,5 +1,13 @@
 [
     {
+        "icon": "business-outline",
+        "name": "Selección Restaurante",
+        "redirectTo": "/seleccion-empresa",
+        "roles": [
+            "cliente"
+        ]
+    },
+    {
         "icon": "brush-outline",
         "name": "Reservas",
         "redirectTo": "/gestion-reservas",

@@ -53,7 +53,7 @@ export class LoginPage implements OnInit {
 
   // Método para manejar el evento de clic en el botón
   alert(event: any) {
-    console.log(event.target);
+    // console.log(event.target);
 
     // Obtener datos del formulario
     const datos = {

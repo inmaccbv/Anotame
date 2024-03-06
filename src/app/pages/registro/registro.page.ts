@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-
 import { AlertController } from '@ionic/angular';
-
+import { switchMap, catchError } from 'rxjs/operators';
+import { Subscription, throwError } from 'rxjs';  // Importa Subscription de RxJS
+import { EmpresaService } from 'src/app/services/empresa.service';
 import { RefreshService } from 'src/app/services/refresh.service';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 
@@ -12,17 +13,19 @@ import { UsuariosService } from 'src/app/services/usuarios.service';
   styleUrls: ['./registro.page.scss'],
 })
 export class RegistroPage implements OnInit {
-
   ionicForm!: FormGroup;
   submitted = false;
   registros: any;
   empresas: any;
+  idEmpresaSeleccionada!: string;
   rol!: any;
+  empresaSubscription: Subscription | undefined;
 
   constructor(
     public formBuilder: FormBuilder,
     public alertController: AlertController,
     public userRegis: UsuariosService,
+    public empresaRegis: EmpresaService,
     private refreshService: RefreshService
   ) {
     this.ionicForm = this.formBuilder.group({
@@ -34,38 +37,35 @@ export class RegistroPage implements OnInit {
       rol: new FormControl("administrador", Validators.compose([Validators.required])),
       id_empresa: new FormControl("", Validators.compose([Validators.required])),
     }, {
-      validators: this.MustMatch('password', 'confirmPassword') // Validador personalizado para comparar contraseñas
+      validators: this.MustMatch('password', 'confirmPassword')
     });
   }
 
-  // Método que se ejecuta al iniciar la página
   ngOnInit() {
-    // Llama al método getEmpresas al iniciar el componente para cargar las opciones del ion-select
-    this.userRegis.getEmpresas().subscribe(
+    this.empresaRegis.getUltimaEmpresa().subscribe(
       (response: any) => {
         if (response && response.code === 200) {
-          this.empresas = response.data || [];
+          const ultimaEmpresa = response.data;
+          this.idEmpresaSeleccionada = ultimaEmpresa.id_empresa;
+          this.ionicForm.get('id_empresa')?.setValue(this.idEmpresaSeleccionada);
         } else {
-          console.error('Error al obtener empresas:', response ? response.error : 'Respuesta no válida');
+          console.error('Error al obtener la última empresa:', response ? response.error : 'Respuesta no válida');
         }
       },
       (error) => {
-        console.error('Error al obtener empresas:', error);
+        console.error('Error al obtener la última empresa:', error);
       }
     );
   }
 
-  // Método que inicia el refresco desde este componente
   initiateRefresh(): void {
     this.refreshService.startRefresh();
   }
 
-  // Getter para acceder fácilmente a los controles del formulario
   get f() {
     return this.ionicForm.controls;
   }
 
-  // Validador personalizado para coincidencia de contraseñas
   MustMatch(password: any, confirmPassword: any) {
     return (formGroup: FormGroup) => {
       const passwordcontrol = formGroup.controls[password];
@@ -83,12 +83,10 @@ export class RegistroPage implements OnInit {
     };
   }
 
-  // Getter para acceder fácilmente a los errores del formulario
-  get errorControl() {
+  errorControl() {
     return this.ionicForm.controls;
   }
 
-  // Método para manejar el evento de alerta
   alert(event: any) {
     console.log(event.target);
 
@@ -104,15 +102,10 @@ export class RegistroPage implements OnInit {
 
     this.submitted = true;
 
-    // Detenerse aquí si el formulario no es válido
     if (this.ionicForm.invalid) {
       return;
     }
-    // Mostrar los valores del formulario en caso de éxito
-    // alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.ionicForm.value, null, 4));
   }
-
-  // Método para enviar los datos del formulario al servidor
   enviarDatos() {
     // console.log('Enviando datos:', this.ionicForm.value);
 
@@ -152,7 +145,6 @@ export class RegistroPage implements OnInit {
     );
   }
 
-  // Método para mostrar alerta de éxito
   async mostrarAlertaOK(titulo: string, mensaje: string) {
     const alert = await this.alertController.create({
       header: titulo,
@@ -169,7 +161,6 @@ export class RegistroPage implements OnInit {
     await alert.present();
   }
 
-  // Método para mostrar alerta de error
   async mostrarAlertaNO(titulo: string, mensaje: string) {
     const alert = await this.alertController.create({
       header: titulo,

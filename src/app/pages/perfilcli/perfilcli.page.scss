@@ -1,11 +1,19 @@
-.centrado {
-    text-align: center;
+.avatar-container {
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.avatar-img {
+    width: 100px;
+    /* Ajusta según sea necesario */
+    height: 100px;
+    /* Ajusta según sea necesario */
+    object-fit: cover;
 }
 
 .negrita {
-    font-weight: bold;
-}
 
-ion-item {
-    text-align: center !important;
+    font-weight: bold;
+    font-size: 18px;
 }

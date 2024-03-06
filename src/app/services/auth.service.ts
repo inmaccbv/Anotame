@@ -23,6 +23,9 @@ export class AuthService {
     localStorage.removeItem('role');
     localStorage.removeItem('darkMode');
     localStorage.removeItem('usuario');
+    localStorage.removeItem('cliente');
+    localStorage.removeItem('id_empresa');
+    localStorage.removeItem('empresa');
     this.idEmpresa = null;
     this.idUsuario = null;
 
@@ -40,7 +43,6 @@ export class AuthService {
     }
     return null;
   }
-  
 
   // Método para obtener el rol del usuario actual
   storeUserRole(role: any) {
@@ -52,27 +54,7 @@ export class AuthService {
     return localStorage.getItem('role');
   }
 
-  setIdEmpresa(idEmpresa: number): void {
-    this.idEmpresa = idEmpresa;
-    console.log('Id de Empresa establecido:', idEmpresa);
-  }
-  
   getIdEmpresa(): number {
     return this.idEmpresa || 0; // Devuelve 0 si es null
-  }
-  
-  setIdUsuario(idUsuario: number): void {
-    this.idUsuario = idUsuario;
-    console.log('Id de Usuario establecido:', idUsuario);
-  }
-  
-
-  getIdUsuario(): number {
-    return this.idUsuario || 0; // Devuelve 0 si es null
-  }
-
-  // Método para comprobar si el usuario está autenticado
-  isAuthenticated(): boolean {
-    return !!localStorage.getItem('role');
   }
 }

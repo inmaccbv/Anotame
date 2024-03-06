@@ -1,3 +1,18 @@
+/* Estilo para ion-content */
+ion-content {
+    margin-top: 30px !important;
+    margin-bottom: 20px !important;
+    margin-left: 35px !important;
+    margin-right: 40px !important;
+}
+
+.gallery-container {
+    margin-top: 30px !important;
+    margin-bottom: 20px;
+    margin-left: 35px !important;
+    margin-right: 40px !important;
+}
+
 /* Estilo para el título de la página */
 ion-title {
     text-align: center;
@@ -5,69 +20,70 @@ ion-title {
 
 /* Estilo para las etiquetas en el formulario */
 label {
-    font-size: large; 
-    color: #ff830f; 
-    font-weight: bold; 
-    margin-left: 2px; 
+    font-size: large;
+    color: #ff830f;
+    font-weight: bold;
+    margin-left: 2px;
 }
 
 /* Estilo para elementos con la clase 'color-salir' */
 .color-salir {
-    color: #ff830f; 
+    color: #ff830f;
 }
 
 /* Estilo para la fila de carga de imágenes */
 .upload-row {
-    display: flex; 
-    align-items: center; 
+    display: flex;
+    align-items: center;
 }
 
 /* Estilo para el botón de carga de imágenes */
 .upload-button {
-    width: 120px; 
+    width: 120px;
 }
 
 /* Estilo para las tarjetas de contenido */
 .card-container {
-    width: 100%; 
-    max-width: 400px; 
-    margin-bottom: 50px; 
-    position: relative; 
-    text-align: center; 
-    overflow: hidden; 
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 50px;
+    position: relative;
+    text-align: center;
+    overflow: hidden;
 }
 
 /* Estilo para imágenes dentro de las tarjetas */
 .card-image {
-    width: calc(100% - 12px); /* Ancho ajustado con margen */
-    height: auto; 
-    object-fit: contain; 
-    margin: 10px auto; 
-    max-height: 300px; 
+    width: calc(100% - 12px);
+    /* Ancho ajustado con margen */
+    height: auto;
+    object-fit: contain;
+    margin: 10px auto;
+    max-height: 300px;
 }
 
 /* Estilo para el encabezado de las tarjetas */
 ion-card-header {
-    text-align: center; 
+    text-align: center;
     overflow: visible;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    white-space: nowrap; 
+    white-space: nowrap;
     margin-top: 5px;
-    margin-bottom: 5px; 
+    margin-bottom: 5px;
 }
 
 /* Estilo para el título de las tarjetas */
 .card-title {
-    font-size: 18px; 
-    margin-left: auto; 
-    margin-right: auto; 
-    margin-bottom: 2px; 
+    font-size: 18px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2px;
 }
 
 /* Estilo para el icono de eliminación en las tarjetas */
 .trash-icon {
-    cursor: pointer; 
-    margin-left: 5px; 
+    cursor: pointer;
+    margin-left: 5px;
 }

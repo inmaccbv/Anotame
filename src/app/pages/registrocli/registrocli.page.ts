@@ -95,7 +95,7 @@ export class RegistrocliPage {
     this.submitted = true;
   
     if (this.ionicForm.invalid) {
-      console.log('Formulario no válido. Deteniendo envío de datos.');
+      // console.log('Formulario no válido. Deteniendo envío de datos.');
       return;
     }
   
@@ -111,29 +111,43 @@ export class RegistrocliPage {
         // console.log('Authorized de registros:', this.registros['authorized']);
   
         // Verificar el estado de la autorización
-        if (this.registros['authorized'] !== 'OK') {
-          // Llama al método mostrarAlertaOK con el mensaje específico
-          this.mostrarAlertaOK('Registro Exitoso', 'Se ha enviado un correo de verificación.');
-        } else {
+        if (this.registros['authorized'] === 'NO') {
           console.log('Mostrando alerta de error...');
           // Llama al método mostrarAlertaNO con el mensaje específico
-          this.mostrarAlertaNO('Error', 'El correo electrónico ya está registrado.');
+          this.mostrarAlertaNO('Error', 'Email ya registrado');
+        } else {
+          // console.log('Mostrando alerta de éxito...');
+          // Llama al método mostrarAlertaOK con el mensaje específico
+          this.mostrarAlertaOK('Enhorabuena', 'Cliente creado correctamente');
         }
       },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+        console.log('Mostrando alerta de error en la solicitud...');
+        // En caso de un error en la solicitud, muestra una alerta de error genérica
+        this.mostrarAlertaNO('Error', 'Email ya registrado');
+      }
     );
   }
 
+  // Método para mostrar alerta de éxito
   async mostrarAlertaOK(titulo: string, mensaje: string) {
     const alert = await this.alertController.create({
       header: titulo,
       message: mensaje,
-      buttons: ['OK'],
+      buttons: [{
+        text: 'OK',
+        handler: () => {
+          window.location.href = '/logincli';
+        }
+      }],
       cssClass: 'custom-alert-header'
-    });  
-  
+    });
+
     await alert.present();
   }
-  
+
+  // Método para mostrar alerta de error
   async mostrarAlertaNO(titulo: string, mensaje: string) {
     const alert = await this.alertController.create({
       header: titulo,
@@ -141,7 +155,7 @@ export class RegistrocliPage {
       buttons: ['OK'],
       cssClass: 'custom-alert-header'
     });
-  
+
     await alert.present();
   }
 }

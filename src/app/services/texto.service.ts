@@ -10,16 +10,8 @@ export class TextoService {
 
   BASE_RUTA = "http://localhost/anotame/APIANOTAME/public/";
   RUTA_TEXTO = "SubirTexto";
-  RUTA_USER = 'Logueo';
-  RUTA_EMPRESA = 'Empresas';
-
 
   constructor(private http: HttpClient) {}
-
-  // Método para obtener todos los textos
-  getTexto(): Observable<any> {
-    return this.http.get(this.BASE_RUTA + this.RUTA_TEXTO + '/getTexto');
-  }
 
   // Método para subir un nuevo texto al servidor
   subirTexto(datos: any, idEmpresa: number, idUsuario: number): Observable<any> {
@@ -38,7 +30,7 @@ export class TextoService {
         return throwError(error);
       })
     );
-  }
+  } 
 
   // Método para obtener textos filtrados por empresa
   getTextosByEmpresa(idEmpresa: number): Observable<any> {

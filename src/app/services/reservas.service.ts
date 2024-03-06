@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 @Injectable({
@@ -76,6 +76,7 @@ export class ReservasService {
       );
   }
 
+  // Método para obtener reservas por empresa desde el servidor
   getReservasPorEmpresa(idEmpresa: number): Observable<any> {
     const params = new HttpParams().set('id_empresa', idEmpresa.toString());
     

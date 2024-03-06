@@ -1,10 +1,9 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
-import { Componente, DatosContacto, Horario } from 'src/app/interfaces/interfaces';
+import { Componente, Horario } from 'src/app/interfaces/interfaces';
 
-import { AuthService } from 'src/app/services/auth.service';
 import { ContactoService } from 'src/app/services/contacto.service';
 import { HorariosService } from 'src/app/services/horarios.service';
 import { AuthClienteService } from 'src/app/services/auth-cliente.service';
@@ -20,9 +19,6 @@ import { ClientesService } from 'src/app/services/clientes.service';
 export class ContactocliPage implements OnInit {
 
   horariosSeleccionados: Horario[] = [];
-
-  horas: any;
-  horasFiltradas: any;
 
   datos: any;
   datosFiltrados: any;
@@ -44,9 +40,8 @@ export class ContactocliPage implements OnInit {
     private menuCli: MenuCliService,
   ) {
     this.getUserRole();
-    console.log('Rol obtenido:', this.rol);
+    // console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
-
   }
 
   ngOnInit() {
@@ -57,27 +52,29 @@ export class ContactocliPage implements OnInit {
     const idEmpresaString = localStorage.getItem('id_empresa');
     this.idEmpresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;
 
-    console.log('ID Empresa:', this.idEmpresa);
+    // console.log('ID Empresa:', this.idEmpresa);
 
     this.getDatos();
     this.getHorarios();
   }
 
-  getDatos() {
+   // Método para obtener los textos del servidor
+   getDatos() {
     if (this.idEmpresa !== null) {
-      this.contactService.obtenerDatosByEmpresa(this.idEmpresa).subscribe(
+      this.contactService.getDatosByEmpresa(this.idEmpresa).subscribe(
         (ans) => {
+          // console.log('Respuesta del servidor:', ans);
+  
           if (ans.code === 200) {
-            // La solicitud fue exitosa, asigna los textos
             this.datos = ans.data;
             this.datosFiltrados = ans.data;
-            console.log('Textos obtenidos:', this.datos);
+            console.log('Datos obtenidos:', this.datos);
           } else {
-            console.error('Error en la respuesta:', ans.datos);
+            console.error('Error en la respuesta:', ans.texto);
           }
         },
         (error) => {
-          console.error('Error al obtener los textos:', error);
+          console.error('Error al obtener los datos:', error);
         }
       );
     } else {
@@ -90,23 +87,44 @@ export class ContactocliPage implements OnInit {
       this.horariosService.obtenerHorasByEmpresa(this.idEmpresa).subscribe(
         (ans) => {
           if (ans.code === 200) {
-            // La solicitud fue exitosa, asigna los textos
-            this.horas = ans.data;
-            this.horasFiltradas = ans.data;
-            console.log('Textos obtenidos:', this.horas);
+            this.horariosSeleccionados = ans.data;
+            this.marcarDiasCerrados();
           } else {
             console.error('Error en la respuesta:', ans.horas);
           }
         },
         (error) => {
-          console.error('Error al obtener los textos:', error);
+          console.error('Error al obtener los horarios:', error);
         }
       );
     } else {
       console.error('ID de empresa no válido.');
     }
   }
+  
+  marcarDiasCerrados() {
+    // Array con los días de la semana
+    const diasSemana: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+  
+    // Itera sobre los días de la semana y marca como cerrado si no tiene horario
+    this.horariosSeleccionados = diasSemana.map(dia => {
+      const horarioExistente = this.horariosSeleccionados.find(horario => horario.dia === dia);
+  
+      if (horarioExistente) {
+        return horarioExistente;
+      } else {
+        return {
+          dia: dia,
+          hora_apertura: 'cerrado',
+          hora_cierre: 'cerrado',
+          id_user: 0,  // Modifica según tus requisitos
+          id_empresa: 0  // Modifica según tus requisitos
+        };
+      }
+    });
+  }
 
+  // Obtener los datos del usuario cliente
   obtenerDatosUsuario() {
     const clienteString = localStorage.getItem('cliente');
   
@@ -120,13 +138,13 @@ export class ContactocliPage implements OnInit {
   
     this.clienteService.getUserByEmail(email).subscribe(
       (response) => {
-        console.log('Respuesta del servidor en obtenerDatosUsuario:', response);
+        // console.log('Respuesta del servidor en obtenerDatosUsuario:', response);
   
         if (response && response.code === 200 && response.data) {
           this.clienteData = response.data;
           const clienteId = response.data.id_cliente.toString();  // Ajusta la propiedad según la respuesta real
-          console.log('Cliente ID:', clienteId);
-          //this.getDatos(clienteId);
+          // console.log('Cliente ID:', clienteId);
+          // this.getDatos(clienteId);
         } else {
           console.error('No se pudieron obtener los datos del usuario:', response.texto);
         }
@@ -137,9 +155,10 @@ export class ContactocliPage implements OnInit {
     );
   }  
 
+  // Obtener el rol del usuario cliente
   getUserRole() {
     this.rol = this.authServiceCliente.getUserRole();
-    console.log(this.rol);
+    // console.log(this.rol);
     
     if (!(this.rol === 'cliente')) {
       console.error('Cliente con rol', this.rol, 'no tiene permiso para acceder a esta opción.');

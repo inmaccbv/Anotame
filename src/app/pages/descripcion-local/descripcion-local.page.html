@@ -26,12 +26,11 @@
   <form [formGroup]="ionicForm" (ngSubmit)="enviarTexto()">
     <ion-item>
 
-      <ion-input formControlName="nomLocal" placeholder="Introduce nombre local" maxlength="2000"></ion-input>
+      <ion-input formControlName="nomLocal" placeholder="Introduce nombre local" rows="5"></ion-input>
     </ion-item>
 
     <ion-item>
-
-      <ion-input formControlName="texto" placeholder="Introduce texto" maxlength="2000"></ion-input>
+      <ion-textarea formControlName="texto" placeholder="Introduce texto" rows="10"></ion-textarea>
     </ion-item>
 
     <!-- Campos ocultos para id_user e id_empresa -->
@@ -42,7 +41,7 @@
   </form>
 
   <div *ngIf="ionicForm.get('nomLocal')?.invalid && ionicForm.get('nomLocal')?.touched" class="error-message">
-    Nombre Local es obligatorio.
+    Nombre Restaurante es obligatorio.
   </div>
 
   <div *ngIf="ionicForm.get('texto')?.invalid && ionicForm.get('texto')?.touched" class="error-message">
@@ -59,4 +58,16 @@
     <p class="white-text" style="font-size: 20px;">{{ ionicForm.get('texto')?.value }}</p>
   </div>
 
+  <!-- Mostrar el nombre local -->
+  <div *ngFor="let texto of textosFiltrados">
+    <div style="overflow-wrap: break-word; max-width: 350px; color: #ff830f;">
+      <p style="font-size: 25px;">{{ texto.nomLocal }}</p>
+    </div>
+
+    <!-- Mostrar el texto con saltos de línea y espacio entre párrafos -->
+    <div style="overflow-wrap: break-word; max-width: 350px; white-space: pre-line; margin-bottom: 10px;">
+      <p class="white-text" style="font-size: 20px;">{{ texto.texto }}</p>
+    </div>
+  </div>
+  
 </ion-content>

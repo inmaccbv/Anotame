@@ -20,9 +20,11 @@ export class LogoutcliPage {
         // Elimina cualquier informacion de session almacenada localmente
         localStorage.removeItem('role');
         localStorage.removeItem('darkMode');
+        localStorage.removeItem('usuario');
         localStorage.removeItem('cliente');
         localStorage.removeItem('id_empresa');
         localStorage.removeItem('empresa');
+
 
         // Redirige al usuario a la pagina de inicion de sesion
         window.location.href = '/logincli';

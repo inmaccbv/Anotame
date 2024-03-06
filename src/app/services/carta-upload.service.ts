@@ -59,22 +59,22 @@ export class CartaUploadService {
     );
   }
 
-  // Método para borrar una imagen de carta
   borrarImg(id_carta: any) {
-    // Configuro las cabeceras y el cuerpo de la solicitud
-    const headers = new HttpHeaders({
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    });
-    const payload = new HttpParams().set('id_carta', id_carta);
+    var headers = new Headers();
+    headers.append("Accept", "application/json");
+    headers.append("Content-Type", "application/json");
 
-    // Realizo la solicitud POST al servidor
-    return this.http.post(this.BASE_RUTA + this.RUTA_IMG + '/borrarImg', payload, { headers })
+    const payload = new HttpParams()
+      .set('id_carta', id_carta);
+
+    return this.http.post(this.BASE_RUTA + this.RUTA_IMG + '/borrarImg', payload)
       .pipe(
         dat => {
           console.log('res ' + JSON.stringify(dat));
+
           return dat;
         }
       );
   }
+
 }

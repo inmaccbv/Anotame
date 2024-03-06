@@ -11,7 +11,6 @@ header('Allow: GET, POST, OPTIONS, PUT, DELETE');
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-// Si es una solicitud OPTIONS, simplemente muere sin ejecutar nada más
 if ($method == 'OPTIONS') {
     die();
 }
@@ -23,6 +22,7 @@ class Horarios extends ResourceController
     protected $table      = 'horarios';
     protected $primaryKey = 'id_horario';
 
+    // Método para manejar la solicitud de inserción o actualización de un horario
     public function index()
     {
         try {
@@ -32,8 +32,8 @@ class Horarios extends ResourceController
 
             // Obtención de valores de la solicitud
             $dia = $request_data->dia;
-            $hora_apertura = $request_data->horaApertura;
-            $hora_cierre = $request_data->horaCierre;
+            $hora_apertura = $request_data->hora_apertura;
+            $hora_cierre = $request_data->hora_cierre;
             $id_user = $request_data->id_user;
             $id_empresa = $request_data->id_empresa;
 
@@ -109,14 +109,17 @@ class Horarios extends ResourceController
         }
     }
 
+    // Método para obtener horarios por empresa
     public function obtenerHorasByEmpresa()
     {
         try {
+            // Obtener datos de la solicitud
             $request_data = $this->request->getGet();
             log_message('info', 'Request Data: ' . json_encode($request_data));
-    
+
+            // Obtener id_empresa de la solicitud
             $id_empresa = $request_data['id_empresa'];
-    
+
             // Validar datos
             if (!is_numeric($id_empresa)) {
                 return $this->respond([
@@ -126,10 +129,11 @@ class Horarios extends ResourceController
                     'request_data' => $request_data,
                 ]);
             }
-    
+
             // Obtener horarios asociados a la empresa
             $horarios = $this->model->where('id_empresa', $id_empresa)->findAll();
-    
+
+            // Respuesta exitosa
             return $this->respond([
                 'code' => 200,
                 'authorized' => 'SI',
@@ -143,47 +147,6 @@ class Horarios extends ResourceController
                 'authorized' => 'NO',
                 'texto' => 'Error al obtener horarios: ' . $e->getMessage(),
                 'request_data' => $request_data,
-            ]);
-        }
-    }
-    
-
-    public function getHorarios()
-    {
-        $db4 = \Config\Database::connect();
-
-        $query = $db4->query("SELECT * FROM horarios");
-
-        return $this->respond($query->getResult());
-    }
-
-    public function borrarHorario()
-    {
-
-        $db5 = \Config\Database::connect();
-
-        $builder = $db5->table('horarios');
-
-        $id_horario = $this->request->getPost('id_horario');
-
-        // Actualizar los datos en la base de datos
-        $builder->where('id_horario', $id_horario);
-        $builder->delete();
-
-        // Metodo affectedRows() es para comprobar si se elimino al menos una fila y devuelve una respuesta
-        if ($db5->affectedRows() > 0) {
-            return $this->respond([
-                'code'       => 200,
-                'data'       => $id_horario,
-                'authorized' => 'SI',
-                'texto'      => 'Horario eliminado correctamente'
-            ]);
-        } else {
-            return $this->respond([
-                'code'       => 500,
-                'data'       => $id_horario,
-                'authorized' => 'NO',
-                'texto'      => 'No se ha podido eliminar el horario'
             ]);
         }
     }

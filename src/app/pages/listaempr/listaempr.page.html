@@ -50,9 +50,7 @@
       </ion-select>
     </ion-col>
   </ion-row>
-  
-  <!-- Lista de tarjetas con información de las empresas filtradas -->
-<!-- Lista de tarjetas con información de las empresas filtradas -->
+
 <!-- Lista de tarjetas con información de los empleados -->
 <ion-list *ngIf="rol === 'administrador'">
   <ion-card *ngFor="let empleado of empleados; let i = index" [ngStyle]="{ 'background-color': coloresFilas[i % coloresFilas.length] }">

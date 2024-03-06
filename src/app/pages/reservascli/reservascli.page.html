@@ -21,11 +21,15 @@
 
     <ion-item [ngClass]="{'dark-theme': isDarkMode}">
       <ion-label position="floating">Fecha/Hora Reserva</ion-label>
-      <ion-datetime displayFormat="DD, MMM, YYYY HH:mm" formControlName="fechaHoraReserva" required
-        [ngClass]="{'dark-theme': isDarkMode}" (ionChange)="mostrarFormulario($event)">
+      <ion-datetime 
+        displayFormat="DD, MMM, YYYY HH:mm" 
+        formControlName="fechaHoraReserva" 
+        required
+        [ngClass]="{'dark-theme': isDarkMode}" 
+        (ionChange)="mostrarFormulario($event)">
       </ion-datetime>
     </ion-item>
-
+    
     <ion-item [ngClass]="{'dark-theme': isDarkMode}">
       <ion-label position="floating">Nombre</ion-label>
       <ion-input type="text" formControlName="nombre" required [ngClass]="{'dark-theme': isDarkMode}"></ion-input>
@@ -55,9 +59,9 @@
       <ion-input type="text" formControlName="fechaCreacion" [value]="fechaCreacionActual" readonly></ion-input>
     </ion-item>
 
-    <ion-button expand="full" type="submit" (click)="enviarReserva()" [ngClass]="{'dark-theme': isDarkMode}">Reservar</ion-button>
+    <ion-button expand="full" type="submit" [ngClass]="{'dark-theme': isDarkMode}">Reservar</ion-button>
 
-    <input type="number" #idEmpresaInput [value]="idEmpresa">
+    <input type="hidden" #idEmpresaInput [value]="idEmpresa">
 
   </form>
 

@@ -1,0 +1,97 @@
+<!-- eslint-disable @angular-eslint/template/eqeqeq -->
+<ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'administrador'">
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/config-empleados" style="--color: #ff830f;"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title color="primary">Add Restaurante</ion-title>
+
+    <ion-buttons slot="end">
+
+      <ion-button (click)="toggleDarkMode()">
+        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"
+          style="color: #ff830f; font-size: 24px;"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="cerrarSesion()">
+        <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
+      </ion-button>
+
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+<ion-content *ngIf="rol === 'administrador'" [class]="isDarkMode ? 'dark-theme' : ''">
+  <form [formGroup]="empresaForm" (ngSubmit)="enviarDatos()">
+
+    <ion-item lines="full">
+      <ion-label position="floating">CIF Empresa</ion-label>
+      <ion-input type="text" formControlName="cif"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['cif'].getError('required')!=null" class="errormessage" position="floating">Cif empresa
+      requerido</ion-label>
+    <ion-label *ngIf="f['cif'].getError('pattern')!=null" class="errormessage" position="floating">Cif no
+      valido</ion-label>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Nombre Empresa</ion-label>
+      <ion-input type="text" formControlName="empresa"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['empresa'].getError('required')!=null" class="errormessage" position="floating">Nombre empresa
+      requerido</ion-label>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Direccion</ion-label>
+      <ion-input type="text" formControlName="direccion"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['direccion'].getError('required')!=null" class="errormessage" position="floating">Direccion
+      requerido</ion-label>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Provincia</ion-label>
+
+      <ion-select type="select" formControlName="provincia">
+        <ion-select-option *ngFor="let provincia of provincias" [value]="provincia.provincia">{{ provincia.provincia
+          }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Ciudad</ion-label>
+      <ion-input type="text" formControlName="ciudad"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['ciudad'].getError('required')!=null" class="errormessage" position="floating">Ciudad
+      requerida</ion-label>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Codigo Postal</ion-label>
+      <ion-input type="text" formControlName="cPostal"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="f['cPostal'].getError('required')!=null" class="errormessage" position="floating">Codigo Postal
+      requerido</ion-label>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Tipo de Restaurante</ion-label>
+      <ion-select formControlName="tipoLocal">
+        <ion-select-option value="Italiano">Italiano</ion-select-option>
+        <ion-select-option value="Mexicano">Mexicano</ion-select-option>
+        <ion-select-option value="Asiático">Asiático</ion-select-option>
+        <ion-select-option value="Mediterráneo">Mediterráneo</ion-select-option>
+        <ion-select-option value="Indio">Indio</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-row>
+      <ion-col>
+        <ion-button class="custom-button" (click)="enviarDatos()">
+          <a href='/config-empleados' style="color: #fff;">
+            Add Restaurante
+          </a>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+  </form>
+</ion-content>

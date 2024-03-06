@@ -54,14 +54,8 @@
       <ion-input type="text" formControlName="rol"></ion-input>
     </ion-item>
 
-    <ion-item lines="full">
-      <ion-label position="floating">Restaurante</ion-label>
-      <ion-select formControlName="id_empresa">
-        <ion-select-option *ngFor="let empresa of empresas" [value]="empresa.id_empresa">{{ empresa.empresa }}</ion-select-option>
-      </ion-select>
-    </ion-item>
-    <ion-label *ngIf="f['id_empresa'].getError('required')!=null" class="errormessage" position="floating">Empresa requerida</ion-label>
-
+    <ion-input type="hidden" formControlName="id_empresa"></ion-input>
+    
     <ion-row>
       <ion-col>
         <ion-button class="custom-button" (click)="enviarDatos()" >

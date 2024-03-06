@@ -6,21 +6,23 @@ import { ThemeService } from 'src/app/services/theme.service';
   selector: 'app-detallescliente',
   styleUrls: ['./detallescliente.page.scss'],
   template: `
-<ion-content class="ion-padding" *ngIf="cliente && cliente.cliente">
-  <h2>{{ cliente.cliente.nombre }}</h2>
-  <div class="detalle-info">
-    <!-- <div><p class="pe">Email:</p> <p>{{ cliente.cliente.email }}</p></div>
-    <div><p class="pe">DIRECCIÓN:</p> <p>{{ cliente.cliente.direccion }}</p></div> -->
-    <div><p class="pe">Teléfono:</p> <p>{{ cliente.cliente.telf }}</p></div>
-  </div>
-</ion-content>
+    <ion-content class="ion-padding" *ngIf="cliente && cliente.cliente">
+      <ion-toolbar>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarPopover()">
+            <ion-icon name="close" style="font-size: 25px;"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
 
-
-`,
+      <h2>{{ cliente.cliente.nombre }}</h2>
+      <div class="detalle-info">
+        <div><p class="pe">Teléfono:</p> <p>{{ cliente.cliente.telf }}</p></div>
+      </div>
+    </ion-content>
+  `,
 })
-
 export class DetallesclientePage implements OnInit {
-
   @Input() cliente: any;
   isDarkMode: any;
 
@@ -39,4 +41,7 @@ export class DetallesclientePage implements OnInit {
     this.themeService.setDarkTheme(this.isDarkMode);
   }
 
+  cerrarPopover() {
+    this.popoverController.dismiss();
+  }
 }

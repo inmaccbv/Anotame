@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, catchError, map, of } from 'rxjs';
 
 import { UsuariosService } from '../../services/usuarios.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -21,9 +21,10 @@ export class AddempleadosPage implements OnInit {
   ionicForm!: FormGroup;
   submitted = false;
 
-  regisEmpleado: any;
   registros: any;
-  empresas: any[] = [];
+
+  idEmpresa!: number | null;
+  id_empresa: number | null = null;
 
   rol!: any;
   isDarkMode: any;
@@ -31,12 +32,12 @@ export class AddempleadosPage implements OnInit {
 
   constructor(
     public formBuilder: FormBuilder,
+    private router: Router,
     public alertController: AlertController,
     public userRegis: UsuariosService,
     public authService: AuthService,
     public menuService: MenuService,
     public themeService: ThemeService,
-    private router: Router
   ) {
     this.ionicForm = this.formBuilder.group({
       nombre: new FormControl("", Validators.compose([Validators.required])),
@@ -50,30 +51,67 @@ export class AddempleadosPage implements OnInit {
       validators: this.MustMatch('password', 'confirmPassword')
     });
     this.getUserRole();
-    console.log('Rol obtenido:', this.rol);
+    // console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
   }
 
   ngOnInit() {
     this.componentes = this.menuService.getMenuOpts();
-    this.userRegis.getEmpresas().subscribe(
-      (response: any) => {
-        if (response && response.code === 200) {
-          this.empresas = response.data || [];
-        } else {
-          console.error('Error al obtener empresas:', response ? response.error : 'Respuesta no válida');
-        }
+  
+    // Llamar al método para obtener datos del usuario y la empresa
+    this.obtenerIdUsuario().subscribe(
+      ({ idEmpresa }) => {
+        // Asignar los valores obtenidos
+        this.id_empresa = idEmpresa;
+  
+        // Actualizar el valor de id_empresa en el formulario
+        this.ionicForm.get('id_empresa')?.setValue(this.id_empresa);
       },
       (error) => {
-        console.error('Error al obtener empresas:', error);
+        console.error('Error al obtener el id del usuario y la empresa:', error);
       }
     );
   }
+  
+
+  // Método para obtener el id del usuario y la empresa
+  obtenerIdUsuario(): Observable<{ idEmpresa: number | null }> {
+    const usuarioString = localStorage.getItem('usuario');
+  
+    if (usuarioString) {
+      const usuario = JSON.parse(usuarioString);
+      const email = usuario.email;
+  
+      return this.userRegis.getUserAndEmpresaByEmail(email).pipe(
+        map(response => {
+          if (response && response.code === 200 && response.data) {
+            const idEmpresa = response.data.id_empresa ? response.data.id_empresa : null;
+  
+            // Asegúrate de asignar idEmpresa
+            this.idEmpresa = idEmpresa;
+  
+            return { idEmpresa };
+          } else {
+            console.error('No se pudieron obtener los datos del usuario:', response.texto);
+            return { idUsuario: null, idEmpresa: null };
+          }
+        }),
+        catchError(error => {
+          console.error('Error al obtener datos del usuario:', error);
+          return of({ idUsuario: null, idEmpresa: null });
+        })
+      );
+    } else {
+      console.error('Usuario no encontrado en el almacenamiento local');
+      return of({ idUsuario: null, idEmpresa: null });
+    }
+  }
+
 
   // Obtener el rol del usuario
   getUserRole() {
     this.rol = this.authService.getUserRole();
-    console.log(this.rol);
+    // console.log(this.rol);
 
     // Verificar si el rol no es "administrador" 
     if (!(this.rol === 'administrador')) {
@@ -146,28 +184,45 @@ export class AddempleadosPage implements OnInit {
     // Muestra los datos del formulario en caso de éxito
     // alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.ionicForm.value, null, 4));
   }
-
-  // Método para enviar datos del formulario al servicio de registro de usuarios
   enviarDatos() {
     console.log('Enviando datos:', this.ionicForm.value);
-
+  
     this.submitted = true;
-
+  
     if (this.ionicForm.invalid) {
       console.log('Formulario no válido. Deteniendo envío de datos.');
       return;
     }
-
-    this.userRegis.registroUsuario(this.ionicForm.value).subscribe(
+  
+    // Obtén el id_empresa del formulario directamente
+    const id_empresa = this.ionicForm.get('id_empresa')?.value;
+  
+    // Asegúrate de tener un valor válido para id_empresa antes de continuar
+    if (id_empresa == null) {
+      console.error('Id de empresa no válido. Deteniendo envío de datos.');
+      return;
+    }
+  
+    // Modifica el objeto de datos para incluir id_empresa
+    const datos = {
+      nombre: this.ionicForm.get('nombre')?.value,
+      apellido: this.ionicForm.get('apellido')?.value,
+      email: this.ionicForm.get('email')?.value,
+      id_empresa: id_empresa,  // Utiliza el id_empresa obtenido del formulario
+      password: this.ionicForm.get('password')?.value,
+      rol: this.ionicForm.get('rol')?.value,
+    };
+  
+    this.userRegis.registroUsuario(datos).subscribe(
       (ans) => {
         console.log('Respuesta del servidor:', ans);
-
+  
         this.registros = ans;
-
+  
         console.log('Datos de registros:', this.registros['data']);
         console.log('Texto de registros:', this.registros['texto']);
         console.log('Authorized de registros:', this.registros['authorized']);
-
+  
         if (this.registros['authorized'] === 'NO') {
           console.log('Mostrando alerta de error...');
           // Llama al método mostrarAlertaNO con el mensaje específico
@@ -210,13 +265,11 @@ export class AddempleadosPage implements OnInit {
     await alert.present();
   }
 
-  // Método para cambiar el modo oscuro
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;
     this.themeService.setDarkTheme(this.isDarkMode);
   }
 
-  // Método para cerrar sesión
   cerrarSesion(): void {
     this.authService.logout().subscribe();
   }

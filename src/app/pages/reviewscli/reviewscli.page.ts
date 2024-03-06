@@ -19,8 +19,8 @@ import { ThemeService } from 'src/app/services/theme.service';
 })
 export class ReviewscliPage implements OnInit {
 
-  nombre: string = '';
-  comentario: string = '';
+  expandido: boolean = false;
+
   stars: { icon: string, color: string }[] = [];
   resenas: { nombre: string, calificacion: number, comentario: string }[] = [];
 
@@ -31,6 +31,7 @@ export class ReviewscliPage implements OnInit {
   reviewsFiltrados: any;
 
   reviewForm!: FormGroup;
+
   rol!: any;
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
@@ -48,11 +49,12 @@ export class ReviewscliPage implements OnInit {
     public themeService: ThemeService
   ) {
     this.getUserRole();
-    console.log('Rol obtenido:', this.rol);
+    // console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
     this.inicializarEstrellas();
     this.obtenerDatosUsuario();
 
+    // Crear el formulario con controles iniciales
     this.reviewForm = this.formBuilder.group({
       id_cliente: [''],
       id_empresa: [''],
@@ -63,26 +65,27 @@ export class ReviewscliPage implements OnInit {
 
   ngOnInit() {
     this.componentes = this.menuCli.getMenuOptsCli();
-  
+
     // Recuperar el valor de id_empresa del localStorage
     const idEmpresaString = localStorage.getItem('id_empresa');
     this.idEmpresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;  // Asignar a this.idEmpresa
-  
-    console.log('ID Empresa:', this.idEmpresa);
-  
+
+    // console.log('ID Empresa:', this.idEmpresa);
+
     // Llama a getReservas con el idEmpresa actual
     if (this.idEmpresa) {
       this.getReviews(this.idEmpresa);
     }
   }
-  
 
+  // Método para inicializar las estrellas
   inicializarEstrellas() {
     this.stars = Array(5).fill({ icon: 'star-outline', color: 'medium' });
   }
 
+  // Método para manejar la calificación
   calificar(index: number) {
-    console.log('Valor de la calificación:', index);
+    // console.log('Valor de la calificación:', index);
 
     // Actualiza el valor de la calificación en el formulario
     this.reviewForm.get('calificacion')?.setValue(index);
@@ -94,6 +97,7 @@ export class ReviewscliPage implements OnInit {
     }));
   }
 
+  // Método para obtener el id del cliente desde el servidor
   obtenerIdCliente(): Observable<string | null> {
     const clienteString = localStorage.getItem('cliente');
 
@@ -124,17 +128,17 @@ export class ReviewscliPage implements OnInit {
     }
   }
 
+  // Método para enviar la reseña
   enviarResena() {
     if (this.reviewForm.valid) {
       // Obtener el id_cliente y id_empresa antes de enviar la reseña
       this.obtenerIdCliente().subscribe(
         (id_cliente) => {
           if (id_cliente) {
-            // También necesitas obtener el id_empresa de alguna manera
-            // Aquí asumo que puedes obtenerlo del clienteData, pero debes ajustarlo según tus necesidades
-           // Recuperar el valor de id_empresa del localStorage
-           const idEmpresaString = localStorage.getItem('id_empresa');
-           const id_empresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;
+
+            // Recuperar el valor de id_empresa del localStorage
+            const idEmpresaString = localStorage.getItem('id_empresa');
+            const id_empresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;
 
             const calificacion = this.reviewForm.get('calificacion')?.value;
 
@@ -170,6 +174,7 @@ export class ReviewscliPage implements OnInit {
     }
   }
 
+  // Método para obtener datos del usuario
   obtenerDatosUsuario() {
     const clienteString = localStorage.getItem('cliente');
     if (!clienteString) {
@@ -197,6 +202,7 @@ export class ReviewscliPage implements OnInit {
     );
   }
 
+  // Método para obtener reseñas
   getReviews(id_empresa: number) {
     if (this.idEmpresa !== null) {
       this.reviewsService.getReviewsByEmpresa(this.idEmpresa).subscribe(
@@ -209,7 +215,7 @@ export class ReviewscliPage implements OnInit {
               if ('data' in ans) {
                 this.reviews = ans.data;
                 this.reviewsFiltrados = ans.data;
-                console.log('Textos obtenidos:', this.reviews);
+                // console.log('Textos obtenidos:', this.reviews);
               } else {
                 console.error('Error en la respuesta: Propiedad "data" no encontrada.');
               }
@@ -228,8 +234,8 @@ export class ReviewscliPage implements OnInit {
       console.error('ID de empresa no válido.');
     }
   }
-  
 
+  // Método para eliminar reseñas
   eliminarResena(index: number) {
     this.resenas.splice(index, 1);
     localStorage.setItem('resenas', JSON.stringify(this.resenas));
@@ -238,7 +244,7 @@ export class ReviewscliPage implements OnInit {
   // Método para obtener el rol del usuario
   getUserRole() {
     this.rol = this.authServiceCli.getUserRole();
-    console.log(this.rol);
+    // console.log(this.rol);
 
     if (!(this.rol === 'cliente')) {
       console.error('Cliente con rol', this.rol, 'no tiene permiso para acceder a esta opción.');
@@ -257,11 +263,18 @@ export class ReviewscliPage implements OnInit {
     }
   }
 
+  // Función para alternar la expansión
+  toggleExpansion() {
+    this.expandido = !this.expandido;
+  }
+
+  // Método para cambiar el modo oscuro
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;
     this.themeService.setDarkTheme(this.isDarkMode);
   }
 
+  // Método para cerrar sesión
   cerrarSesion(): void {
     this.authServiceCli.logout().subscribe();
   }

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, OnInit, Renderer2 } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2 } from '@angular/core';
 
 import { MenuController } from '@ionic/angular';
 import { Observable, tap } from 'rxjs';
@@ -6,7 +6,7 @@ import { Componente } from './interfaces/interfaces';
 
 import { ThemeService } from './services/theme.service';
 import { MenuService } from './services/menu.service';
-import { MenuCliService } from './services/menucli.service';
+
 import { AuthService } from './services/auth.service';
 import { Router } from '@angular/router';
 
@@ -20,7 +20,6 @@ export class AppComponent implements OnInit {
 
   componentes: Observable<Componente[]> | null = null;
   isDarkMode: any;
-
 
   constructor(
     private menu: MenuController,

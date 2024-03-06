@@ -16,14 +16,10 @@ import { ThemeService } from 'src/app/services/theme.service';
 })
 export class DescripcionClientePage implements OnInit {
 
-  texto: string = '';
-  titulo: string = '';
-
   textos: any;
   textosFiltrados: any;
 
   idEmpresa!: number | null;
-  empresaSeleccionada: any;
 
   rol!: any;
   isDarkMode: any;
@@ -36,12 +32,11 @@ export class DescripcionClientePage implements OnInit {
     public authService: AuthService,
     private menuCli: MenuCliService,
     private textoService: TextoService,
-    private empresaService: EmpresaService,
     public authServiceCliente: AuthClienteService,
     public themeService: ThemeService
   ) {
     this.getUserRole();
-    console.log('Rol obtenido:', this.rol);
+    // console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
   }
 
@@ -52,7 +47,7 @@ export class DescripcionClientePage implements OnInit {
     const idEmpresaString = localStorage.getItem('id_empresa');
     this.idEmpresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;
 
-    console.log('ID Empresa:', this.idEmpresa);
+    // console.log('ID Empresa:', this.idEmpresa);
 
     this.getTexto();
   }
@@ -78,12 +73,10 @@ export class DescripcionClientePage implements OnInit {
       console.error('ID de empresa no válido.');
     }
   }
-  
-  
 
   getUserRole() {
     this.rol = this.authService.getUserRole();
-    console.log(this.rol);
+    // console.log(this.rol);
     
     if (!(this.rol === 'cliente')) {
       console.error('Cliente con rol', this.rol, 'no tiene permiso para acceder a esta opción.');

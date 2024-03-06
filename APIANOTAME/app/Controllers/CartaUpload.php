@@ -111,7 +111,6 @@ class CartaUpload extends ResourceController
     
         return $this->respond($query->getResult());
     }
-    
 
     public function borrarImg()
     {
@@ -120,6 +119,7 @@ class CartaUpload extends ResourceController
 
         $builder = $db5->table('carta');
 
+        // Obtiene el id para poder eliminarlo
         $id_carta = $this->request->getPost('id_carta');
 
         // Actualizar los datos en la base de datos
@@ -132,15 +132,15 @@ class CartaUpload extends ResourceController
                 'code'       => 200,
                 'data'       => $id_carta,
                 'authorized' => 'SI',
-                'texto'      => 'Imagen eliminada correctamente'
+                'texto'      => 'Empleado eliminado correctamente'
             ]);
         } else {
             return $this->respond([
                 'code'       => 500,
                 'data'       => $id_carta,
                 'authorized' => 'NO',
-                'texto'      => 'No se ha podido eliminar la imagen'
+                'texto'      => 'No se ha podido eliminar al empleado'
             ]);
         }
-    }
+    }    
 }

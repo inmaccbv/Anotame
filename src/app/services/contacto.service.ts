@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
@@ -33,6 +33,15 @@ export class ContactoService {
     );
   }
 
+  // Método para obtener textos filtrados por empresa
+  getDatosByEmpresa(idEmpresa: number): Observable<any> {
+    // Configuración de parámetros en la URL
+    const params = new HttpParams().set('id_empresa', idEmpresa.toString());
+
+    // Realizar la solicitud GET con parámetros y manejar errores con RxJS catchError
+    return this.http.get(`${this.BASE_RUTA}${this.RUTA_DATOS}/getDatosByEmpresa`, { params });
+  }
+
   // Método para obtener datos por empresa desde el servidor
   obtenerDatosByEmpresa(idEmpresa: number): Observable<any> {
     // Configurar parámetros de la solicitud HTTP
@@ -40,30 +49,5 @@ export class ContactoService {
 
     // Realizar una solicitud GET al servidor
     return this.http.get(`${this.BASE_RUTA}${this.RUTA_DATOS}/obtenerDatosByEmpresa`, { params });
-  }
-  
-  // Método para eliminar un dato por su ID desde el servidor
-  eliminarDato(id_datos: number): Observable<any> {
-    // Configurar el payload con el ID del dato a eliminar
-    const payload = { id_datos: id_datos };
-
-    // Realizar una solicitud POST al servidor para eliminar el dato
-    return this.http.post(this.BASE_RUTA + this.RUTA_DATOS + '/borrarDatos', payload)
-      .pipe(
-        tap((response: any) => {
-          console.log('Response al eliminarDato:', response);
-
-          // Manejar la respuesta del servidor después de intentar eliminar el dato
-          if (response && response.code === 200) {
-            console.log('Datos eliminados con éxito.');
-          } else {
-            console.error('Error al eliminar datos:', response);
-          }
-        }),
-        catchError((error) => {
-          console.error('Error en la solicitud al eliminarDato:', error);
-          return throwError(error);
-        })
-      );
   }
 }

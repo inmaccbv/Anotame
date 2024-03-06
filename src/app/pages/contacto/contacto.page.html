@@ -1,18 +1,25 @@
 <ion-header [class]="isDarkMode ? 'dark-theme' : ''" *ngIf="rol === 'administrador' || rol === 'encargado'">
   <ion-toolbar>
+
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home" style="--color: #ff830f;"></ion-back-button>
     </ion-buttons>
+
     <ion-title color="primary">Contacto</ion-title>
+
     <ion-buttons slot="end">
+
       <ion-button (click)="toggleDarkMode()">
         <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"
           style="color: #ff830f; font-size: 24px;"></ion-icon>
       </ion-button>
+
       <ion-button (click)="cerrarSesion()">
         <ion-icon name="log-out-outline" class="color-salir" size="large"></ion-icon>
       </ion-button>
+
     </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 
@@ -20,7 +27,7 @@
   <form [formGroup]="ionicForm" (ngSubmit)="enviarDatos()">
     <!-- Campos de entrada Nombre -->
     <ion-row [ngClass]="isDarkMode ? 'dark-theme' : 'light-theme'">
-      <ion-label>Nombre Local</ion-label>
+      <ion-label>Restaurante</ion-label>
     </ion-row>
     <ion-row [ngClass]="isDarkMode ? 'dark-theme' : 'light-theme'">
       <ion-input formControlName="nomLocal" type="text"></ion-input>
@@ -58,10 +65,10 @@
       Añadir datos
     </ion-button>
 
-    <div *ngIf="datos && datos.length > 0" class="center-container ion-text-center">
-      <div *ngFor="let dato of datos; let i = index" class="text-container"
+    <div class="center-container ion-text-center">
+
+      <div *ngFor="let dato of datosFiltrados; let i = index" class="text-container"
         [ngClass]="isDarkMode ? 'dark-theme' : 'light-theme'">
-        <p>{{ dato.id_datos }}</p>
         <ion-icon name="restaurant-outline"></ion-icon>
         <p>{{ dato.nomLocal }}</p>
         <ion-icon name="location-outline"></ion-icon>
@@ -69,9 +76,8 @@
         <ion-icon name="call-outline"></ion-icon>
         <p>{{ dato.telf1 }}</p>
         <p>{{ dato.telf2 }}</p>
-    
       </div>
+      
     </div>
-
   </form>
 </ion-content>

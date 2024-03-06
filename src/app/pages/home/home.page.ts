@@ -94,7 +94,6 @@ export class HomePage {
     this.menu.close('first');
   }
 
-  // Cambia entre los modos claro y oscuro
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;
     this.themeService.setDarkTheme(this.isDarkMode);

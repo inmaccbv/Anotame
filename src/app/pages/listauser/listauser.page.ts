@@ -3,12 +3,10 @@ import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Observable } from 'rxjs';
 
-import { Componente } from 'src/app/interfaces/interfaces';
+import { Componente, Usuario } from 'src/app/interfaces/interfaces';
 
 import { AuthService } from 'src/app/services/auth.service';
-import { EmpresaService } from 'src/app/services/empresa.service';
 import { MenuService } from 'src/app/services/menu.service';
-import { ProvinciasService } from 'src/app/services/provincias.service';
 import { ThemeService } from 'src/app/services/theme.service';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 
@@ -19,145 +17,111 @@ import { UsuariosService } from 'src/app/services/usuarios.service';
 })
 export class ListauserPage implements OnInit {
 
-  empleados: any;
-  empresas: any;
-  empleado: any;
-  rol!: any;
-
+  idEmpresa!: number | null;
+  empleados: Usuario[] = [];
   empleadosFiltrados: any;
-  roles: string[] = [];
-  provincias: any;
-  rolSeleccionado: string = '';
-  filtroEmpresa: any;
-  filtroProvincia: any;
 
   coloresFilas = ['#FFECBA', '#FFFFFF'];
 
+  rol!: any;
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
 
-
   constructor(
-    public userLogin: UsuariosService,
-    public empresaService: EmpresaService,
-    public provinciasService: ProvinciasService,
-    public authService: AuthService,
-    public menuService: MenuService,
     private router: Router,
     private alertController: AlertController,
+    public userLogin: UsuariosService,
+    public authService: AuthService,
+    public menuService: MenuService,
     public themeService: ThemeService
   ) {
     this.getUserRole();
-    console.log('Rol obtenido:', this.rol);
+    // Inicializo el modo oscuro
     this.isDarkMode = this.themeService.isDarkTheme();
   }
 
   ngOnInit() {
     this.componentes = this.menuService.getMenuOpts();
-    this.getEmpresas();
+
     this.getEmpleados();
-    this.getProvincias();
-    this.getUserInfo();
   }
 
-  getUserInfo() {
-    // Llama al servicio para obtener la información del usuario
-    this.userLogin.getUserInfo().subscribe(
-      (response: any) => {
-        // Verifica si la respuesta contiene un ID de usuario y empresa
-        const idUser = response.id_user;
-        const idEmpresa = response.id_empresa;
-
-        // Almacena el ID de usuario y empresa en el localStorage si están presentes
-        if (idUser) {
-          localStorage.setItem('userId', idUser);
-        }
-        if (idEmpresa) {
-          localStorage.setItem('companyId', idEmpresa);
-        }
-
-        // Continúa con el resto de la lógica de tu componente
-        this.getEmpleados();
-      },
-      (error: any) => {
-        console.error('Error al obtener información del usuario:', error);
-        //this.presentAlert('Error', 'Error al obtener información del usuario');
-      }
-    );
-  }
-
+  // Obtengo el rol del usuario actual
   getUserRole() {
     this.rol = this.authService.getUserRole();
-    console.log(this.rol);
 
+    // Verifico si el rol no es 'administrador' y cierro sesión si es necesario
     if (!(this.rol === 'administrador')) {
       console.error('Usuario con rol', this.rol, 'no tiene permiso para acceder a esta opción.');
       this.authService.logout().subscribe(
         () => {
-
+          // Elimino datos del usuario del almacenamiento local
           localStorage.removeItem('role');
           localStorage.removeItem('usuario');
 
+          // Redirijo al usuario a la página de inicio
           this.router.navigate(['/inicio']);
         },
         (error) => {
           console.error('Error al cerrar sesion:', error);
         }
-      )
+      );
     }
   }
 
-  // Método para obtener la lista de empleados desde el servicio
+  // Obtengo la lista de empleados asociados a la empresa del usuario
   getEmpleados() {
-    this.userLogin.getEmpleados().subscribe(
-      (ans) => {
-        this.empleados = ans;
-        this.empleadosFiltrados = ans; // Inicializa empleadosFiltrados
-        console.log('Empleados obtenidos:', this.empleados);
-      },
-      (error) => {
-        console.error('Error al obtener empleados:', error);
+    // Verifico si el rol del usuario es 'administrador', 'encargado' o 'camarero'
+    if (this.rol === 'administrador' || this.rol === 'encargado' || this.rol === 'camarero') {
+      // Obtengo el email del usuario
+      const email = this.authService.getUserEmail();
+
+      // Verifico si el email no es nulo antes de llamar a la función
+      if (email !== null) {
+        this.userLogin.getIdEmpresaPorEmail(email).subscribe(
+          (response) => {
+            // Verifico si la respuesta tiene el código 200 y contiene el id_empresa
+            if (response.code === 200 && response.data && response.data.id_empresa) {
+              this.idEmpresa = response.data.id_empresa;
+              // Ahora que tengo el idEmpresa, obtengo la lista de empleados
+              const idEmpresaAsNumber = this.idEmpresa as number; // Convierto a número
+              if (!isNaN(idEmpresaAsNumber)) {
+                this.userLogin.getUsuariosPorEmpresa(idEmpresaAsNumber).subscribe(
+                  (empleadosResponse: any) => {
+                    // Verifico si la respuesta tiene el código 200 y data es un array
+                    if (empleadosResponse.code === 200 && Array.isArray(empleadosResponse.data)) {
+                      // Almaceno la lista de empleados y la utilizo para filtrar
+                      this.empleados = empleadosResponse.data;
+                      this.empleadosFiltrados = empleadosResponse.data; // Inicializo empleadosFiltrados
+                      console.log('Empleados obtenidos:', this.empleados);
+                    } else {
+                      console.error('La respuesta del servicio de empleados no es válida:', empleadosResponse);
+                    }
+                  },
+                  (errorEmpleados) => {
+                    console.error('Error al obtener los empleados:', errorEmpleados);
+                  }
+                );
+              } else {
+                console.error('ID de empresa no es un número válido:', idEmpresaAsNumber);
+              }
+            } else {
+              console.error('No se pudo obtener el id_empresa del usuario:', response);
+            }
+          },
+          (error) => {
+            console.error('Error al obtener el id_empresa del usuario:', error);
+          }
+        );
+      } else {
+        console.error('El email del usuario es nulo.');
       }
-    );
+    } else {
+      console.error('No tiene permiso para acceder a esta opción.');
+    }
   }
 
-  getEmpresas() {
-    this.empresaService.getEmpresas().subscribe(
-      (ans) => {
-        this.empresas = ans;
-        console.log('Empresas obtenidas:', this.empresas);
-      },
-      (error) => {
-        console.error('Error al obtener empresas:', error);
-      }
-    );
-  }
-
-  getProvincias() {
-    this.provinciasService.getProvincias().subscribe(async (ans) => {
-      this.provincias = ans;
-    });
-  }
-
-  getUsuarioInfo(usuario: any): any {
-    const empresa = this.empresas.find((e: any) => e.id_empresa === usuario.id_empresa);
-    return empresa ? { empresa: empresa.empresa, provincia: empresa.provincia } : { empresa: '', provincia: '' };
-  }
-
-
-  actualizarRol(id_user: any) {
-    const nuevoRol = this.empleado.rol;
-    this.userLogin.actualizarRol(id_user, nuevoRol).subscribe(
-      (respuesta) => {
-        console.log('Rol actualizado correctamente:', respuesta);
-
-      },
-      (error) => {
-        console.error('Error al actualizar el rol:', error);
-      }
-    );
-  }
-
+  // Muestra una alerta para confirmar el borrado de un empleado
   async borrarEmpleado(id_user: any) {
     const alert = await this.alertController.create({
       header: 'Confirmar',
@@ -174,10 +138,10 @@ export class ListauserPage implements OnInit {
           text: 'Borrar',
           handler: () => {
             try {
+              // Llamo al servicio para borrar el empleado y recargo la página después de borrar
               this.userLogin.borrarEmpleado(id_user).subscribe(async (ans) => {
                 console.log(ans);
-                // Actualizar lista de empleados después de borrar el empleado
-                this.getEmpleados();
+                window.location.reload();
               });
             } catch (e) {
               console.error(e);
@@ -190,6 +154,7 @@ export class ListauserPage implements OnInit {
     await alert.present();
   }
 
+  // Filtra la lista de empleados según el criterio y el valor proporcionados
   filtrarEmpleados(criterio: string, valor: string) {
     if (!valor) {
       valor = '';
@@ -200,8 +165,6 @@ export class ListauserPage implements OnInit {
       switch (criterio) {
         case 'nombre':
           return empleado.nombre.toLowerCase().includes(valorLower);
-        case 'apellido':
-          return empleado.apellido.toLowerCase().includes(valorLower);
         case 'email':
           return empleado.email.toLowerCase().includes(valorLower);
         default:
@@ -210,59 +173,9 @@ export class ListauserPage implements OnInit {
     });
   }
 
-  filtrarPorRol(rolSeleccionado: string) {
-    if (rolSeleccionado === "") {
-      // Mostrar todos los empleados
-      this.empleadosFiltrados = this.empleados;
-    } else {
-      // Filtrar por el rol seleccionado
-      this.empleadosFiltrados = this.empleados.filter((empleado: any) => {
-        return empleado.rol.toLowerCase().includes(rolSeleccionado.toLowerCase());
-      });
-    }
-  }
-
-  // Método para filtrar empleados por empresa y/o provincia
-  filtrarPorEmpresaProvincia() {
-    // Filtra empleados basados en las selecciones de empresa y provincia
-    this.empleadosFiltrados = this.empleados.filter((empleado: any) => {
-      const filtroEmpresaCumple = !this.filtroEmpresa || empleado.id_empresa === this.filtroEmpresa;
-      const filtroProvinciaCumple = !this.filtroProvincia || this.getUsuarioInfo(empleado).provincia === this.filtroProvincia;
-      return filtroEmpresaCumple && filtroProvinciaCumple;
-    });
-  }
-
-  // Método para manejar el evento de cambio en el desplegable de empresa
-  onEmpresaChange(event: any) {
-    this.filtroEmpresa = event.detail.value;
-    this.filtrarPorEmpresaProvincia();
-  }
-
-  // Método para manejar el evento de cambio en el desplegable de provincia
-  onProvinciaChange(event: any) {
-    this.filtroProvincia = event.detail.value;
-    this.filtrarPorEmpresaProvincia();
-  }
-
-  // Método para manejar el evento de cambio en la opción "Mostrar Todos" del desplegable de empresa
-  onMostrarTodosEmpresas() {
-    this.filtroEmpresa = null;
-    this.filtrarPorEmpresaProvincia();
-  }
-
-  // Método para manejar el evento de cambio en la opción "Mostrar Todos" del desplegable de provincia
-  onMostrarTodosProvincias() {
-    this.filtroProvincia = null;
-    this.filtrarPorEmpresaProvincia();
-  }
-
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;
     this.themeService.setDarkTheme(this.isDarkMode);
-    const contentElement = document.querySelector('ion-content');
-    if (contentElement) {
-      contentElement.classList.toggle('dark-mode', this.isDarkMode);
-    }
   }
 
   cerrarSesion(): void {

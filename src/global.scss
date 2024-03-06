@@ -1,4 +1,13 @@
-/* globlal.scss */
+@font-face {
+    font-family: 'restaurant';
+    src: url('./assets/fonts/restaurant.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+body {
+    font-family: 'restaurant', sans-serif;
+}
 
 /* Modo claro */
 ion-header,
@@ -22,11 +31,22 @@ ion-content {
     color: #343541;
 }
 
-ion-item,
-ion-card {
-    --background: #ffffff;
+.itemUser {
+    --background: #FFECBA;
     color: #343541;
 }
+
+.itemUser ion-item,
+.itemUser ion-card {
+    --background: inherit;
+    color: inherit;
+}
+
+// ion-item,
+// ion-card {
+//     --background: #ffffff;
+//     color: #343541;
+// }
 
 ion-menu {
     --background: #ffffff;
@@ -73,7 +93,7 @@ body.dark-theme ng-container ion-list {
 }
 
 .dark-theme ion-card {
-    --background: #343541 !important; 
+    --background: #343541 !important;
 
 }
 

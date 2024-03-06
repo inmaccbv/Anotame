@@ -25,16 +25,20 @@
 
   <input type="hidden" #idEmpresaInput [value]="idEmpresa">
 
-  <ion-content [class]="{'dark-theme': isDarkMode}" *ngIf="rol === 'cliente'">
-    <div *ngFor="let texto of textosFiltrados" class="texto-container">
-      <ion-title style="font-weight: bold; font-size: 15px; color: #ff830f; text-align: center; font-size: 25px;"> 
-        {{ texto.nomLocal }}
-      </ion-title>
-      <p style="font-size: 18px; text-align: center;">{{ texto.texto }}</p>
-    </div>
-  </ion-content>
+  <div style="margin-left: 20px;margin-right: 18px;margin-top: 15px;">
+    
+    <!-- Mostrar el nombre local -->
+    <div *ngFor="let texto of textosFiltrados">
+      <div style="overflow-wrap: break-word; max-width: 350px; color: #ff830f;">
+        <ion-title style="font-size: 25px;">{{ texto.nomLocal }}</ion-title>
+      </div>
   
+      <!-- Mostrar el texto con saltos de línea y espacio entre párrafos -->
+      <div style="overflow-wrap: break-word; max-width: 350px; white-space: pre-line; margin-bottom: 10px;">
+        <p class="white-text" style="font-size: 20px;">{{ texto.texto }}</p>
+      </div>
+    </div>
+  </div>
 
-
-
+  
 </ion-content>

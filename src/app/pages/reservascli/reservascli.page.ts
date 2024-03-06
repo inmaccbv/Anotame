@@ -1,17 +1,20 @@
 import { Component, OnInit, AfterViewInit, ChangeDetectorRef, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable, catchError, map, of } from 'rxjs';
+
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { Observable, catchError, map, of, tap } from 'rxjs';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { Componente } from 'src/app/interfaces/interfaces';
+
 import { AuthClienteService } from 'src/app/services/auth-cliente.service';
-import { AuthService } from 'src/app/services/auth.service';
 import { MenuCliService } from 'src/app/services/menu-cli.service';
 import { ReservasService } from 'src/app/services/reservas.service';
 import { ThemeService } from 'src/app/services/theme.service';
 import { ClientesService } from 'src/app/services/clientes.service';
 import { NotificacionService } from 'src/app/services/notificacion.service';
+import { HorariosService } from 'src/app/services/horarios.service';
 
 @Component({
   selector: 'app-reservascli',
@@ -26,6 +29,9 @@ export class ReservascliPage implements OnInit, AfterViewInit {
   reservaForm!: FormGroup;
   reservas: any;
   idEmpresa: any;
+
+  esLocale = es;
+  horariosRestaurante: any[] = [];
 
   fechaSeleccionada: any;
   fechaCreacionActual: string = '';
@@ -47,6 +53,7 @@ export class ReservascliPage implements OnInit, AfterViewInit {
     private reservasService: ReservasService,
     private clienteService: ClientesService,
     public authServiceCli: AuthClienteService,
+    public horariosService: HorariosService,
     private notificacionService: NotificacionService,
     public themeService: ThemeService
   ) {
@@ -70,20 +77,88 @@ export class ReservascliPage implements OnInit, AfterViewInit {
     this.obtenerFechaActual();
     this.cargarReservaGuardadas();
 
-       // Recuperar el valor de id_empresa del localStorage
-       const idEmpresaString = localStorage.getItem('id_empresa');
-       this.idEmpresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;
-   
-       console.log('ID Empresa:', this.idEmpresa);
-  }
+    // Recuperar el valor de id_empresa del localStorage
+    const idEmpresaString = localStorage.getItem('id_empresa');
+    this.idEmpresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;
 
+    console.log('ID Empresa:', this.idEmpresa);
+
+    // Llamada al servicio para obtener los horarios por empresa
+    if (this.idEmpresa) {
+      this.horariosService.obtenerHorasByEmpresa(this.idEmpresa).subscribe(
+        (response) => {
+          console.log('Datos de horarios:', response);
+          this.horariosRestaurante = response.data; // Guarda los horarios en la variable
+  
+          // Establece la fecha mínima en la parte de la fecha
+          this.reservaForm.get('fechaHoraReserva')?.setValue(new Date().toISOString());
+  
+        },
+        (error) => {
+          console.error('Error al obtener horarios:', error);
+        }
+      );
+    }
+  }
+  
   ngAfterViewInit(): void {
     this.obtenerFechaActual();
     this.changeDetectorRef.detectChanges();
   }
 
   mostrarFormulario(event: any) {
-    this.fechaSeleccionada = event.detail.value;
+    const horaSeleccionada = new Date(event.detail.value);
+    const diaSeleccionado = format(horaSeleccionada, 'EEEE', { locale: this.esLocale });
+    horaSeleccionada.setUTCHours(horaSeleccionada.getHours());
+  
+    const diaSeleccionadoNormalizado = diaSeleccionado.charAt(0).toUpperCase() + diaSeleccionado.slice(1).toLowerCase();
+    const horarioDiaSeleccionado = this.horariosRestaurante.find(horario =>
+      horario.dia.toLowerCase() === diaSeleccionadoNormalizado.toLowerCase()
+    );
+  
+    console.log('Hora seleccionada (después del ajuste de zona horaria):', horaSeleccionada);
+    console.log('Día seleccionado (después del ajuste de zona horaria):', diaSeleccionado);
+    console.log('Horario del día seleccionado:', horarioDiaSeleccionado);
+  
+    // Verifica si hay horarios para el día seleccionado
+    if (horarioDiaSeleccionado) {
+      const [aperturaHours, aperturaMinutes] = horarioDiaSeleccionado.hora_apertura.split(':');
+      const [cierreHours, cierreMinutes] = horarioDiaSeleccionado.hora_cierre.split(':');
+  
+      const horaApertura = new Date();
+      horaApertura.setUTCHours(Number(aperturaHours), Number(aperturaMinutes), 0);
+  
+      const horaCierre = new Date();
+      horaCierre.setUTCHours(Number(cierreHours), Number(cierreMinutes), 0);
+  
+      console.log('Hora de apertura:', horaApertura);
+      console.log('Hora de cierre:', horaCierre);
+  
+      console.log('Comparación de horas:');
+      console.log('Hora seleccionada:', horaSeleccionada);
+      console.log('Hora de apertura:', horaApertura);
+      console.log('Hora de cierre:', horaCierre);
+  
+      if (horaSeleccionada >= horaApertura && horaSeleccionada < horaCierre) {
+        console.log('El restaurante está abierto en este momento.');
+      } else {
+        this.mostrarMensajeError('Lo sentimos, el restaurante se encuentra cerrado en este momento. Disculpen las molestias.');
+        this.reservaForm.get('fechaHoraReserva')?.setValue(null);
+      }
+    } else {
+      console.log('No se encontró el horario para el día seleccionado.');
+      this.mostrarMensajeError('Lo sentimos, el restaurante se encuentra cerrado en este momento. Disculpen las molestias.');
+      this.reservaForm.get('fechaHoraReserva')?.setValue(null);
+    }
+  }
+  
+
+  mostrarMensajeError(mensaje: string) {
+    this.alertController.create({
+      header: 'Atención',
+      message: mensaje,
+      buttons: ['OK']
+    }).then(alert => alert.present());
   }
 
   obtenerIdCliente(): Observable<string | null> {
@@ -121,7 +196,7 @@ export class ReservascliPage implements OnInit, AfterViewInit {
       // Añade una verificación para evitar envíos múltiples
       if (!this.envioReservaEnProceso) {
         this.envioReservaEnProceso = true;
-  
+
         this.obtenerIdCliente().subscribe(
           (id_cliente) => {
             if (id_cliente) {
@@ -130,11 +205,11 @@ export class ReservascliPage implements OnInit, AfterViewInit {
               const notasEspeciales = this.reservaForm.get('notasEspeciales')?.value;
               const estadoReserva = this.reservaForm.get('estadoReserva')?.value;
               const fechaCreacion = this.reservaForm.get('fechaCreacion')?.value;
-  
+
               // Recuperar el valor de id_empresa del localStorage
               const idEmpresaString = localStorage.getItem('id_empresa');
               const id_empresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;
-  
+
               const nuevaReserva = {
                 numPax: numPax,
                 fechaHoraReserva: fechaHoraReserva,
@@ -144,16 +219,16 @@ export class ReservascliPage implements OnInit, AfterViewInit {
                 fechaCreacion: fechaCreacion,
                 id_empresa: id_empresa // Agrega el id_empresa al objeto nuevaReserva
               };
-  
+
               // Envía la reserva al servicio de notificaciones
               this.notificacionService.enviarNotificacion(nuevaReserva);
-  
+
               this.reservasService.addReserva(nuevaReserva).subscribe(
                 (response) => {
                   // Luego de enviar la reseña, guardarla en el localStorage
                   this.guardarReservaEnLocalStorage(nuevaReserva);
                   this.envioReservaEnProceso = false;
-  
+
                   setTimeout(() => {
                     window.location.reload();
                   }, 500);
@@ -178,7 +253,6 @@ export class ReservascliPage implements OnInit, AfterViewInit {
       console.error('El formulario de reseña no es válido.');
     }
   }
-  
 
   guardarReservaEnLocalStorage(reserva: any) {
     // Obtener las reseñas almacenadas actualmente
@@ -202,15 +276,15 @@ export class ReservascliPage implements OnInit, AfterViewInit {
   eliminarOpcion(campo: string): void {
     this.reservaForm.get(campo)?.reset();
   }
-  
+
   obtenerFechaActual(): void {
     const ahora = new Date();
     this.fechaCreacionActual = ahora.toISOString(); // Esto captura la fecha en formato ISO (yyyy-MM-ddTHH:mm:ss.sssZ)
     console.log(this.fechaCreacionActual); // Imprime la fecha en la consola para verificar
-  
+
     this.reservaForm.get('fechaCreacion')?.setValue(this.fechaCreacionActual);
   }
-  
+
   getUserRole() {
     this.rol = this.authServiceCli.getUserRole();
     console.log(this.rol);

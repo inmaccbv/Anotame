@@ -30,7 +30,7 @@
         <!-- Filtro por tipo de local -->
         <ion-item class="filter-item">
           <ion-icon name="restaurant-outline" slot="start" style="margin-right: 8px;"></ion-icon>
-          <ion-select class="filter-select" [(ngModel)]="filtroTipoLocal" (ionChange)="aplicarFiltros()">
+          <ion-select class="filter-select" [(ngModel)]="filtroTipoLocal" (ionChange)="aplicarFiltros()" placeholder="Tipo restaurante">
             <ion-select-option value="Italiano">Italiano</ion-select-option>
             <ion-select-option value="Mexicano">Mexicano</ion-select-option>
             <ion-select-option value="Asiático">Asiático</ion-select-option>
@@ -45,7 +45,7 @@
         <!-- Filtro por provincia -->
         <ion-item class="filter-item">
           <ion-icon name="location-outline" slot="start" style="margin-right: 8px;"></ion-icon>
-          <ion-select class="filter-select" [(ngModel)]="filtroProvincia" (ionChange)="aplicarFiltros()">
+          <ion-select class="filter-select" [(ngModel)]="filtroProvincia" (ionChange)="aplicarFiltros()" placeholder="Provincia">
             <ion-select-option *ngFor="let provincia of provincias" [value]="provincia.provincia">
               {{ provincia.provincia }}
             </ion-select-option>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 import { Observable, catchError, map, of } from 'rxjs';
 
 import { AuthService } from 'src/app/services/auth.service';
@@ -31,12 +32,12 @@ export class CartaPage implements OnInit {
   id_empresa: number | null = null;
   id_user: number | null = null;
 
-
   rol!: any;
   isDarkMode: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
+    private alertController: AlertController,
     private router: Router,
     private cartaUploadService: CartaUploadService,
     public authService: AuthService,
@@ -151,8 +152,8 @@ export class CartaPage implements OnInit {
       // Obtiene el ID del usuario y de la empresa
       this.obtenerIdUsuario().subscribe(
         ({ idUsuario, idEmpresa }) => {
-          console.log('Id de Usuario:', idUsuario);
-          console.log('Id de Empresa:', idEmpresa);
+          // console.log('Id de Usuario:', idUsuario);
+          // console.log('Id de Empresa:', idEmpresa);
 
           // Asigna los valores obtenidos
           this.id_user = idUsuario;
@@ -168,7 +169,7 @@ export class CartaPage implements OnInit {
             // Realiza la solicitud para subir la imagen
             this.cartaUploadService.uploadFile(formData, this.id_empresa, this.id_user).subscribe(
               (response: any) => {
-                console.log('Respuesta del servidor:', response);
+                // console.log('Respuesta del servidor:', response);
 
                 // Verifica si la respuesta es exitosa y contiene la URL de la imagen
                 if (response && response.authorized === 'SI' && response.url) {
@@ -177,11 +178,12 @@ export class CartaPage implements OnInit {
 
                   // Agrega la imagen a la lista de archivos subidos
                   this.uploadedFiles.push({ name: fileName, url: imageUrl });
-                  console.log('Lista de cartas después de subir:', this.uploadedFiles);
+                  // console.log('Lista de cartas después de subir:', this.uploadedFiles);
                   // this.getImg();
                 } else {
                   console.error('Error al subir la imagen:', response);
                 }
+                this.getImg();
               },
               (error: any) => {
                 console.error('Error en la solicitud:', error);
@@ -233,18 +235,36 @@ export class CartaPage implements OnInit {
     }
   }
 
-  // Método para borrar una imagen de carta
-  borrarImg(id_carta: any) {
-    try {
-      // Realiza la solicitud para borrar la imagen por ID de carta
-      this.cartaUploadService.borrarImg(id_carta).subscribe(async (ans) => {
-        console.log(ans);
-        // Actualiza lista de las imágenes de cartas
-        this.getImg();
-      });
-    } catch (e) {
-      console.error(e);
-    }
+  async borrarImg(id_carta: any) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar',
+      message: '¿Estás seguro de que deseas borrar esta carta?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          handler: () => {
+            console.log('Borrado cancelado');
+          }
+        },
+        {
+          text: 'Borrar',
+          handler: () => {
+            try {
+              this.cartaUploadService.borrarImg(id_carta).subscribe(async (ans) => {
+                console.log(ans);
+                // Actualizar lista de empleados después de borrar el empleado
+                window.location.reload();
+              });
+            } catch (e) {
+              console.error(e);
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   // Método para obtener la URL de una imagen de carta

@@ -12,9 +12,6 @@ export class ReviewsService {
   BASE_RUTA = "http://localhost/anotame/APIANOTAME/public/";
   RUTA_REVIEWS = "SubirResena";
 
-
-
-
   constructor(
     private http: HttpClient,
     private alertController: AlertController) { }

@@ -11,9 +11,7 @@ export class UsuariosService {
   BASE_RUTA = "http://localhost/anotame/APIANOTAME/public/";
 
   RUTA_REGISTRO = "Registro";
-  RUTA_LOGIN = "Logueo";
-  RUTA_EMPLEADO = 'Empleado';
-  RUTA_FILTRAR = "Filtrar";
+  RUTA_LOGIN = "Logueo"; 
 
   constructor(private http: HttpClient) { }
 
@@ -77,20 +75,6 @@ export class UsuariosService {
     );
   }
 
-  getUserInfo(): Observable<any> {
-    // Obtener el email del usuario del localStorage
-    const usuarioLocalStorage = localStorage.getItem('usuario');
-    if (!usuarioLocalStorage) {
-      return throwError('Usuario no encontrado en el localStorage');
-    }
-
-    const usuario = JSON.parse(usuarioLocalStorage);
-    const email = usuario.email;
-
-    // Hacer la solicitud al backend para obtener la información del usuario
-    return this.getUserAndEmpresaByEmail(email);
-  }
-
   getIdEmpresaPorEmail(email: string): Observable<any> {
     const payload = new HttpParams().set('email', email);
   
@@ -104,10 +88,9 @@ export class UsuariosService {
       );
   }
 
-
   registroUsuario(datos: any) {
 
-    console.log(datos);
+    // console.log(datos);
 
     var headers = new Headers();
     headers.append("Accept", 'application/json');
@@ -122,15 +105,31 @@ export class UsuariosService {
       .set('rol', datos.rol)
       .set('id_empresa', datos.id_empresa)
 
-    console.log(payload);
+    // console.log(payload);
 
     return this.http.post(this.BASE_RUTA + this.RUTA_REGISTRO, payload)
       .pipe(
         dat => {
-          console.log('res ' + JSON.stringify(dat));
+          // console.log('res ' + JSON.stringify(dat));
 
           return dat;
         }
+      );
+  }  
+
+  getUsuariosPorEmpresa(idEmpresa: number): Observable<any> {
+    const params = new HttpParams().set('id_empresa', idEmpresa.toString());
+    
+    return this.http.get(`${this.BASE_RUTA}${this.RUTA_LOGIN}/getUsuariosPorIdEmpresa`, { params })
+      .pipe(
+        tap((ans) => {
+          // console.log('Reservas obtenidas:', ans);
+          return ans;
+        }),
+        catchError(error => {
+          console.error('Error al obtener las reservas por empresa:', error);
+          return throwError(error);
+        })
       );
   }
 
@@ -174,23 +173,6 @@ export class UsuariosService {
       );
   }
 
-  
-
-
-  actualizarRol(id_user: any, nuevoRol: string): Observable<any> {
-    const payload = new HttpParams()
-      .set('id_user', id_user)
-      .set('nuevoRol', nuevoRol);
-
-    return this.http.put(this.BASE_RUTA + this.RUTA_EMPLEADO + '/actualizarRol', payload)
-      .pipe(
-        catchError(error => {
-          console.error('Error al actualizar el rol:', error);
-          return throwError(error);
-        })
-      );
-  }
-
   borrarEmpleado(id_user: any) {
     var headers = new Headers();
     headers.append("Accept", "application/json");
@@ -208,15 +190,4 @@ export class UsuariosService {
         }
       );
   }
-
-  getEmpresas() {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/x-www-form-urlencoded',
-    });
-
-    return this.http.post(this.BASE_RUTA + this.RUTA_REGISTRO + '/getEmpresas', '', { headers });
-  }
-
-
-
 }

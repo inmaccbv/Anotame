@@ -42,7 +42,6 @@ export class GestionReservasPage implements OnInit {
   constructor(
     public alertController: AlertController,
     private popoverController: PopoverController,
-    private cdRef: ChangeDetectorRef,
     private router: Router,
     public authService: AuthService,
     public usuariosService: UsuariosService,
@@ -101,7 +100,7 @@ export class GestionReservasPage implements OnInit {
                     if (reservasResponse.code === 200 && Array.isArray(reservasResponse.data)) {
                       // Verificar si la respuesta tiene el código 200 y data es un array
                       this.reservas = reservasResponse.data;
-                      this.reservasFiltradas = reservasResponse.data; // Inicializar reservasFiltradas
+                      this.reservasFiltradas = reservasResponse.data; 
                       console.log('Reservas obtenidas:', this.reservas);
                     } else {
                       console.error('La respuesta del servicio de reservas no es válida:', reservasResponse);

@@ -1,3 +1,16 @@
+
+
+.text-container {
+    margin-top: 50px !important;
+}
+
+.gridContent {
+    margin-top: 30px !important;
+    margin-bottom: 20px !important;
+    margin-left: 55px !important;
+    margin-right: 40px !important;
+}
+
 /* Estilos para las letras grandes */
 .large-text {
     font-size: 1.8em;
@@ -34,6 +47,10 @@ ion-card {
     width: 150px;
     height: 180px;
     margin: 0 20px 20px 20px;
+}
+
+ion-title {
+    text-align: center;
 }
 
 ion-row {
@@ -82,4 +99,16 @@ ion-card-content p {
 .orange-icons {
     color: #ff830f;
     font-size: 1.8em;
+}
+
+/* Estilos para los iconos */
+ion-icon {
+    font-size: 1.5em;
+    color: #ff830f;
+}
+
+.timeIcon {
+    align-items: center;
+    margin-left: 110px;
+    margin-bottom: 15px;
 }

@@ -31,8 +31,8 @@
 
   <form [formGroup]="form">
     <!-- Selector de día para asociar con la imagen -->
-    <ion-select type="select" formControlName="dia" [class.dark-theme]="isDarkMode">
-      <ion-select-option value="" disabled selected>Selecciona día</ion-select-option>
+    <ion-select type="select" formControlName="dia" [class.dark-theme]="isDarkMode" placeholder="Seleccione un día">
+      <ion-icon name="today-outline" slot="start" style="margin-right: 8px;"></ion-icon>
       <ion-select-option *ngFor="let dia of availableDays" [value]="dia">
         {{ dia }}
       </ion-select-option>

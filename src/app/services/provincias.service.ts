@@ -14,7 +14,6 @@ export class ProvinciasService {
     public http: HttpClient
   ) { }
 
-  
   getProvincias() {
 
     var headers = new Headers();
@@ -24,7 +23,7 @@ export class ProvinciasService {
     return this.http.post(this.BASE_RUTA + this.RUTA_PROVINCIA + '/getProvincias', '')
     .pipe(
       dat => {
-        console.log('res ' + JSON.stringify(dat));
+        // console.log('res ' + JSON.stringify(dat));
         return dat;
       }
     );

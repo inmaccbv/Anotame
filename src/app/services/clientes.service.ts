@@ -14,9 +14,7 @@ export class ClientesService {
   REGISTRO_CLIENTE = "RegistroCliente";
 
   constructor(
-
     private http: HttpClient
-
   ) { }
 
   httpOptions = {
@@ -79,23 +77,9 @@ export class ClientesService {
     );
   }
 
-  getIdEmpresaPorEmail(email: string): Observable<any> {
-    const payload = new HttpParams().set('email', email);
-  
-    return this.http.post(this.BASE_RUTA + this.LOGIN_CLIENTE + '/getIdEmpresaPorEmail', payload)
-      .pipe(
-        map(response => response || {}), // Manejar respuesta undefined
-        catchError(error => {
-          console.error('Error al obtener id_empresa por email:', error);
-          throw error;
-        })
-      );
-  }
-  
-
   registroCliente(datos: any) {
 
-    console.log(datos);
+    // console.log(datos);
 
     var headers = new Headers();
     headers.append("Accept", 'application/json');
@@ -109,12 +93,12 @@ export class ClientesService {
       .set('password', datos.password)
       .set('rol', datos.rol)
 
-    console.log(payload);
+    // console.log(payload);
 
     return this.http.post(this.BASE_RUTA + this.REGISTRO_CLIENTE, payload)
       .pipe(
         dat => {
-          console.log('res ' + JSON.stringify(dat));
+          // console.log('res ' + JSON.stringify(dat));
 
           return dat;
         }
@@ -148,34 +132,6 @@ export class ClientesService {
       );
   }
 
-  getDatosClienteParaTabla(id_cliente: number): Observable<any> {
-    const payload = new HttpParams().set('id_cliente', id_cliente.toString());
-  
-    return this.http.post<{ cliente: any }>(this.BASE_RUTA + this.REGISTRO_CLIENTE + '/obtenerDatosClienteParaTabla', payload)
-      .pipe(
-        map(response => response.cliente || {}),  // Devolver la propiedad 'cliente' de la respuesta
-        catchError(error => {
-          console.error('Error al obtener datos del cliente para la tabla:', error);
-          throw error;
-        })
-      );
-  }
-  
-  getUserAndEmpresaByEmail(email: string): Observable<any> {
-    const payload = new HttpParams().set('email', email);
-
-    return this.http.post(this.BASE_RUTA + this.LOGIN_CLIENTE + '/getUserAndEmpresaByEmail', payload)
-      .pipe(
-        dat => {
-          console.log('res ' + JSON.stringify(dat));
-
-          return dat;
-        }
-      );
-  }
-  
-  
-
   getUserByEmail(email: string): Observable<any> {
     const payload = new HttpParams().set('email', email);
 
@@ -206,5 +162,4 @@ export class ClientesService {
         }
       );
   }
-
 }

@@ -18,13 +18,14 @@ import { UsuariosService } from 'src/app/services/usuarios.service';
 })
 export class ContactoPage implements OnInit {
 
-  ionicForm!: FormGroup;
-
   id_empresa: number | null = null;
   id_user: number | null = null;
-  
-  datos: any[] = [];
+  idEmpresa!: number | null;
 
+  datos: any;
+  datosFiltrados: any;
+
+  ionicForm!: FormGroup;
   rol!: any;
   isDarkMode: any;
   componentes!: Observable<Componente[]>;
@@ -54,63 +55,52 @@ export class ContactoPage implements OnInit {
   ngOnInit() {
     this.componentes = this.menuService.getMenuOpts();
 
-    // Recuperar datos del almacenamiento local
-    this.recuperarDatosLocalStorage();
-
-    // Llamar al nuevo método para obtener el ID de usuario y empresa
+    // Llamar al método para obtener datos del usuario y la empresa
     this.obtenerIdUsuario().subscribe(
       ({ idUsuario, idEmpresa }) => {
-        // console.log('Id de Usuario:', idUsuario);
-        // console.log('Id de Empresa:', idEmpresa);
-
-        // Asignar los IDs obtenidos a las variables correspondientes
+        // Asignar los valores obtenidos
         this.id_user = idUsuario;
         this.id_empresa = idEmpresa;
+
+        // Obtener los textos después de obtener los datos del usuario
+        this.getDatos();
       },
       (error) => {
-        console.error('Error al obtener el ID del usuario y la empresa:', error);
+        console.error('Error al obtener el id del usuario y la empresa:', error);
       }
-    );
+    );    
   }
 
-  // Método para obtener el ID de usuario y empresa desde el servidor
+  // Método para obtener el id del usuario y la empresa
   obtenerIdUsuario(): Observable<{ idUsuario: number | null, idEmpresa: number | null }> {
-    // Obtener el usuario del almacenamiento local
     const usuarioString = localStorage.getItem('usuario');
-
+  
     if (usuarioString) {
-      // Parsear el usuario obtenido del almacenamiento local
       const usuario = JSON.parse(usuarioString);
       const email = usuario.email;
-
-      // Llamar al servicio para obtener el ID de usuario y empresa
+  
       return this.usuariosService.getUserAndEmpresaByEmail(email).pipe(
         map(response => {
-          // console.log('Respuesta del servidor en obtenerIdUsuario:', response);
-
-          // Verificar la respuesta del servidor
           if (response && response.code === 200 && response.data) {
-            // Acceder a las propiedades id_user e id_empresa según la estructura real de la respuesta
             const idUsuario = response.data.id_user ? response.data.id_user : null;
             const idEmpresa = response.data.id_empresa ? response.data.id_empresa : null;
-
-            // Devolver los IDs obtenidos
+  
+            // Asegúrate de asignar idEmpresa
+            this.idEmpresa = idEmpresa;
+  
             return { idUsuario, idEmpresa };
           } else {
             console.error('No se pudieron obtener los datos del usuario:', response.texto);
-            // Devolver IDs nulos en caso de error
             return { idUsuario: null, idEmpresa: null };
           }
         }),
         catchError(error => {
           console.error('Error al obtener datos del usuario:', error);
-          // Devolver IDs nulos en caso de error
           return of({ idUsuario: null, idEmpresa: null });
         })
       );
     } else {
       console.error('Usuario no encontrado en el almacenamiento local');
-      // Devolver IDs nulos en caso de que no se encuentre el usuario
       return of({ idUsuario: null, idEmpresa: null });
     }
   }
@@ -119,11 +109,9 @@ export class ContactoPage implements OnInit {
   getUserRole() {
     this.rol = this.authService.getUserRole();
 
-    // Verificar si el usuario tiene permisos
     if (!(this.rol === 'administrador' || this.rol === 'encargado')) {
       console.error('Usuario con rol', this.rol, 'no tiene permiso para acceder a esta opción.');
 
-      // Cerrar sesión en caso de no tener permisos
       this.authService.logout().subscribe(
         () => {
           localStorage.removeItem('role');
@@ -140,33 +128,21 @@ export class ContactoPage implements OnInit {
   // Método para enviar datos al servidor
   enviarDatos() {
     if (this.ionicForm.valid) {
-      // Continuar solo si ambos valores no son nulos
       if (this.id_empresa !== null && this.id_user !== null) {
-        // Crear un objeto con todas las propiedades necesarias, incluyendo idEmpresa e idUsuario
         const datos = { ...this.ionicForm.value, id_empresa: this.id_empresa, id_user: this.id_user };
 
-        // Enviar los datos con los valores correctos
         this.contactService.subirDatos(datos, this.id_empresa, this.id_user).subscribe(
           (ans) => {
-            console.log('Respuesta del servidor:', ans);
+            // console.log('Respuesta del servidor:', ans);
 
-            // Limpiar el formulario después de enviarlo
             this.ionicForm.reset();
 
-            // Obtener los datos guardados del localStorage
-            const datosGuardadosString = localStorage.getItem('datos');
-            const datosGuardados = datosGuardadosString ? JSON.parse(datosGuardadosString) : [];
-
-            // Almacenar el nuevo dato en el localStorage y eliminar el anterior
-            localStorage.setItem('datos', JSON.stringify([ans.data]));
-            localStorage.removeItem('datosAnteriores');
-
-            // Actualizar la lista de datos en la variable datos para que muestre el último
-            this.recuperarDatosLocalStorage();
+            this.getDatos();
           },
           (error) => {
             console.error('Error en la solicitud:', error);
           }
+          
         );
       } else {
         console.error('No se pudo obtener el id de la empresa o el id del usuario.');
@@ -174,10 +150,28 @@ export class ContactoPage implements OnInit {
     }
   }
 
-  // Método para recuperar datos del localStorage
-  recuperarDatosLocalStorage() {
-    const datosGuardadosString = localStorage.getItem('datos');
-    this.datos = datosGuardadosString ? JSON.parse(datosGuardadosString) : [];
+   // Método para obtener los textos del servidor
+   getDatos() {
+    if (this.idEmpresa !== null) {
+      this.contactService.getDatosByEmpresa(this.idEmpresa).subscribe(
+        (ans) => {
+          // console.log('Respuesta del servidor:', ans);
+  
+          if (ans.code === 200) {
+            this.datos = ans.data;
+            this.datosFiltrados = ans.data;
+            console.log('Datos obtenidos:', this.datos);
+          } else {
+            console.error('Error en la respuesta:', ans.texto);
+          }
+        },
+        (error) => {
+          console.error('Error al obtener los datos:', error);
+        }
+      );
+    } else {
+      console.error('ID de empresa no válido.');
+    }
   }
 
   // Método para cambiar entre modos oscuro y claro

@@ -1,0 +1,34 @@
+/* detallescliente.page.scss */
+
+ion-content {
+    ion-toolbar {
+        --background: #ff830f;
+      --color: white;
+      height: 40px;
+    }
+  
+    h2 {
+      text-align: center;
+      margin-top: 20px;
+      color: #333; /* Puedes ajustar el color del texto según tus preferencias */
+    }
+  
+    .detalle-info {
+      text-align: center;
+      margin-top: 20px;
+      color: #333; /* Puedes ajustar el color del texto según tus preferencias */
+    }
+  
+    ion-button {
+      --background: #ff830f;
+      --color: white;
+      border: 1px solid #ff830f;
+      border-radius: 25%;
+    }
+
+    ion-icon {
+        color: white;
+        margin-bottom: 18px;
+    }
+  }
+  

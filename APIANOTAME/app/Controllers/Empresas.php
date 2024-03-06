@@ -81,6 +81,38 @@ class Empresas extends ResourceController
         return $this->respond($query0);
     }
 
+    public function obtenerUltimaEmpresa() {
+        try {
+            $db = \Config\Database::connect();
+            $builder = $db->table('empresas');
+            
+            // Ordena por id_empresa de forma descendente para obtener la última
+            $builder->orderBy('id_empresa', 'DESC');
+            $builder->limit(1);
+    
+            $query = $builder->get();
+            $result = $query->getRow();
+    
+            if ($result) {
+                return $this->respond([
+                    'code' => 200,
+                    'data' => $result,
+                ]);
+            } else {
+                return $this->respond([
+                    'code' => 404,
+                    'error' => 'No se encontró ninguna empresa.',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return $this->respond([
+                'code' => 500,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+    
+
     public function getEmpresas()
     {
         $db4 = \Config\Database::connect();

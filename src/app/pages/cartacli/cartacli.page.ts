@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { Componente } from 'src/app/interfaces/interfaces';
 
 import { AuthClienteService } from 'src/app/services/auth-cliente.service';
 import { CartaUploadService } from 'src/app/services/carta-upload.service';
+import { MenuCliService } from 'src/app/services/menucli.service';
 import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
@@ -25,17 +28,20 @@ export class CartacliPage implements OnInit {
 
   rol!: any;
   isDarkMode: boolean = false;
+  componentes!: Observable<Componente[]>;
 
   constructor(
     private router: Router,
     private cartaUploadService: CartaUploadService,
     public authServiceCliente: AuthClienteService,
+    private menuCli: MenuCliService,
     public themeService: ThemeService,
   ) {
     this.isDarkMode = this.themeService.isDarkTheme();
   }
 
   ngOnInit() {
+    this.componentes = this.menuCli.getMenuOptsCli();
     this.getUserRole();
     this.isDarkMode = this.themeService.isDarkTheme();
 
@@ -61,7 +67,7 @@ export class CartacliPage implements OnInit {
       this.authServiceCliente.logout().subscribe(
         () => {
           localStorage.removeItem('role');
-          localStorage.removeItem('usuario');
+          localStorage.removeItem('cliente');
           this.router.navigate(['/inicio']);
         },
         (error) => {

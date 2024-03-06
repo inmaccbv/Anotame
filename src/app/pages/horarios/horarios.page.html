@@ -8,6 +8,7 @@
     <ion-title color="primary">Horarios</ion-title>
 
     <ion-buttons slot="end">
+
       <ion-button (click)="toggleDarkMode()">
         <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"
           style="color: #ff830f; font-size: 24px;"></ion-icon>
@@ -23,32 +24,35 @@
 
 <ion-content *ngIf="rol === 'administrador' || rol === 'encargado'">
 
+  <!-- Formulario con campos ocultos para id_user e id_empresa -->
   <form [formGroup]="ionicForm">
-    <!-- Campos ocultos para id_user e id_empresa -->
     <input type="hidden" formControlName="id_empresa" [value]="id_empresa">
     <input type="hidden" formControlName="id_user" [value]="id_user">
-
   </form>
 
   <!-- Tabla para agregar horarios -->
   <ion-grid [class.dark-text]="isDarkMode">
-    <ion-row class="encabezado" style="font-weight: bold;">
-      <ion-col>Día</ion-col>
-      <ion-col>Hora de Apertura</ion-col>
-      <ion-col>Hora de Cierre</ion-col>
-      <ion-col></ion-col>
+
+    <!-- Encabezado de la tabla con días y horas -->
+    <ion-row class="encabezado" style="font-weight: bold; text-align: center; color: #ff830f;">
+      <ion-col size="4" style="color: #ff830f;">Día</ion-col>
+      <ion-col size="4" style="color: #ff830f;">Hora de Apertura</ion-col>
+      <ion-col size="4" style="color: #ff830f;">Hora de Cierre</ion-col>
+      <ion-col size="auto"></ion-col>
     </ion-row>
+
+    <!-- Filas dinámicas para seleccionar horarios -->
     <ion-row *ngFor="let dia of diasSemana">
-      <ion-col>{{ dia }}</ion-col>
-      <ion-col>
-        <ion-input type="time" [(ngModel)]="horarioApertura[dia]"></ion-input>
+      <ion-col size="4" style="font-weight: bold;">{{ dia }}</ion-col>
+      <ion-col size="4">
+        <ion-input type="time" [(ngModel)]="hora_apertura[dia]"></ion-input>
       </ion-col>
-      <ion-col>
-        <ion-input type="time" [(ngModel)]="horarioCierre[dia]"></ion-input>
+      <ion-col size="4">
+        <ion-input type="time" [(ngModel)]="hora_cierre[dia]"></ion-input>
       </ion-col>
-      <ion-col>
+      <ion-col size="auto">
         <ion-button (click)="agregarHorario(dia)" [disabled]="diasSeleccionados.has(dia)">
-          Agregar
+          <ion-icon name="add-outline"></ion-icon>
         </ion-button>
       </ion-col>
     </ion-row>
@@ -56,22 +60,27 @@
 
   <!-- Tabla para mostrar los horarios seleccionados -->
   <ion-grid [class.dark-text]="isDarkMode">
-    <ion-row class="encabezado" style="font-weight: bold;">
-      <ion-col>Día</ion-col>
-      <ion-col>Hora de Apertura</ion-col>
-      <ion-col>Hora de Cierre</ion-col>
-      <ion-col></ion-col>
+
+    <!-- Encabezado de la tabla con días y horarios -->
+    <ion-row class="encabezado" style="font-weight: bold; text-align: center; color: #ff830f;">
+      <ion-col size="4" style="color: #ff830f;">Día</ion-col>
+      <ion-col size="8" style="color: #ff830f;">Horario</ion-col>
     </ion-row>
+
+    <!-- Filas dinámicas para mostrar los horarios seleccionados -->
     <ion-row *ngFor="let horario of horariosSeleccionados">
-      <ion-col>{{ horario.dia }}</ion-col>
-      <ion-col>{{ horario.hora_apertura }}</ion-col>
-      <ion-col>{{ horario.hora_cierre }}</ion-col>
-  
-    
-      
-      <ion-col>
-        <ion-button (click)="borrarHorario(horario)">Borrar</ion-button>
+      <ion-col size="4" style="font-weight: bold;">{{ horario.dia }}</ion-col>
+      <ion-col size="8">
+        <!-- Mostrar rango horario si ambos, hora_apertura y hora_cierre, tienen datos -->
+        <ng-container *ngIf="horario.hora_apertura && horario.hora_cierre">
+          {{ horario.hora_apertura }} – {{ horario.hora_cierre }}
+        </ng-container>
+        <!-- Mostrar 'Cerrado' si alguno de los dos está vacío o es null -->
+        <ng-container *ngIf="!horario.hora_apertura || !horario.hora_cierre">
+          Cerrado
+        </ng-container>
       </ion-col>
     </ion-row>
   </ion-grid>
+
 </ion-content>

@@ -19,7 +19,7 @@
     },
     {
         "icon": "calendar-outline",
-        "name": "Reservas",
+        "name": "Reservass",
         "redirectTo": "/reservascli",
         "roles":  ["cliente"]
     },

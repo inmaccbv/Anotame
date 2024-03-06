@@ -1,86 +1,58 @@
-ion-toolbar, ion-title, ion-col {
-    font-size: 2.0vw;
+@font-face {
+    font-family: 'restaurant';
+    src: url('../../../assets/fonts/restaurant.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+ion-label {
+    font-family: 'cakecafe', sans-serif;
+}
+
+.lista-empleados {
+    margin-top: 20px;
 }
 
 ion-title {
     text-align: center;
+    font-size: 4vw;
+}
+
+ion-toolbar,
+ion-title,
+ion-col,
+ion-label {
+    font-size: 3vw;
+}
+
+.iconos {
+    font-size: 6.5vw;
+    color: #ff830f;
+    overflow: visible;
+}
+
+p.mostrar-abajo {
+    display: block;
+    position: absolute;
+    background-color: white;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    /* Ajusta la posición vertical según tus necesidades */
+    z-index: 1;
+}
+
+.itemUser {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.dark-theme .itemUser {
+    background-color: #333;
+    /* Cambia el color de fondo en modo oscuro si es necesario */
 }
 
 .color-salir {
     color: #ff830f;
-}
-
-.iconos ion-icon {
-    font-size: 1.5vw;
-    color: #ff830f; 
-    overflow: visible;
-}
-
-/* Configuración y estilo para la tabla centrada */
-.tabla-centrada {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%; /* Ajusta el ancho para ocupar el 100% del contenedor */
-}
-
-/* Estilo para las filas de la tabla */
-.fila-bordes {
-    background-color: #FFFFFF;
-    border: 1px solid #E0E0E0;
-    border-radius: 10px;
-    overflow: hidden;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 90vw; /* Reduzco el ancho para dejar espacio para el borde */
-    color: black !important;
-    margin-bottom: 8px; 
-}
-
-.encabezado-naranja {
-    color: #ff830f !important;
-}
-
-/* Configuración para todas las columnas (títulos y datos) */
-.columna {
-    flex: 1;
-    text-align: center;
-    padding: 10px;
-}
-
-/* Configuración para las columnas de íconos */
-.iconos {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    flex: 1;
-}
-
-/* Estilo para los íconos en la tabla */
-.iconos ion-icon {
-    font-size: 1.5vw;
-}
-
-/* Estilo específico para el modo oscuro */
-.dark-theme {
-    filter: none;
-}
-
-/* Estilos específicos para pantallas pequeñas */
-@media screen and (max-width: 768px) {
-    ion-title.tabla-centrada {
-        font-size: 3vw;
-    }
-
-    /* Cambia el diseño a una columna en pantallas pequeñas */
-    .columna, .iconos {
-        flex: 1;
-        font-size: 2.5vw;
-    }
-
-    /* Ajusta el tamaño de fuente para íconos en pantallas pequeñas */
-    ion-icon {
-        font-size: 4vw;
-    }
 }

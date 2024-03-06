@@ -9,6 +9,7 @@ import { MenuUploadService } from 'src/app/services/menu-upload.service';
 import { DiasService } from 'src/app/services/dias.service';
 import { Observable, catchError, map, of, tap } from 'rxjs';
 import { UsuariosService } from 'src/app/services/usuarios.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-menu-img',
@@ -43,6 +44,7 @@ export class MenuImgPage implements OnInit {
 
   constructor(
     private router: Router,
+    public alertController: AlertController,
     private formBuilder: FormBuilder,
     private menuUploadService: MenuUploadService,
     public usuariosService: UsuariosService,
@@ -66,7 +68,7 @@ export class MenuImgPage implements OnInit {
     // console.log('Rol obtenido:', this.rol);
 
     this.isDarkMode = this.themeService.isDarkTheme();
-  
+
     // Llama a getDias para obtener los días de la semana
     this.getDias().subscribe(
       (dias) => {
@@ -81,10 +83,10 @@ export class MenuImgPage implements OnInit {
       ({ idUsuario, idEmpresa }) => {
         // console.log('Id de Usuario:', idUsuario);
         // console.log('Id de Empresa:', idEmpresa);
-    
+
         this.id_user = idUsuario;
         this.id_empresa = idEmpresa;
-    
+
         // Asegúrate de que id_empresa se haya establecido antes de llamar a getImg()
         if (this.id_empresa !== null) {
           this.getImg();
@@ -131,7 +133,7 @@ export class MenuImgPage implements OnInit {
       return of({ idUsuario: null, idEmpresa: null });
     }
   }
-  
+
   // Método para obtener los días de la semana desde el servicio
   getDias() {
     return this.diasService.getDias().pipe(
@@ -178,39 +180,39 @@ export class MenuImgPage implements OnInit {
     if (this.selectedFile) {
       this.obtenerIdUsuario().subscribe(
         ({ idUsuario, idEmpresa }) => {
-          console.log('Id de Usuario:', idUsuario);
-          console.log('Id de Empresa:', idEmpresa);
-  
+          // console.log('Id de Usuario:', idUsuario);
+          // console.log('Id de Empresa:', idEmpresa);
+
           const selectedDay = this.form.get('dia')?.value;
-  
+
           this.id_user = idUsuario;
           this.id_empresa = idEmpresa;
-  
+
           const formData: FormData = new FormData();
-  
+
           if (this.selectedFile && this.id_empresa !== null && this.id_user !== null) {
             formData.append('menu_img', this.selectedFile, this.selectedFile.name);
             formData.append('dia', selectedDay);
-  
+
             this.menuUploadService.uploadFile(formData, this.id_empresa, this.id_user).subscribe(
               (response: any) => {
-                console.log('Respuesta del servidor:', response);
-  
+                // console.log('Respuesta del servidor:', response);
+
                 if (response && response.authorized === 'SI' && response.url) {
                   const nomImg = response.data.menu_img;
                   const imgUrl = this.BASE_RUTA + response.data.menu_img;
-  
+
                   // Almacena los datos en el localStorage
                   const imageData = { fileName: nomImg, imageUrl: imgUrl, selectedDay };
-  
+
                   // Actualiza la lista de cartas después de subir la imagen
-                  this.getImg();
-  
+                  window.location.reload();
+
                   // Desactiva la opción del día seleccionado en el formulario
                   const diaControl = this.form.get('dia');
                   diaControl?.disable({ emitEvent: false }); // Desactiva el control del día sin emitir el evento
-  
-                  console.log('Después de desactivar:', this.form.value);
+
+                  // console.log('Después de desactivar:', this.form.value);
                 } else {
                   console.error('Error al subir la imagen:', response);
                 }
@@ -230,22 +232,25 @@ export class MenuImgPage implements OnInit {
     } else {
       console.error('No se ha seleccionado ningún archivo.');
     }
-  }  
+  }
 
   // Método para obtener las imágenes desde el servicio
   getImg() {
     if (this.id_empresa !== null) {
       this.menuUploadService.getMenusByEmpresa(this.id_empresa).subscribe(
         (ans: any) => {
-          // Comprueba si 'ans' tiene la propiedad 'code'
           if ('code' in ans) {
             if (ans.code === 200) {
-              // La solicitud fue exitosa, asigna los menús
-              // Comprueba si 'ans' tiene la propiedad 'data'
               if ('data' in ans) {
                 this.menus = ans.data;
-                this.menusFiltrados = ans.data;
-  
+
+                // Ordena los menús por el día de la semana
+                this.menus.sort((a: any, b: any) => {
+                  const diaA = this.availableDays.indexOf(a.dia);
+                  const diaB = this.availableDays.indexOf(b.dia);
+                  return diaA - diaB;
+                });
+
                 console.log('Menús obtenidos:', this.menus);
               } else {
                 console.error('Error en la respuesta: Propiedad "data" no encontrada.');
@@ -263,45 +268,51 @@ export class MenuImgPage implements OnInit {
       );
     }
   }
-  
+
+
   // Método para borrar una imagen
-  borrarImg(id_menu: any) {
-    try {
-      this.menuUploadService.borrarImg(id_menu).subscribe(async (ans: any) => {
-        console.log(ans);
-  
-        // Actualiza lista de las imágenes de cartas
-        this.getImg();
-  
-        // Desactiva el día seleccionado en el formulario
-        const diaControl = this.form.get('dia');
-        diaControl?.enable(); // Habilita el control del día antes de desactivarlo
-        diaControl?.disable({ emitEvent: false }); // Desactiva el control del día sin emitir el evento
-        diaControl?.setValue(''); // Opcional: restablece el valor a vacío
-  
-        // Activa el día nuevamente en la lista de días
-        const selectedDay = diaControl?.value;
-        this.dias.push({ dia: selectedDay, disponible: true });
-  
-        // Elimina la imagen del Local Storage
-        const localStorageKey = 'arrImg&Day';
-        const fileNameToDelete = ans as string; // Convertir ans a cadena
-  
-        // Encuentra el índice de la imagen a eliminar por fileName
-        let storedImages = JSON.parse(localStorage.getItem(localStorageKey) || '[]');
-        const index = storedImages.findIndex((image: any) => image.fileName === fileNameToDelete);
-  
-        if (index !== -1) {
-          storedImages.splice(index, 1); // Elimina el elemento del array
-          localStorage.setItem(localStorageKey, JSON.stringify(storedImages));
-          console.log('Imagen eliminada del localStorage');
-        } else {
-          console.log('La imagen no se encontró en el localStorage');
+  async borrarImg(id_menu: any) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar',
+      message: '¿Estás seguro de que deseas borrar este menú?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          handler: () => {
+            console.log('Borrado de menu cancelado');
+          }
+        },
+        {
+          text: 'Borrar',
+          handler: () => {
+            try {
+              this.menuUploadService.borrarImg(id_menu).subscribe(async (ans) => {
+                // console.log(ans);
+
+                // Actualiza lista de las imágenes de cartas
+                this.getImg();
+
+                // Desactiva el día seleccionado en el formulario
+                const diaControl = this.form.get('dia');
+                diaControl?.enable(); // Habilita el control del día antes de desactivarlo
+                diaControl?.disable({ emitEvent: false }); // Desactiva el control del día sin emitir el evento
+                diaControl?.setValue(''); // Opcional: restablece el valor a vacío
+
+                // Activa el día nuevamente en la lista de días
+                const selectedDay = diaControl?.value;
+                this.dias.push({ dia: selectedDay, disponible: true });
+                window.location.reload();
+              });
+            } catch (e) {
+              console.error(e);
+            }
+          }
         }
-      });
-    } catch (e) {
-      console.error(e);
-    }
+      ]
+    });
+
+    await alert.present();
   }
 
   // Método para obtener la URL de la imagen
@@ -314,7 +325,7 @@ export class MenuImgPage implements OnInit {
       return ''; // O proporcionar una URL predeterminada o manejar según sea necesario
     }
   }
-  
+
   // Método para alternar el modo oscuro
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;
