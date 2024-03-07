@@ -65,7 +65,7 @@ export class ListaemprPage implements OnInit {
   ngOnInit() {
     // Obtener el menú y la lista de empresas al iniciar la página
     this.componentes = this.menuService.getMenuOpts();
-    this.getProvincias();
+    // this.getProvincias();
     // Llamar a getEmpleados y obtener el id_user
     
     // Obtener el correo del localStorage
@@ -207,12 +207,12 @@ export class ListaemprPage implements OnInit {
   }
 
 
-  // Obtener la lista de provincias
-  getProvincias() {
-    this.provinciasService.getProvincias().subscribe(async (ans) => {
-      this.provincias = ans;
-    });
-  }
+  // // Obtener la lista de provincias
+  // getProvincias() {
+  //   this.provinciasService.getProvincias().subscribe(async (ans) => {
+  //     this.provincias = ans;
+  //   });
+  // }
 
   // Mostrar alerta de confirmación antes de borrar una empresa
   async borrarEmpresa(id_empresa: any) {

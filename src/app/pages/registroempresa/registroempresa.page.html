@@ -39,10 +39,8 @@
 
     <ion-item lines="full">
       <ion-label position="floating">Provincia</ion-label>
-
       <ion-select type="select" formControlName="provincia">
-        <ion-select-option *ngFor="let provincia of provincias" [value]="provincia.provincia">{{ provincia.provincia
-          }}</ion-select-option>
+        <ion-select-option *ngFor="let provincia of provincias" [value]="provincia">{{ provincia }}</ion-select-option>
       </ion-select>
     </ion-item>
 
