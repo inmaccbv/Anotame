@@ -25,7 +25,7 @@
 
 <ion-content *ngIf="rol === 'administrador' || rol === 'encargado'" class="center-content">
 
-  <label>Subir Menú</label>
+  <!-- <label>Subir Menú</label> -->
 
   <br>
 
@@ -45,7 +45,7 @@
     <!-- Sección para cargar imágenes -->
     <div class="upload-row">
       <input type="file" id="fileInput" accept="image/*" (change)="onFileSelected($event)" class="upload-input">
-      <ion-button (click)="uploadImage()" class="upload-button">Subir Menú</ion-button>
+      <ion-button (click)="uploadImage()" class="upload-button">Enviar</ion-button>
     </div>
 
     <!-- Galería de imágenes cargadas, condicionada por el rol -->

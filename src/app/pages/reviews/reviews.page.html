@@ -19,30 +19,63 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
 <ion-content [ngClass]="{'dark-theme': isDarkMode}" class="ion-padding"
   *ngIf="rol === 'administrador' || rol === 'encargado'">
+  
+  <ion-card *ngFor="let resena of resenasFiltrados; let i = index" [class.dark-theme]="isDarkMode" style="margin-top: 30px;">
 
-  <ion-card *ngFor="let resena of resenasFiltrados; let i = index" [class.dark-theme]="isDarkMode">
     <ion-card-header>
       <ion-card-title [style.color]="isDarkMode ? '#ff830f' : '#ff830f'">{{ resena.nombre }}</ion-card-title>
     </ion-card-header>
-    <ion-card-content>
+    
+    <ion-card-content style="display: flex; flex-direction: column;">
       <p>{{ resena.calificacion }} <ion-icon name="star-half-outline" style="color: #ff830f;"></ion-icon></p>
-      <p>{{ resena.comentario }}</p>
+      <p class="comentario-preview" [class.expandido]="expandido[i]">
+        {{ resena.comentario | slice:0:2000 }}
+      </p>
+  
+      <div style="margin-top: 5px; margin-left: auto; text-align: right;">
+        <a (click)="toggleExpansion(i)" *ngIf="!expandido[i] && resena.comentario.length > 80">
+          <ion-icon name="add-outline" size="small" style="vertical-align: middle;"></ion-icon>
+          Más
+        </a>
+        <a (click)="toggleExpansion(i)" *ngIf="expandido[i]">
+          <ion-icon name="remove-outline" size="small" style="vertical-align: middle;"></ion-icon>
+          Menos
+        </a>
+      </div>
+  
       <p style="display: none;">{{ resena.id_reviews }}</p>
-
-      <p>-------------------------------</p>
+  
       <!-- Mostrar respuesta si existe -->
       <ng-container *ngIf="resena.respuesta">
-        <p>Respuesta del restaurante:</p>
-        <p class="respuesta">{{ resena.respuesta }}</p>
+        <p>Restaurante<ion-icon style="margin-left: 5px;" name="person-outline"></ion-icon></p>
+        <p class="respuesta" [class.expandido]="expandidoRespuesta[i]">
+          {{ resena.respuesta }}
+        </p>
+  
+        <div style="margin-top: 5px; margin-left: auto; text-align: right;">
+          <a (click)="toggleExpansionRespuesta(i)" *ngIf="!expandidoRespuesta[i] && resena.respuesta.length > 80">
+            <ion-icon name="add-outline" size="small" style="vertical-align: middle;"></ion-icon>
+            Más
+          </a>
+          <a (click)="toggleExpansionRespuesta(i)" *ngIf="expandidoRespuesta[i]">
+            <ion-icon name="remove-outline" size="small" style="vertical-align: middle;"></ion-icon>
+            Menos
+          </a>
+        </div>
       </ng-container>
-
-      <ion-button (click)="responderResena(resena)">Responder</ion-button>
-
+  
+      <div class="spacer"></div>
+  
+      <ion-button (click)="responderResena(resena)" class="custom-button" shape="round" size="small">
+        Responder
+      </ion-button>
     </ion-card-content>
   </ion-card>
+  
+  
+  
 
   <!-- Mostrar un mensaje si no hay reseñas -->
   <div *ngIf="!resenasFiltrados || resenasFiltrados.length === 0">
@@ -50,3 +83,4 @@
   </div>
 
 </ion-content>
+

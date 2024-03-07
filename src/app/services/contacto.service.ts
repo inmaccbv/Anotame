@@ -42,12 +42,4 @@ export class ContactoService {
     return this.http.get(`${this.BASE_RUTA}${this.RUTA_DATOS}/getDatosByEmpresa`, { params });
   }
 
-  // Método para obtener datos por empresa desde el servidor
-  obtenerDatosByEmpresa(idEmpresa: number): Observable<any> {
-    // Configurar parámetros de la solicitud HTTP
-    const params = new HttpParams().set('id_empresa', idEmpresa.toString());
-
-    // Realizar una solicitud GET al servidor
-    return this.http.get(`${this.BASE_RUTA}${this.RUTA_DATOS}/obtenerDatosByEmpresa`, { params });
-  }
 }

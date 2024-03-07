@@ -6,36 +6,39 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-height: 1.5em;  /* Ajusta según sea necesario para mostrar cierta cantidad de líneas */
-  }
-  
-  .expandido {
-    max-height: unset !important;  /* Ajusta según sea necesario */
-    overflow: unset !important;    /* Ajusta según sea necesario */
+    max-height: 1.5em;
+}
+
+.expandido {
+    max-height: unset !important;
+    /* Ajusta según sea necesario */
+    overflow: unset !important;
+    /* Ajusta según sea necesario */
     white-space: pre-wrap;
-  }
-  
-  a {
+}
+
+a {
     cursor: pointer;
-    color: #ff830f;  /* Color de enlace predeterminado, puedes ajustar según tu estilo */
-  }
-  
-  
-  
+    color: #ff830f;
+}
 
 .custom-trash-icon {
     float: right;
-    color: white; 
+    color: white;
     margin-bottom: 20px;
-  }
-  
+}
+
 
 .star-icon {
     font-size: 24px;
-    color: #ffd700; /* color amarillo para estrellas llenas */
+    color: #ffd700;
+    /* color amarillo para estrellas llenas */
 }
 
-label, ion-label, p, ion-card-title {
+label,
+ion-label,
+p,
+ion-card-title {
     color: black;
 }
 
@@ -49,7 +52,8 @@ ion-card-content p {
 
 ion-icon,
 ion-text {
-    color: #ff830f !important; /* Color en ambos modos */
+    color: #ff830f !important;
+    /* Color en ambos modos */
 }
 
 /* Estilos para el modo oscuro */

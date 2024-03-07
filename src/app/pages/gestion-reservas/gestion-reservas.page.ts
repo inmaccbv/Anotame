@@ -21,6 +21,12 @@ import { UsuariosService } from 'src/app/services/usuarios.service';
 })
 export class GestionReservasPage implements OnInit {
 
+  @Component({
+    selector: 'app-detallescliente',
+    templateUrl: './detallescliente.page.html',
+    styleUrls: ['./detallescliente.page.scss'],
+  })
+
   @Input() cliente: any;
 
   reservasFiltradas: any;

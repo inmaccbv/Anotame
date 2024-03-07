@@ -40,7 +40,7 @@ export class ReservasService {
 
   // Método para editar el estado de una reserva
   editarEstadoReserva(id_reserva: number, estadoReserva: string): Observable<any> {
-    console.log('Iniciando updateEstadoReserva. ID Reserva:', id_reserva, 'Nuevo Estado:', estadoReserva);
+    console.log('ID Reserva:', id_reserva, 'Nuevo Estado:', estadoReserva);
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });

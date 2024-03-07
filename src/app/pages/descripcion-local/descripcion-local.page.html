@@ -5,7 +5,7 @@
       <ion-back-button defaultHref="/home" style="--color: #ff830f;"></ion-back-button>
     </ion-buttons>
 
-    <ion-title>Descripción Local</ion-title>
+    <ion-title>Restaurante</ion-title>
 
     <ion-buttons slot="end">
       <ion-button (click)="toggleDarkMode()" class="custom-button">
@@ -24,29 +24,21 @@
 <ion-content [class]="{'dark-theme': isDarkMode}" *ngIf="rol === 'administrador'" class="custom-content">
 
   <form [formGroup]="ionicForm" (ngSubmit)="enviarTexto()">
-    <ion-item>
 
-      <ion-input formControlName="nomLocal" placeholder="Introduce nombre local" rows="5"></ion-input>
+    <ion-item>
+      <ion-input formControlName="nomLocal" placeholder="Introduce nombre restaurante" rows="5"></ion-input>
     </ion-item>
 
     <ion-item>
-      <ion-textarea formControlName="texto" placeholder="Introduce texto" rows="10"></ion-textarea>
+      <ion-textarea formControlName="texto" placeholder="Introduce texto" rows="4"></ion-textarea>
     </ion-item>
 
     <!-- Campos ocultos para id_user e id_empresa -->
     <input type="hidden" formControlName="id_empresa" [value]="id_empresa">
     <input type="hidden" formControlName="id_user" [value]="id_user">
 
-    <ion-button type="submit" class="custom-button">Enviar</ion-button>
+    <ion-button type="submit" shape="round" size="small" style="margin-left: 245px;">Enviar</ion-button>
   </form>
-
-  <div *ngIf="ionicForm.get('nomLocal')?.invalid && ionicForm.get('nomLocal')?.touched" class="error-message">
-    Nombre Restaurante es obligatorio.
-  </div>
-
-  <div *ngIf="ionicForm.get('texto')?.invalid && ionicForm.get('texto')?.touched" class="error-message">
-    Texto no válido.
-  </div>
 
   <!-- Mostrar el nombre local -->
   <div style="overflow-wrap: break-word; max-width: 350px; color: #ff830f;">

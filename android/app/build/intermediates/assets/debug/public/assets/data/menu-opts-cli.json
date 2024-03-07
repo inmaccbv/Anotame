@@ -1,0 +1,33 @@
+[
+    {
+        "icon": "call-outline",
+        "name": "Contacto",
+        "redirectTo": "/contactocli",
+        "roles":  ["cliente"]
+    },
+    {
+        "icon": "book-outline",
+        "name": "Descripción Local",
+        "redirectTo": "/descripcion-cliente",
+        "roles":  ["cliente"]
+    },
+    {
+        "icon": "star-half-outline",
+        "name": "Reseñas",
+        "redirectTo": "/reviewscli",
+        "roles":  ["cliente"]
+    },
+    {
+        "icon": "calendar-outline",
+        "name": "Reservass",
+        "redirectTo": "/reservascli",
+        "roles":  ["cliente"]
+    },
+    {
+        "icon": "log-in-outline",
+        "name": "Logout",
+        "redirectTo": "/logoutcli",
+        "roles": ["cliente"]
+    }
+
+]

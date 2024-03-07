@@ -5,7 +5,7 @@
       <ion-back-button defaultHref="/homecli" style="--color: #ff830f;"></ion-back-button>
     </ion-buttons>
 
-    <ion-title style="font-size: 20px;">Gestión Reservas</ion-title>
+    <ion-title style="font-size: 20px;">Reservas</ion-title>
 
     <ion-buttons slot="end">
       <ion-button (click)="toggleDarkMode()">
@@ -31,33 +31,46 @@
     </ion-item>
   </ion-list>
   
-<!-- Lista de Reservas -->
-<ion-list *ngIf="reservasFiltradas && reservasFiltradas.length > 0" [class]="isDarkMode ? 'dark-list' : ''">
-  <ion-item class="header-row" style="font-size: 5.8rem;">
-    <ion-label style="font-size: 0.9rem;" class="columna">Fecha y Hora</ion-label>
-    <ion-label style="font-size: 0.9rem;" class="columna">Num. Pax</ion-label>
-    <ion-label style="font-size: 0.9rem;" class="columna">Notas Especiales</ion-label>
-    <ion-label style="font-size: 0.9rem;" class="columna">Estado</ion-label>
-  </ion-item>
-
-  <ion-item *ngFor="let reserva of reservasFiltradas; let i = index"
-            [ngClass]="{'data-row': true, 'dark-theme': isDarkMode}"
-            [style.background-color]="coloresFilas[i % coloresFilas.length]">
-
-    <ion-label class="columna">{{ formatFechaHora(reserva.fechaHoraReserva) }}</ion-label>
-    <ion-label class="columna">{{ reserva.numPax }}</ion-label>
-    <ion-label class="columna">{{ reserva.notasEspeciales }}</ion-label>
-    <ion-label class="columna">
-      <ion-icon [name]="'ellipse'" [class]="getEstadoColor(reserva.estadoReserva)"></ion-icon>
-    </ion-label>
-
-  </ion-item>
-</ion-list>
-
+  <!-- Lista de Reservas  -->
+  <ion-list *ngIf="reservasFiltradas && reservasFiltradas.length > 0" [class]="isDarkMode ? 'dark-list' : ''">
+      <ion-item class="fila-bordes" style="margin-left: 18px; margin-right: 9px;">
+          <ion-row class="header-row" style="color: #ff830f; font-weight: bold;">
+              <!-- Encabezados en la primera fila -->
+              <ion-col class="encabezado-col">Día&Hora</ion-col>
+              <ion-col class="encabezado-col">Pax</ion-col>
+              <ion-col class="encabezado-col">Notas</ion-col>
+              <ion-col class="encabezado-col">Estado</ion-col>
+          </ion-row>
+      </ion-item>
   
+      <div *ngFor="let reserva of reservasFiltradas; let i = index">
+          <!-- Datos -->
+          <ion-item class="fila-bordes" style="margin-left: 18px; margin-right: 12px;">
+              <ion-row class="data-row">
+                  <!-- Datos en la segunda fila -->
+                  <ion-col class="data-col">
+                      <ion-text class="reserva-dato">{{ formatFechaHora(reserva.fechaHoraReserva) }}</ion-text>
+                  </ion-col>
+                  <ion-col class="data-col">
+                      <ion-text class="reserva-dato">{{ reserva.numPax }}</ion-text>
+                  </ion-col>
+                  <ion-col class="data-col">
+                      <ion-text class="reserva-dato">{{ reserva.notasEspeciales }}</ion-text>
+                  </ion-col>
+                  <ion-col class="iconos-col">
+                      <ion-button fill="clear">
+                          <ion-icon [name]="'ellipse'" [class]="getEstadoColor(reserva.estadoReserva)" style="font-size: 12px;"></ion-icon>
+                      </ion-button>
+                  </ion-col>
+              </ion-row>
+          </ion-item>
+      </div>
+  </ion-list>
+
   <!-- Mensaje si no hay reservas -->
   <div *ngIf="!reservasFiltradas || reservasFiltradas.length === 0" style="margin-left: 20px;font-size: 20px;font-weight: bold;color: #ff830f;">
     No hay reservas disponibles.
   </div>
+
 
 </ion-content>

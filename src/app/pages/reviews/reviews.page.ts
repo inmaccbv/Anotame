@@ -16,6 +16,9 @@ import { UsuariosService } from 'src/app/services/usuarios.service';
 })
 export class ReviewsPage implements OnInit {
 
+  expandido: boolean[] = [];
+  expandidoRespuesta: boolean[] = [];
+
   getResenas: any;
   resenasFiltrados: any[] = [];
 
@@ -33,6 +36,7 @@ export class ReviewsPage implements OnInit {
   ) {
     this.getUserRole(); 
     this.getResena();
+
     // console.log('Rol obtenido:', this.rol);
     this.isDarkMode = this.themeService.isDarkTheme();
   }
@@ -40,6 +44,7 @@ export class ReviewsPage implements OnInit {
   ngOnInit() {
     this.componentes = this.menuService.getMenuOpts();
     this.obtenerDetallesClientes();
+    this.expandidoRespuesta = this.resenasFiltrados.map(() => false);
   }  
 
   // Método para obtener reseñas
@@ -110,7 +115,7 @@ export class ReviewsPage implements OnInit {
   async responderResena(resena: any) {
     const respuesta = await this.reviewsService.mostrarCuadroDialogoParaRespuesta(resena);
     if (respuesta !== null) {
-      console.log('Respuesta recibida:', respuesta);
+      // dconsole.log('Respuesta recibida:', respuesta);
       // Lógica adicional si es necesario
     } else {
       console.log('La respuesta está vacía o se canceló.');
@@ -149,6 +154,14 @@ export class ReviewsPage implements OnInit {
     }
   }
 
+toggleExpansion(i: number) {
+  this.expandido[i] = !this.expandido[i];
+}
+
+toggleExpansionRespuesta(i: number) {
+  this.expandidoRespuesta[i] = !this.expandidoRespuesta[i];
+}
+  
   // Método para cambiar entre modos oscuro y claro
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;

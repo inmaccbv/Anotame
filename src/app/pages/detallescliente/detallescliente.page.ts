@@ -4,24 +4,10 @@ import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
   selector: 'app-detallescliente',
+  templateUrl: './detallescliente.page.html',
   styleUrls: ['./detallescliente.page.scss'],
-  template: `
-    <ion-content class="ion-padding" *ngIf="cliente && cliente.cliente">
-      <ion-toolbar>
-        <ion-buttons slot="end">
-          <ion-button (click)="cerrarPopover()">
-            <ion-icon name="close" style="font-size: 25px;"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-
-      <h2>{{ cliente.cliente.nombre }}</h2>
-      <div class="detalle-info">
-        <div><p class="pe">Teléfono:</p> <p>{{ cliente.cliente.telf }}</p></div>
-      </div>
-    </ion-content>
-  `,
 })
+
 export class DetallesclientePage implements OnInit {
   @Input() cliente: any;
   isDarkMode: any;

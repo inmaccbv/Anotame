@@ -114,14 +114,14 @@ export class ReviewsService {
         {
           text: 'Enviar',
           handler: (data) => {
-            console.log('Respuesta enviada:', data.respuesta);
+            // console.log('Respuesta enviada:', data.respuesta);
             // Asignamos la respuesta a la propiedad respuesta de la reseña
             resena.respuesta = data.respuesta;
 
             // Actualizamos la respuesta en la base de datos
             this.agregarRespuestaEnBD(resena.id_reviews, data.respuesta).subscribe(
               (respuesta) => {
-                console.log('Respuesta agregada a la base de datos:', respuesta);
+                // console.log('Respuesta agregada a la base de datos:', respuesta);
               },
               (error) => {
                 console.error('Error al agregar respuesta a la base de datos:', error);

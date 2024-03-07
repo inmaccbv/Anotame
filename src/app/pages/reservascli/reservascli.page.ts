@@ -199,36 +199,30 @@ export class ReservascliPage implements OnInit, AfterViewInit {
 
         this.obtenerIdCliente().subscribe(
           (id_cliente) => {
+            // Verifica si se obtuvo el id_cliente
             if (id_cliente) {
-              const numPax = this.reservaForm.get('numPax')?.value;
-              const fechaHoraReserva = this.reservaForm.get('fechaHoraReserva')?.value;
-              const notasEspeciales = this.reservaForm.get('notasEspeciales')?.value;
-              const estadoReserva = this.reservaForm.get('estadoReserva')?.value;
-              const fechaCreacion = this.reservaForm.get('fechaCreacion')?.value;
-
-              // Recuperar el valor de id_empresa del localStorage
-              const idEmpresaString = localStorage.getItem('id_empresa');
-              const id_empresa = idEmpresaString ? parseInt(idEmpresaString, 10) : null;
-
+              // Construcción del Objeto Reserva
               const nuevaReserva = {
-                numPax: numPax,
-                fechaHoraReserva: fechaHoraReserva,
-                notasEspeciales: notasEspeciales,
+                numPax: this.reservaForm.get('numPax')?.value,
+                fechaHoraReserva: this.reservaForm.get('fechaHoraReserva')?.value,
+                notasEspeciales: this.reservaForm.get('notasEspeciales')?.value,
+                estadoReserva: this.reservaForm.get('estadoReserva')?.value,
+                fechaCreacion: this.reservaForm.get('fechaCreacion')?.value,
                 id_cliente: id_cliente,
-                estadoReserva: estadoReserva,
-                fechaCreacion: fechaCreacion,
-                id_empresa: id_empresa // Agrega el id_empresa al objeto nuevaReserva
+                id_empresa: parseInt(localStorage.getItem('id_empresa') || '', 10)
               };
-
-              // Envía la reserva al servicio de notificaciones
+  
+              // Envío de Notificación
               this.notificacionService.enviarNotificacion(nuevaReserva);
-
+  
+              // Envío de Reserva al Servicio
               this.reservasService.addReserva(nuevaReserva).subscribe(
-                (response) => {
-                  // Luego de enviar la reseña, guardarla en el localStorage
+                () => {
+                  // Guardado Local y Actualización de la Vista
                   this.guardarReservaEnLocalStorage(nuevaReserva);
                   this.envioReservaEnProceso = false;
-
+  
+                  // Recarga la página después de un breve intervalo
                   setTimeout(() => {
                     window.location.reload();
                   }, 500);

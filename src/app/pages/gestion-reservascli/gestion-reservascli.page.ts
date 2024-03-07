@@ -81,7 +81,7 @@ export class GestionReservascliPage implements OnInit {
       (ans) => {
         this.reservas = ans.filter((reserva: any) => reserva.id_cliente === clienteId.toString());
         this.reservasFiltradas = [...this.reservas];
-        // console.log('Reservas obtenidas:', this.reservasFiltradas);
+        console.log('Reservas obtenidas:', this.reservasFiltradas);
       },
       (error) => {
         console.error('Error al obtener las reservas:', error);
@@ -96,19 +96,26 @@ export class GestionReservascliPage implements OnInit {
     return isValidDate ? datePipe.transform(fecha, 'dd/MM/yyyy HH:mm') ?? '' : '';
   }
 
-  // Obtener color según el estado de la reserva
-  public getEstadoColor(estado: string): string {
-    switch (estado) {
-      case 'pendiente':
-        return 'color-naranja';
-      case 'aceptada':
-        return 'color-verde';
-      case 'cancelada':
-        return 'color-rojo';
-      default:
-        return 'color-naranja';
-    }
+  // Funciones auxiliares relacionadas con la gestión de reservas
+  private obtenerEstadoColor(reserva: any, opcionesEstado: any[]): any {
+    const estadoReserva = reserva.estadoReserva.toLowerCase();
+    const color = this.getEstadoColor(estadoReserva);
+    return { estado: estadoReserva, color: color };
   }
+
+  getEstadoColor(estado: string): string {
+    switch (estado) {
+        case 'pendiente':
+            return 'color-naranja';
+        case 'aceptada':
+            return 'color-verde';
+        case 'cancelada':
+            return 'color-rojo';
+        default:
+            return 'color-naranja';
+    }
+}
+
 
   // Obtener el rol del usuario autenticado
   getUserRole() {

@@ -1,0 +1,148 @@
+[
+    {
+        "icon": "business-outline",
+        "name": "Selección Restaurante",
+        "redirectTo": "/seleccion-empresa",
+        "roles": [
+            "cliente"
+        ]
+    },
+    {
+        "icon": "brush-outline",
+        "name": "Reservas",
+        "redirectTo": "/gestion-reservas",
+        "roles": [
+            "administrador",
+            "encargado",
+            "camarero"
+        ]
+    },
+    {
+        "icon": "star-half-outline",
+        "name": "Reseñas",
+        "redirectTo": "/reviews",
+        "roles": [
+            "administrador",
+            "encargado"
+        ]
+    },
+    {
+        "icon": "book-outline",
+        "name": "Carta y/o menú",
+        "redirectTo": "/gestion-menu-carta",
+        "roles": [
+            "administrador",
+            "encargado"
+        ]
+    },
+    {
+        "icon": "pencil-outline",
+        "name": "Descripción Local",
+        "redirectTo": "/descripcion-local",
+        "roles": [
+            "administrador",
+            "encargado"
+        ]
+    },
+    {
+        "icon": "call-outline",
+        "name": "Datos contacto",
+        "redirectTo": "/contacto",
+        "roles": [
+            "administrador",
+            "encargado"
+        ]
+    },
+    {
+        "icon": "qr-code-outline",
+        "name": "Generar QR",
+        "redirectTo": "/codigo-qr",
+        "roles": [
+            "administrador",
+            "encargado"
+        ]
+    },
+    {
+        "icon": "time-outline",
+        "name": "Horario",
+        "redirectTo": "/horarios",
+        "roles": [
+            "administrador",
+            "encargado"
+        ]
+    },
+    {
+        "icon": "people-outline",
+        "name": "Configuración Usuarios",
+        "redirectTo": "/config-empleados",
+        "roles": [
+            "administrador"
+        ]
+    },
+    {
+        "icon": "book-outline",
+        "name": "Carta",
+        "redirectTo": "/cartacli",
+        "roles": [
+            "cliente"
+        ]
+    },
+    {
+        "icon": "fast-food-outline",
+        "name": "Menu",
+        "redirectTo": "/menu-imgcli",
+        "roles": [
+            "cliente"
+        ]
+    },
+    {
+        "icon": "call-outline",
+        "name": "Contacto",
+        "redirectTo": "/contactocli",
+        "roles": [
+            "cliente"
+        ]
+    },
+    {
+        "icon": "brush-outline",
+        "name": "Reservas",
+        "redirectTo": "gestion-reservascli",
+        "roles": [
+            "cliente"
+        ]
+    },
+    {
+        "icon": "pencil-outline",
+        "name": "Descripción Local",
+        "redirectTo": "descripcion-cliente",
+        "roles": [
+            "cliente"
+        ]
+    },
+    {
+        "icon": "star-half-outline",
+        "name": "Reseñas",
+        "redirectTo": "reviewscli",
+        "roles": [
+            "cliente"
+        ]
+    },
+    {
+        "icon": "log-in-outline",
+        "name": "Cerrar Sesión",
+        "action": "logoutcli",
+        "roles": [
+            "cliente"
+        ]
+    },    
+    {
+        "icon": "log-in-outline",
+        "name": "Cerrar Sesión",
+        "action": "logout",
+        "roles": [
+            "administrador",
+            "encargado",
+            "camarero"
+        ]
+    }    
+]

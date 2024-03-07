@@ -1,39 +1,11 @@
-:root {
-    --color-fila-1: #FFECBA;
-    --color-fila-2: #FFFFFF;
-}
-
-
-.dark-list {
-    background-color: #444852;
-    color: #fff;
-}
-
-ion-list {
-    margin-top: 15px !important;
-    margin-bottom: 20px !important;
-    margin-left: 10px !important;
-    margin-right: 10px !important;
-}
-
-/* Estilos generales para ion-toolbar, ion-title y ion-col */
-ion-toolbar,
-ion-title,
-ion-col {
-    font-size: 2.0vw;
-}
-
-/* Estilos específicos para ion-title */
 ion-title {
     text-align: center;
 }
 
-/* Estilos para el color de salir */
 .color-salir {
     color: #ff830f;
 }
 
-/* Estilos para diferentes colores de texto */
 .color-naranja {
     color: #FFA500;
 }
@@ -46,110 +18,169 @@ ion-title {
     color: #FF0000;
 }
 
-/* Estilos para íconos generales */
 .iconos ion-icon {
-    font-size: 1.5vw;
+    font-size: 1.2vw;
     color: #ff830f;
     overflow: visible;
 }
 
-/* Configuración y estilo para la tabla centrada */
-.tabla-centrada {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
+/* Estilo para el botón de filtro */
+.btnFiltro {
+    margin-left: 98px;
+    border-radius: 15px;
+    font-size: 12px;
+    padding: 5px 10px;
 }
 
-/* Estilos para filas de la tabla */
+.custom-button {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 38%;
+    transform: translateX(50%);
+    font-size: 12px;
+}
+
+ion-item.encabezado-naranja .ion-col,
+.fila-bordes ion-col {
+    flex: 2 !important; /* Ajusta este valor según tus necesidades */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.encabezado-naranja ion-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-row,
+.data-row {
+    display: flex;
+    flex-wrap: nowrap; /* Evita que se envuelva a la siguiente línea */
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.columna {
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
 .fila-bordes {
     background-color: #FFFFFF;
     border: 1px solid #E0E0E0;
     border-radius: 10px;
     overflow: hidden;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 90vw;
-    /* Reduzco el ancho para dejar espacio para el borde */
     color: black !important;
     margin-bottom: 8px;
 }
 
-/* Estilos específicos para el encabezado naranja */
-.encabezado-naranja {
-    color: #ff830f !important;
-}
-
-/* Estilos para columnas (títulos y datos) */
-.columna {
-    flex: 1;
+.fila-bordes ion-col {
+    flex: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    padding: 10px;
 }
 
-/* Estilos para íconos en la tabla */
 .iconos {
     display: flex;
     justify-content: flex-end;
+    /* Alineo los íconos a la derecha dentro de las columnas de íconos */
     align-items: center;
     flex: 1;
+    /* Hago que las columnas de íconos tengan la misma flexibilidad */
 }
 
-/* Estilos para íconos en la tabla */
 .iconos ion-icon {
     font-size: 1.5vw;
+    /* Establezco el tamaño de fuente para los íconos dentro de ion-icon */
 }
 
-/* Estilos específicos para el modo oscuro */
+/* Estilo específico para el modo oscuro */
 .dark-theme {
     filter: none;
+    /* Elimino cualquier filtro aplicado al modo oscuro */
 }
 
-/* Estilos específicos para pantallas pequeñas */
-@media screen and (max-width: 768px) {
-    ion-title.tabla-centrada {
-        font-size: 3vw;
-    }
-
-    /* Diseño de columna en pantallas pequeñas */
-    .columna,
-    .iconos {
-        flex: 1;
-        font-size: 2.5vw;
-    }
-
-    /* Tamaño de fuente para íconos en pantallas pequeñas */
-    ion-icon {
-        font-size: 4vw;
-    }
-}
-
-/* Estilos para el punto de estado de reserva */
 .estado-reserva-dot {
     width: 20px;
-    /* Ajusta según sea necesario */
+    /* Ajusto el ancho del elemento de estado de reserva */
     height: 20px;
-    /* Ajusta según sea necesario */
+    /* Ajusto la altura del elemento de estado de reserva */
     background-size: cover;
+    /* Hago que el fondo cubra completamente el elemento */
     border-radius: 50%;
-    /* Esto hace que el elemento sea un círculo */
+    /* Hago que el elemento sea un círculo */
 }
 
-/* Estilos para filas de encabezado y datos en la tabla */
-.header-row {
+ion-title {
+    font-size: 20px;
+    /* Establezco el tamaño de fuente para ion-title */
+}
+
+label {
+    font-size: 10px;
+    /* Establezco el tamaño de fuente para las etiquetas */
     font-weight: bold;
+    /* Establezco la negrita para las etiquetas */
+    color: #ff830f;
+    text-align: center;
 }
 
-.data-row {
-    font-size: 2.0rem;
-    background-color: var(--color-fila-1);
-    /* Cambia el color de la primera fila */
-    /* Ajusta otros estilos según sea necesario */
+p {
+    font-size: 15px;
+    /* Establezco el tamaño de fuente para los párrafos */
+    text-align: center;
+    /* Centro el texto dentro de los párrafos */
 }
 
-.dark-theme .data-row {
-    background-color: var(--color-fila-2);
-    /* Cambia el color de la segunda fila en modo oscuro */
-    /* Ajusta otros estilos para el modo oscuro según sea necesario */
+.reserva-dato {
+    font-size: 15px;
+    /* Establezco el tamaño de fuente para los párrafos */
+    text-align: center;
+    /* Centro el texto dentro de los párrafos */
+}
+
+/* Agrega estas reglas para cambiar el color del texto en modo oscuro */
+.dark-theme ion-col.columna,
+.dark-theme ion-text.reserva-dato {
+    color: #fff; /* Cambia el color del texto a blanco en modo oscuro */
+}
+
+/* Estilos para las columnas de encabezados y datos */
+.encabezado-col,
+.data-col {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-right: 13px;
+    padding-left: 4px;
+}
+
+/* Estilos para los íconos dentro de las columnas */
+.iconos-col {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Aplicar el estilo específico para el modo oscuro */
+.dark-theme .encabezado-col,
+.dark-theme .data-col {
+    color: #fff;
+}
+
+/* Estilo específico para el ícono en el modo oscuro */
+.dark-theme .iconos-col {
+    color: #fff;
 }

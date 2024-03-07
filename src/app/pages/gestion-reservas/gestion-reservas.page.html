@@ -4,7 +4,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home" style="--color: #ff830f"></ion-back-button>
     </ion-buttons>
-    <ion-title>Gestión Reservas</ion-title>
+    <ion-title>Reservas</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="toggleDarkMode()">
         <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"
@@ -18,8 +18,6 @@
 </ion-header>
 
 <ion-content *ngIf="rol === 'administrador' || rol === 'encargado' || rol === 'camarero'">
-
-  <ion-title class="title">Lista de Reservas</ion-title>
 
   <!-- Filtros de búsqueda -->
   <ion-item>
@@ -37,7 +35,6 @@
       <ion-select-option value="10">Octubre</ion-select-option>
       <ion-select-option value="11">Noviembre</ion-select-option>
       <ion-select-option value="12">Diciembre</ion-select-option>
-
     </ion-select>
     <ion-button *ngIf="filtroMes" (click)="borrarFiltro()" fill="clear">
       <ion-icon name="close-circle-outline"></ion-icon>
@@ -57,42 +54,59 @@
     </ion-button>
   </ion-item>
 
-  <ion-button class="btnFiltro" (click)="aplicarFiltros()">Aplicar Filtros</ion-button>
+  <ion-button class="btnFiltro" (click)="aplicarFiltros()" class="custom-button" shape="round" size="small">Aplicar
+    Filtros</ion-button>
 
-  <ion-card *ngFor="let reserva of reservasFiltradas; let i = index" [class.dark-theme]="isDarkMode"
-    [ngStyle]="{ 'background-color': coloresFilas[i % coloresFilas.length] }">
+  <ion-list lines="full">
 
-    <ion-card-content style="color: black;">
-      <ion-row>
-        <!-- Primera Columna -->
-        <ion-col size="6">
-          <label>Fecha y Hora:</label>
-          <p class="reserva-dato"> {{ formatFechaHora(reserva.fechaHoraReserva) }}</p>
-          <label>Num. de Pax:</label>
-          <p class="reserva-dato"> {{ reserva.numPax }}</p>
-          <label>Notas:</label>
-          <p class="reserva-dato"> {{ reserva.notasEspeciales }}</p>
-        </ion-col>
-
-        <!-- Segunda Columna -->
-        <ion-col size="6" class="ion-text-center">
-          <ion-row>
-            <ion-button (click)="cambiarEstadoReserva(reserva)" fill="clear">
-              <ion-icon [name]="'ellipse'" [class]="getEstadoColor(reserva.estadoReserva)"
-                style="margin-left: 5px;"></ion-icon>
-            </ion-button>
-          </ion-row>
-          <ion-row>
-            <ion-icon *ngIf="reserva?.id_cliente" (click)="mostrarDetallesCliente($event, reserva)" name="eye-outline"
-              style="font-size: 20px; cursor: pointer; margin-left: 5px;color: #ff830f;">
-              {{ reserva.id_cliente }}
-            </ion-icon>
-          </ion-row>
-        </ion-col>
-
+    <!-- Encabezados -->
+    <ion-item class="fila-bordes" style="margin-left: 18px; margin-right: 9px;">
+      <ion-row class="header-row" style="color: #ff830f;font-weight: bold;">
+        <!-- Encabezados en la primera fila -->
+        <ion-col size="3">Día&Hora</ion-col>
+        <ion-col size="3">Pax</ion-col>
+        <ion-col size="3">Notas</ion-col>
+        <ion-col size="3">Estado</ion-col>
+        <ion-col size="3">Cliente</ion-col>
       </ion-row>
-    </ion-card-content>
-  </ion-card>
+    </ion-item>
+
+    <div *ngFor="let reserva of reservasFiltradas; let i = index">
+      <!-- Datos -->
+      <ion-item class="fila-bordes" style="margin-left: 18px; margin-right: 12px;">
+        <ion-row class="data-row">
+          <!-- Datos en la segunda fila -->
+          <ion-col class="columna" style="flex: 2; margin-right: 13px;"  [class]="isDarkMode ? 'dark-theme' : ''">
+            <ion-text class="reserva-dato">{{ formatFechaHora(reserva.fechaHoraReserva) }}</ion-text>
+          </ion-col>
+          <ion-col class="columna" style="flex: 2;" [class]="isDarkMode ? 'dark-theme' : ''">
+            <ion-text class="reserva-dato">{{ reserva.numPax }}</ion-text>
+          </ion-col>
+          <ion-col class="columna" style="flex: 2;" [class]="isDarkMode ? 'dark-theme' : ''">
+            <ion-text class="reserva-dato">{{ reserva.notasEspeciales }}</ion-text>
+          </ion-col>
+
+          <!-- Botón con ícono de estado de reserva -->
+          <ion-col class="columna" style="flex: 2;">
+            <ion-button (click)="cambiarEstadoReserva(reserva)" fill="clear" >
+              <ion-icon [name]="'ellipse'" [class]="getEstadoColor(reserva.estadoReserva)"
+                style="font-size: 12px;"></ion-icon>
+            </ion-button>
+          </ion-col>
+
+
+
+          <!-- Ícono de detalles del cliente -->
+          <ion-col class="columna" style="flex: 2;">
+            <ion-icon *ngIf="reserva?.id_cliente" (click)="mostrarDetallesCliente($event, reserva)" name="eye-outline"
+              style="font-size: 15px; cursor: pointer; margin-left: 5px;color: #ff830f;">
+            </ion-icon>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+    </div>
+  </ion-list>
+
 
   <!-- Mostrar un mensaje si no hay reservas -->
   <div *ngIf="!reservas || reservas.length === 0">
